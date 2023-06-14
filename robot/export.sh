@@ -10,35 +10,60 @@ mkdir -p $out_dir/armor
 win_out_dir=$(wslpath -w $out_dir)
 printf '%s\n' "$win_out_dir"
 
-armature_parts=(
-    "lens" "neck" "torso" "waist"
-    "hips" "hip"
-    "arm_upper" "arm_lower"
-    "hand_right" "hand_left"
-    "leg_upper" "leg_lower"
-    "shoulder" "head_and_foot_socket"
+declare -A armature_parts=(
+    ["lens"]=1
+    ["neck"]=1
+    ["torso"]=1
+    ["waist"]=1
+    ["hips"]=1
+    ["hip"]=2
+    ["arm_upper"]=2
+    ["arm_lower"]=2
+    ["hand_right"]=1
+    ["hand_left"]=1
+    ["leg_upper"]=2
+    ["leg_lower"]=2
+    ["shoulder"]=2
+    ["head_and_foot_socket"]=3
 )
 
-armor_parts=(
-    "head"
-    "torso_armor" "waist_armor" "hips_armor" "hip_armor"
-    "arm_upper_armor_top" "arm_upper_armor_bottom"
-    "arm_lower_armor_top" "arm_lower_armor_bottom"
-    "hand_armor"
-    "leg_upper_armor_top" "leg_upper_armor_bottom"
-    "leg_lower_armor_top" "leg_lower_armor_bottom"
-    "shoulder_armor"
-    "foot"
+declare -A armor_parts=(
+    ["head"]=1
+    ["torso_armor"]=2
+    ["waist_armor"]=2
+    ["hips_armor"]=2
+    ["hip_armor"]=2
+    ["arm_upper_armor_top"]=2
+    ["arm_upper_armor_bottom"]=2
+    ["arm_lower_armor_top"]=2
+    ["arm_lower_armor_bottom"]=2
+    ["hand_armor"]=2
+    ["leg_upper_armor_top"]=2
+    ["leg_upper_armor_bottom"]=2
+    ["leg_lower_armor_top"]=2
+    ["leg_lower_armor_bottom"]=2
+    ["shoulder_armor"]=2
+    ["foot"]=2
 )
 
-for part in "${armature_parts[@]}"
+for part in "${!armature_parts[@]}" 
 do
-    ("/mnt/c/Program Files/OpenSCAD/openscad.exe" -Dpart="\"$part\"" -q -o $win_out_dir/armature/$part.stl print\ map.scad; echo "Finished generating: $part") &
+    ("/mnt/c/Program Files/OpenSCAD/openscad.exe" -Dpart="\"$part\"" -q -o $win_out_dir/armature/$part.stl print\ map.scad; 
+        echo "Finished generating: $part";
+        for ((i=2;i<=${armature_parts[$part]};i++)) do 
+            cp $out_dir/armature/$part.stl $out_dir/armature/$part\_$i.stl; echo "Finished generating: $part\_$i.stl"
+        done
+    ) &
 done
 
-for part in "${armor_parts[@]}"
+for part in "${!armor_parts[@]}" 
 do
-    ("/mnt/c/Program Files/OpenSCAD/openscad.exe" -Dpart="\"$part\"" -q -o $win_out_dir/armor/$part.stl print\ map.scad; echo "Finished generating: $part")  &
+    ("/mnt/c/Program Files/OpenSCAD/openscad.exe" -Dpart="\"$part\"" -q -o $win_out_dir/armor/$part.stl print\ map.scad; 
+        echo "Finished generating: $part";
+        for ((i=2;i<=${armor_parts[$part]};i++)) do 
+            cp $out_dir/armor/$part.stl $out_dir/armor/$part\_$i.stl; echo "Finished generating: $part\_$i.stl"
+        done
+    ) &
 done
 
 wait
