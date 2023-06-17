@@ -10,10 +10,10 @@ Assemble the armature before putting on the armor, or it will be much harder to 
 
 Some parts look very similar and it can be hard to tell the correct orientation. 
 
-The below image shows:
+From left to right, the below image shows:
 * The shoulder from the top.
 * The should from the bottom. Note the deeper cut on the socket.
-* The waist. Note the slightly longer stem on the ball and presensce of two snap indents on the side, rather than one big one.
+* The waist. Note the slightly longer stem on the ball and presence of two snap indents on the side, rather than one big one.
 
 ![](images/shoulder_and_waist.png?raw=true "Should and waist sockets")
 
