@@ -1,35 +1,32 @@
 include <robot imports.scad>
 
 lens_diameter = 12;
+eye_socket_diameter = lens_diameter + 2;
 head_cube_y_offset = 5.5;
+
+wall_thickness = 1.5;
+head_cube_y = eye_socket_diameter + 2 * wall_thickness + 1;
 head_cube_z = 16;
 neck_len = 8.5;
 
-head_assembled();
+function head_height() = head_cube_y_offset + neck_len + head_cube_y/2;
 
 module head_assembled(neck_angle = 0) {
-	rotate(neck_angle) {
-		rotate_z_relative_to_point([0, neck_len], neck_angle) {
-			translate([0, neck_len]) {
-				c2() head();
-				c1() head_and_foot_socket();
-				translate([0, head_cube_y_offset, head_cube_z/2 - 0.5]) c1() lens();
+	rotate(180) {
+		translate([0, -head_height()]) {
+			rotate(neck_angle) {
+				rotate_z_relative_to_point([0, neck_len], neck_angle) {
+					translate([0, neck_len]) {
+						c2() head();
+						c1() head_and_foot_socket();
+						translate([0, head_cube_y_offset, head_cube_z/2 - 0.5]) c1() lens();
+					}
+				}
+				c1() neck();
 			}
 		}
-		c1() neck();
 	}
 }
-//
-//module head_assembled(neck_angle = 0) {
-//	rotate_z_relative_to_point([0, -neck_len], neck_angle) {
-//		rotate(neck_angle) {
-//			c2() head();
-//			c1() head_and_foot_socket();
-//			translate([0, head_cube_y_offset, head_cube_z/2 - 0.5]) c1() lens();
-//		}
-//		rotate(180) c1() neck();
-//	}
-//}
 
 module head() {
 	difference() {

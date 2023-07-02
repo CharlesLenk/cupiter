@@ -34,41 +34,13 @@ module cube_one_round_corner(vector, corner_r) {
 	y = vector[1];
 	z = vector[2];
 	linear_extrude(z) {
-		translate([x - corner_r, y - corner_r]) {
-			intersection() {
-				circle(corner_r);
-				square([corner_r, corner_r]);
-			}
-		}
-		square([x - corner_r, y]);
-		square([x, y - corner_r]);
+		rounded_square_2([x, y], c3 = corner_r);
 	}
 }
 
 module rounded_cylinder(h, d, top_d = 0, bottom_d = 0, center = false) {
 	translate([0, 0, center ? -h/2: 0]) {
 		hull() rotate_extrude() rounded_corner(d, h, top_d, bottom_d);
-	}
-}
-
-module rounded_corner(d, h, top_d, bottom_d) {
-	intersection() {
-		union() {
-			if (top_d > 0) {
-				translate([d/2 - top_d/2, h - top_d/2]) {
-					circle(d = top_d);
-				}
-				translate([0, h - top_d]) square([d/2 - top_d/2, top_d]);
-			}
-			if (bottom_d > 0) {
-				translate([d/2 - bottom_d/2, bottom_d/2]) {
-					circle(d = bottom_d);
-				}
-				square([d/2 - bottom_d/2, bottom_d]);
-			}
-			translate([0, bottom_d/2]) square([d/2, h - top_d/2 - bottom_d/2]);
-		}
-		square([d/2, h]);
 	}
 }
 
@@ -111,44 +83,52 @@ module xy_cut(height = 0, from_top = false, size = 250) {
     }
 }
 
+module rounded_corner(d, h, top_d, bottom_d) {
+	rounded_square_2([d/2, h], c2 = bottom_d/2, c3 = top_d/2);
+}
+
 module rounded_square(vector, d, front_d, back_d) {
-	x = vector[0];
-    y = vector[1];
-	front_d = is_undef(front_d) ? d : front_d;
-	back_d = is_undef(back_d) ? d : back_d;
+	front_r = is_undef(front_d) ? d/2 : front_d/2;
+	back_r = is_undef(back_d) ? d/2 : back_d/2;
 	
-	hull() {
-		if (front_d > 0) {
-			translate([front_d/2, -front_d/2 + y]) {
-				circle(d = front_d);
-			}
-			translate([-front_d/2 + x, -front_d/2 + y]) {
-				circle(d = front_d);
-			}
-		}
-		if (back_d > 0) {
-			translate([back_d/2, back_d/2]) {
-				circle(d = back_d);
-			}
-			translate([-back_d/2 + x, back_d/2]) {
-				circle(d = back_d);
-			}
-		}
-	}
-	if (front_d == 0 || back_d == 0) {
-		translate([0, back_d/2]) {
-			square([x, y - front_d/2 - back_d/2]);
+	rounded_square_2(vector, back_r, back_r, front_r, front_r);
+}
+
+module rounded_square_2(vector, c1 = 0, c2 = 0, c3 = 0, c4 = 0) {
+	x = vector[0];
+	y = vector[1];
+	
+	if (c1 > 0) translate([c1, c1]) corner(c1, 2);
+	if (c2 > 0) translate([x - c2, c2]) corner(c2, 3);
+	if (c3 > 0) translate([x - c3, y - c3]) corner(c3, 0);
+	if (c4 > 0) translate([c4, y - c4]) corner(c4, 1);
+	polygon(
+		[
+			[c1, 0],
+			[x - c2, 0],
+			[x, c2],
+			[x, y - c3],
+			[x - c3, y],
+			[c4, y],
+			[0, y - c4],
+			[0, c1],
+		]
+	);
+	
+	module corner(r, quad) {
+		intersection() {
+			circle(r);
+			rotate(quad * 90) square([r, r]);
 		}
 	}
 }
 
 module wedge(angle, y, z) {
-	hypotenuse = y/sin(90 - angle/2);
-	hull() {
-		rotate(angle/2) cube([0.001, hypotenuse, z]);
-		rotate(-angle/2) cube([0.001, hypotenuse, z]);
-	}
+	x = get_opposite(angle/2, y);
+	linear_extrude(z) polygon([[0, 0], [x, y], [-x, y]]);
 }
+
+function get_opposite(angle, adjacent) = adjacent * tan(angle);
 
 function is_undef_or_0(value) = is_undef(value) || value == 0;
 
@@ -176,7 +156,7 @@ module rounded_cube(vector, d, front_d, back_d, top_d, bottom_d, center = false)
 		translate(center ? [-x/2, -y/2, -z/2] : [0, 0, 0]) {
 			if (top_d == 0 && bottom_d == 0) {
 				translate([0, 0, bottom_d/2]) {
-					linear_extrude(z) rounded_square([x, y], d, front_d, back_d); 
+					linear_extrude(z) rounded_square([x, y], d, front_d, back_d);
 				}
 			} else {
 				hull() {

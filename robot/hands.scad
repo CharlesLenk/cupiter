@@ -7,7 +7,7 @@ hand_z = 6;
 finger_width = 2.5;
 palm_z = 8;
 wrist_len = 2.5;
-wrist_socket_gap = -0.15;
+wrist_socket_gap = -0.10;
 
 joint_angles = [45, 45, 45];
 
@@ -34,9 +34,9 @@ flat_hand = [
 	[0, 0, 0],
 	[0, 0]
 ];
-
+hand_assembled();
 module hand_assembled(with_armor = true) {
-	rotate([180, 90, 0]) {
+	rotate([0, 90, 0]) {
 		c1() hand_left();
 		if(with_armor) c2() hand_armor();
 	}

@@ -11,13 +11,14 @@ module segment(
 	is_cut = false, 
 	end1_snap = false,
 	mid_snap = false,
-	end2_snap = false
+	end2_snap = false,
+	cross_brace = false
 ) {
     segment_mid_y = get_segment_mid_y(length, end1, end2);
 	height = is_cut ? segment_cut_height : segment_height;
 	width = is_cut ? segment_cut_width : segment_width;
     
-	snap_len = 4;
+	snap_len = 3.5;
 	snap_edge_dist = 0.5;
 	end2_y = segment_mid_y > 0 ? length : get_end_y(end1) + get_end_y(end2);
 	
@@ -29,7 +30,12 @@ module segment(
 	if (segment_mid_y > 0) {
 		translate([0, segment_mid_y/2 + get_end_y(end1), 0]) {
 			difference() {
-				cube([width, segment_mid_y + 0.002, height], center = true);
+				union() {
+					cube([width, segment_mid_y + 0.002, height], center = true);
+					if (cross_brace) {
+						cross_brace(1, segment_width, is_cut);
+					}
+				}
 				if (end1_snap) {
 					translate([0, -segment_mid_y/2 + snap_edge_dist, 0]) {
 						snaps();
@@ -93,10 +99,10 @@ function get_segment_mid_y(length, end1 = 0, end2 = 0) =
 function get_end_y(end) = 
 	(end == SOCKET || end == WAIST_SOCKET || end == SHOULDER_SOCKET || end == HIP_SOCKET)? socket_dist : 
 	end == BALL ? ball_dist : 
-	end == ROTATOR_SOCKET ? rotator_socket_l :
+	end == ROTATOR_SOCKET ? rotator_socket_l - 1 :
 	end == ROTATOR_PEG ? 0 :
-	(end == ELBOW_PEG || end == KNEE_PEG) ? elbow_peg_len :
-	(end == ELBOW_SOCKET || end == KNEE_SOCKET) ? elbow_socket_len :
+	(end == ELBOW_PEG || end == KNEE_PEG) ? elbow_peg_size()/2 :
+	(end == ELBOW_SOCKET || end == KNEE_SOCKET) ? elbow_socket_size()/2 :
 	0;
 
 module make_socket(ball_offset = 0, socket_angle = 0, cut_angle = socket_opening_angle, is_cut = false) {
@@ -130,6 +136,23 @@ module ball_for_armor_subtractions() {
 	sphere(d = ball_d + 0.2);
 }
 
+module cross_brace(depth, target_width, is_cut) {
+	height = is_cut ? segment_cut_height : segment_height;
+	cut_adjust = is_cut ? 0.1 : 0;
+	
+	translate([0, 0, -height/2]) { 
+		linear_extrude(height) {
+			hull() {
+				reflect([1, 0, 0]) {
+					translate([target_width/2, 0]) {
+						circle(d = depth + cut_adjust);
+					}
+				}
+			}
+		}
+	}
+}
+
 module armor_snap_inner_double(
 	length, 
 	target_width,
@@ -137,7 +160,7 @@ module armor_snap_inner_double(
 	is_cut = false
 ) {
 	snap_triangle_height = (depth + segment_cut_width_amt/2);
-	z_dist = snap_triangle_height / tan(90 - snap_angle/2) + 0.1;
+	z_dist = snap_triangle_height / tan(90 - snap_angle/2) + 0.2;
 	
 	translate([0, 0, z_dist]) snaps();
 	translate([0, 0, -z_dist]) snaps();
@@ -193,24 +216,26 @@ module armor_snap_inner(
 	length, 
 	target_width,
 	depth,
-	is_cut = false
+	is_cut = false,
+	width_cut_adjust = 0.05
 ) {
-	snap_bump(length, target_width, depth, is_cut);
-	translate([0, length]) rotate(180) snap_bump(length, target_width, depth, is_cut);
+	snap_bump(length, target_width, depth, is_cut, width_cut_adjust);
+	translate([0, length]) rotate(180) snap_bump(length, target_width, depth, is_cut, width_cut_adjust);
 }
 
 module snap_bump(
 	length, 
 	target_width,
 	depth,
-	is_cut = false
+	is_cut = false,
+	width_cut_adjust = 0.05
 ) {
 	depth_cut_adjust = is_cut ? 0.15 : 0;
-	width_cut_adjust = is_cut ? 0.1 : 0;
+	width_cut_adjust = is_cut ? width_cut_adjust : 0;
 	
-	translate([-target_width/2 + depth_cut_adjust + depth, -width_cut_adjust/2]) {
+	translate([depth - target_width/2 + depth_cut_adjust, -width_cut_adjust/2]) {
 		rotate([0, 90, 90]) {
-			wedge(snap_angle, 2 * depth, length + width_cut_adjust);
+			wedge(snap_angle, depth + depth_cut_adjust + 0.001, length + width_cut_adjust);
 		}
 	}
 }
