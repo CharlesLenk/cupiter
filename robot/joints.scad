@@ -2,8 +2,18 @@ include <robot imports.scad>
 
 elbow_peg_armor_peg_d = 2.75;
 elbow_peg_armor_peg_h = 1.5;
+shoulder_socket_gap = -0.15;
+elbow_wall_width = 1.5;
+elbow_peg_d = 4.5;
+elbow_peg_h = segment_height - elbow_wall_width;
+elbow_socket_d = elbow_peg_d + 3;
+elbow_peg_size = elbow_socket_d + 2.7;
+elbow_peg_len = elbow_peg_size/2;
 
-//waist_socket();
+assembled(with_armor = false);
+
+function elbow_peg_size() = elbow_peg_size;
+function elbow_socket_size() = elbow_socket_d;
 
 module head_and_foot_socket(is_cut = false) {
 	head_and_foot_socket_gap = -0.2;
@@ -54,7 +64,7 @@ module head_and_foot_socket(is_cut = false) {
 
 module rounded_socket_blank(is_cut = false, cylinder_length) {
 	height = is_cut ? segment_cut_height : segment_height;
-	socket_width = is_cut ? socket_d + 0.2 : socket_d;
+	socket_width = is_cut ? socket_d + 0.15 : socket_d;
 	cylinder_length = is_undef(cylinder_length) ? socket_width/2 : cylinder_length;
 	
 	intersection() {
@@ -180,13 +190,16 @@ module waist_socket(is_cut = false) {
 	height = segment_height + (is_cut ? segment_cut_height_amt : 0);
 	width = socket_d + (is_cut ? segment_cut_width_amt : 0);
 	
+	translate([0, -0.5 + socket_d/2]) {
+		cross_brace(1, socket_d, is_cut);
+	}
 	difference() {
 		make_socket(waist_socket_gap, is_cut = is_cut) {
 			rounded_socket_blank(is_cut);
 		}
-		translate([0, 0.5]) {
+		translate([0, 0.25]) {
 			armor_snap_inner_double(
-				length = 3.75, 
+				length = 3.5, 
 				target_width = socket_d,
 				depth = snap_depth,
 				is_cut = !is_cut
@@ -196,10 +209,9 @@ module waist_socket(is_cut = false) {
 }
 
 module shoulder_socket(is_cut = false) {
-	shoulder_socket_gap = -0.15;
 	height = segment_height + (is_cut ? segment_cut_height_amt : 0);
 	width = socket_d + (is_cut ? segment_cut_width_amt : 0);
-	cut_d = is_cut ? 0.1 : 0;
+	cut_d = is_cut ? 0.2 : 0;
 	
 	d = socket_d + 0.5 + cut_d;
 	difference() {
@@ -220,17 +232,17 @@ module shoulder_socket(is_cut = false) {
 		armor_snap_inner(
 			length = 4, 
 			target_width = socket_d,
-			depth = 0.6,
-			is_cut = !is_cut
+			depth = 0.5,
+			is_cut = !is_cut,
+			width_cut_adjust = 0.2
 		);
 	}
 }
 
 module hip_socket(is_cut = false) {
-	shoulder_socket_gap = -0.15;
 	height = segment_height + (is_cut ? segment_cut_height_amt : 0);
 	width = socket_d + (is_cut ? segment_cut_width_amt : 0);
-	cut_d = is_cut ? 0.1 : 0;
+	cut_d = is_cut ? 0.2 : 0;
 	
 	d = socket_d + 0.5 + cut_d;
 	difference() {
@@ -240,8 +252,9 @@ module hip_socket(is_cut = false) {
 		armor_snap_inner(
 			length = 4, 
 			target_width = socket_d,
-			depth = 0.4,
-			is_cut = !is_cut
+			depth = 0.5,
+			is_cut = !is_cut,
+			width_cut_adjust = 0.2
 		);
 	}	
 }
@@ -288,7 +301,7 @@ module rotator_peg(is_cut = false) {
 		difference() {
 			capped_cylinder(rotator_peg_d + cut_adjust, rotator_peg_l + cut_adjust/2);
 			snap_d2 = 2.5;
-			translate([0, 0, snap_d2/2 + shoulder_armor_tab_width + 1]) {
+			translate([0, 0, snap_d2/2 + hip_armor_tab_width + 1]) {
 				torus(rotator_peg_d - 1.25, snap_d2);
 			}
 		}
@@ -306,20 +319,20 @@ module rotator_socket(is_cut = false) {
 		union() {
 			intersection() {
 				rotate([-90, 0, 0]) {
-					capped_cylinder(diameter + cut_adjust, rotator_socket_l + 0.25 + cut_adjust/2);
+					capped_cylinder(diameter + cut_adjust, rotator_socket_l + cut_adjust/2 - 1, width);
 				}
 				cube([diameter, 2 * length, height], center = true);
 			}
 			translate([-width/2, 0, -height/2]) {
-				cube([width, rotator_socket_l, height]);
+				cube([width, rotator_socket_l - 1, height]);
 			}
 		}
 		if (!is_cut) {
-			translate([0, -shoulder_armor_tab_width - 0.001, 0]) {
+			translate([0, -hip_armor_tab_width - 0.001, 0]) {
 				rotate(180) rotator_peg(is_cut = true);
 			}
 			fix_preview() {
-				translate([0, -shoulder_armor_tab_width, -height/2]) {
+				translate([0, -hip_armor_tab_width, -height/2]) {
 					linear_extrude(height) {
 						projection(cut = true) {
 							translate([0, 0, -segment_height/2 + 0.3]) {
@@ -333,7 +346,7 @@ module rotator_socket(is_cut = false) {
 	}
 	if (is_cut) {
 		rotate([-90, 0, 0]) {
-			cylinder(d = rotator_peg_d + 0.2, h = rotator_peg_l - rotator_peg_d/2 - shoulder_armor_tab_width + 0.1);
+			cylinder(d = rotator_peg_d + 0.2, h = rotator_peg_l - rotator_peg_d/2 - hip_armor_tab_width + 0.1);
 		}
 	}
 }

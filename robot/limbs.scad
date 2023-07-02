@@ -1,5 +1,8 @@
 include <robot imports.scad>
 
+arm_armor_y_offset = 1;
+leg_armor_y_offset = 1;
+
 arm_armor_height = armor_height - 0.5;
 limb_upper_armor_width = segment_height + 3;
 
@@ -7,38 +10,7 @@ arm_len = 22;
 arm_lower_len = 0.9 * arm_len; 
 leg_len = 1.5 * arm_len;
 shoulder_len = socket_d/2;
-leg_upper_len = leg_len - shoulder_len - shoulder_armor_tab_width;
-
-//assembled(
-//	with_armor = true, 
-//	limb_range_test = false, 
-//	neck_angle_test = false,
-//	shoulder_angle_test = false
-//);
-
-//translate([30, 0]) arm_exploded();
-////translate([25, 0, 0]) cross_section(0);
-//////translate([40, 0]) cross_section();
-//
-////hip_armor();
-//translate([0, 0])
-	//leg_assembled(with_armor = true, leg_angle = 0);
-////	translate([15, 0]) leg_assembled(leg_angle = 165);
-////translate([30, 0]) leg_exploded();
-//////}
-
-arm_assembled(
-	elbow_angle = 0,
-	shrug_angle = 0,
-	arm_extension_angle = 0
-);
-//translate([20, 0, 0]) {
-//	arm_assembled(
-//		elbow_angle = 160,
-//		shrug_angle = 0,
-//		arm_extension_angle = 0
-//	);
-//}
+leg_upper_len = leg_len - shoulder_len - hip_armor_tab_width;
 
 module arm_exploded() {
 	rotate([0, 270, 0]) arm_upper();
@@ -138,11 +110,11 @@ module leg_exploded() {
 
 module hip_armor() {
 	x = socket_d + 2.5;
-	z =  0.75 * socket_d + shoulder_armor_tab_width - 0.1;
+	z =  0.75 * socket_d + hip_armor_tab_width - 0.15;
 	y = armor_height - 1.5;
 	
 	x2 = x - 1;
-	z2 = socket_d/2 + shoulder_armor_tab_width;
+	z2 = socket_d/2 + hip_armor_tab_width;
 		
 	module armor_blank() {
 		intersection() {
@@ -154,7 +126,7 @@ module hip_armor() {
 						rounded_cube([x2, y, z], 1, 7, 5, 1, 1);
 					}
 				}
-				translate([-0.001, -10 + 1.5, 2 * shoulder_armor_tab_width + z]) {
+				translate([-0.001, -10 + 1.5, 2 * hip_armor_tab_width + z]) {
 					rotate([0, 90, 0]) {
 						rounded_cube([10, 10, x + 0.002], cut_d, cut_d, cut_d, 0, 0);
 					}
@@ -174,7 +146,7 @@ module hip_armor() {
 	}
 	
 	difference() {
-		translate([-x/2, socket_d/2 + shoulder_armor_tab_width - 0.1, -armor_height/2 + 1.5]) {
+		translate([-x/2, socket_d/2 + hip_armor_tab_width - 0.15, -armor_height/2 + 1.5]) {
 			rotate([90, 0, 0]) armor_blank();
 		}
 		translate([0, socket_d/2]) {
@@ -236,7 +208,7 @@ module limb_upper_armor_blank(max_width, max_length, min_width, min_length, cyli
 			}
 		}
 		translate(cylinder_pos) {
-			cylinder(d = elbow_socket_d + 0.2, h = armor_height, center = true);
+			cylinder(d = elbow_socket_size() + 0.2, h = armor_height, center = true);
 		}
 	}
 }
@@ -275,7 +247,7 @@ module limb_lower_armor_blank(max_width, max_length, min_width, cylinder_pos) {
 	}
 	translate(cylinder_pos) {
 		rounded_cylinder(
-			d = elbow_socket_d, 
+			d = elbow_socket_size(), 
 			h = armor_height, 
 			top_d = segment_d,  
 			bottom_d = segment_d, 
@@ -289,12 +261,13 @@ module shoulder(is_cut = false) {
 }
 
 module arm_upper(is_cut = false) {
-	segment(arm_len, BALL, ELBOW_SOCKET, 
-	is_cut, end1_snap = true, end2_snap = true);
+	segment(arm_len, BALL, ELBOW_SOCKET, is_cut, 
+		end1_snap = true, end2_snap = true, cross_brace = true);
 }
 
 module arm_lower(is_cut = false) {
-	segment(arm_lower_len, BALL, ELBOW_PEG, is_cut, end1_snap = true, end2_snap = true);
+	segment(arm_lower_len, BALL, ELBOW_PEG, is_cut, 
+		end1_snap = true, end2_snap = true, cross_brace = true);
 }
 
 module arm_upper_armor(is_top = false) {
@@ -315,11 +288,12 @@ module hip(is_cut = false) segment(0, HIP_SOCKET, ROTATOR_PEG, is_cut);
 
 module leg_upper(is_cut = false) {
 	segment(leg_upper_len, ROTATOR_SOCKET, KNEE_SOCKET,
-		is_cut, end1_snap = true, end2_snap = true);
+		is_cut, end1_snap = true, end2_snap = true, cross_brace = true);
 }
 
 module leg_lower(is_cut = false) {
-	segment(leg_len, BALL, KNEE_PEG, is_cut, end1_snap = true, end2_snap = true);
+	segment(leg_len, BALL, KNEE_PEG, is_cut, 
+		end1_snap = true, end2_snap = true, cross_brace = true);
 }
 
 module leg_upper_armor(is_top = false) {
@@ -338,24 +312,24 @@ module leg_lower_armor(is_top = false) {
 
 module arm_assembled(with_armor = true, elbow_angle = 0, shrug_angle = 0, arm_extension_angle = 0) {
 	rotate(shrug_angle) { 
-		rotate([0, 90, 90]) {
+		rotate([0, 90, 270]) {
 			rotate([0, 180, 0]) c1() shoulder();
 			if(with_armor) c2() shoulder_armor();
 		}
 		rotate(arm_extension_angle) {
-			rotate([0, 270, 180]) {
+			rotate([0, 270, 0]) {
 				c1() arm_upper();
 				if(with_armor) c2() arm_upper_armor_blank();
 			}	
-			translate([0, -arm_len, 0]) {
+			translate([0, arm_len, 0]) {
 				rotate_with_offset_origin([0, 0, -elbow_joint_offset], [-elbow_angle, 0, 0]) {
-					translate([0, -arm_lower_len, 0]) {
-						rotate([0, 270, 0]) {
+					translate([0, arm_lower_len, 0]) {
+						rotate([0, 270, 180]) {
 							c1() arm_lower();
 							if(with_armor) c2() arm_lower_armor_blank();
 						}
 					}
-					translate([0, -arm_lower_len]) {
+					translate([0, arm_lower_len]) {
 						hand_assembled(with_armor);
 					}
 				}		
@@ -365,27 +339,27 @@ module arm_assembled(with_armor = true, elbow_angle = 0, shrug_angle = 0, arm_ex
 }
 
 module leg_assembled(with_armor = true, leg_angle = 0) {
-	hip_offset = socket_d/2 + shoulder_armor_tab_width;
+	hip_offset = socket_d/2 + hip_armor_tab_width;
 	
-	rotate([0, -90, 180]) {
+	rotate([0, -90, 0]) {
 		c1() hip();
 		if(with_armor) c2() hip_armor();
 	}
-	translate([0, -hip_offset, 0]) {
-		rotate([0, 90, 180]) {
+	translate([0, hip_offset, 0]) {
+		rotate([0, 90, 0]) {
 			c1() leg_upper();
 			if(with_armor) c2() leg_upper_armor_blank();
 		}
 	}
-	translate([0, -leg_len]) {
+	translate([0, leg_len]) {
 		rotate_with_offset_origin([0, 0, knee_joint_offset], [leg_angle, 0, 0]) {
-			translate([0, -leg_upper_len - hip_offset, 0]) {
-				rotate([0, 90, 0]) {
+			translate([0, leg_upper_len + hip_offset, 0]) {
+				rotate([0, 90, 180]) {
 					c1() leg_lower();
 					if(with_armor) c2() leg_lower_armor_blank();
 				}
 			}
-			translate([0, -leg_len]) rotate(180) foot_assembled();
+			translate([0, leg_len]) foot_assembled();
 		}
 	}
 }

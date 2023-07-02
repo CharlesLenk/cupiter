@@ -40,7 +40,9 @@ module foot() {
 					rounded_cube([foot_width, socket_bump_len, 2], bottom_d, 4);
 				}
 			}
-			translate([0, 4.75, bottom_d/2]) rounded_cylinder(d = socket_d + 1.2, h = 5, bottom_d = 0, top_d = 0.5);
+			translate([0, 4.75, bottom_d/2]) {
+				rounded_cylinder(d = socket_d + 1.2, h = 5, bottom_d = 3, top_d = 0.5);
+			}
 		}
 		rotate([-90, 0, 0]) head_and_foot_socket(true); 
 	}
