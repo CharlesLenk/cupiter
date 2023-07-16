@@ -1,16 +1,18 @@
-include <robot imports.scad>
+include <../common.scad>
+include <globals.scad>
+use <robot common.scad>
 
 foot_assembled();
 translate([15, 0]) foot_exploded();
 
 module foot_assembled() {
 	rotate([90, 0, 0]) c2() foot();
-	c1() head_and_foot_socket();
+	c1() socket_with_snaps();
 }
 
 module foot_exploded() {
 	translate([0, 10]) rotate([90, 0, 0]) foot();
-	head_and_foot_socket();
+	socket_with_snaps();
 }
 
 module foot() {
@@ -44,6 +46,6 @@ module foot() {
 				rounded_cylinder(d = socket_d + 1.2, h = 5, bottom_d = 3, top_d = 0.5);
 			}
 		}
-		rotate([-90, 0, 0]) head_and_foot_socket(true); 
+		rotate([-90, 0, 0]) socket_with_snaps(true); 
 	}
 }

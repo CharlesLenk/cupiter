@@ -1,4 +1,6 @@
-include <robot imports.scad>
+include <../common.scad>
+include <globals.scad>
+use <robot common.scad>
 
 lens_diameter = 12;
 eye_socket_diameter = lens_diameter + 2;
@@ -18,7 +20,7 @@ module head_assembled(neck_angle = 0) {
 				rotate_z_relative_to_point([0, neck_len], neck_angle) {
 					translate([0, neck_len]) {
 						c2() head();
-						c1() head_and_foot_socket();
+						c1() socket_with_snaps();
 						translate([0, head_cube_y_offset, head_cube_z/2 - 0.5]) c1() lens();
 					}
 				}
@@ -36,7 +38,7 @@ module head() {
 		translate([0, -10 + socket_d/2, 0]) {
 			rotate([-90, 0, 0]) cylinder(d = socket_d, h = 10);
 		}
-		head_and_foot_socket(true);
+		socket_with_snaps(true);
 	}
 	
 	module head_common(lens_diameter) {
