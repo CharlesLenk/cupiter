@@ -1,11 +1,17 @@
-include <robot imports.scad>
+include <../common.scad>
+include <globals.scad>
+use <robot common.scad>
+use <head.scad>
+use <body.scad>
+use <limbs.scad>
+use <snaps.scad>
 
 hip_width = 6 + 2 * ball_dist;
 shoulder_width = 33;
 shoulder_height = 4;
 torso_len = 36 + shoulder_height;
 hip_len = 12;
-waist_len = socket_dist + ball_dist + 1;
+waist_len = socket_r + ball_dist + 1;
 chest_len = torso_len - waist_len - hip_len;
 shoulder_inner_width = shoulder_width - 2 * (ball_dist + socket_d/2);
 
@@ -14,6 +20,9 @@ torso_width_inc = 1.2;
 torso_height_start = segment_height + 4;
 torso_height_inc = 0.75;
 waist_ball_overlap_adjust = 2.5;
+waist_socket_gap = -0.2;
+
+socket_snap_depth = 0.35;
 
 body_assembled(with_armor = false);
 //body_exploded();
@@ -99,13 +108,13 @@ module chest(is_cut = false) {
 			}
 		}
 		translate([socket_d/2 + 0.1, shoulder_height]) {
-			rotate(-90) armor_snap_inner_double(shoulder_upper_snap_len, socket_d, snap_depth, !is_cut);
+			rotate(-90) armor_snap_inner_double(shoulder_upper_snap_len, socket_d, socket_snap_depth, is_cut = !is_cut);
 		}
 		translate([-socket_d/2  - 0.1 - shoulder_upper_snap_len, shoulder_height]) {
-			rotate(-90) armor_snap_inner_double(shoulder_upper_snap_len, socket_d, snap_depth, !is_cut);
+			rotate(-90) armor_snap_inner_double(shoulder_upper_snap_len, socket_d, socket_snap_depth, is_cut = !is_cut);
 		}
 		translate([0, chest_len - socket_d/2 - 2]) {
-			armor_snap_inner_double(waist_snap_len, socket_d, snap_depth, !is_cut);
+			armor_snap_inner_double(waist_snap_len, socket_d, socket_snap_depth, is_cut = !is_cut);
 		}
 	}
 	if (is_cut) {
@@ -143,7 +152,18 @@ module chest_armor_blank() {
 	translate([-inner_segment_width/2, 0]) {
 		shoulder_pad();
 	}
-
+	armor_segment(chest_len, width);
+	hull() {
+		y = 12;
+		translate([shoulder_width/2 - ball_dist - shoulder_width_offset, y/2 + shoulder_height - socket_d/2 - 0.5, 0]) {
+			rotate(90) armor_segment(inner_segment_width, y);
+		}
+		lower_segment_offset = (inner_segment_width - width)/2;
+		translate([0, 6 + shoulder_height - segment_d + lower_segment_offset]) {
+			armor_segment(segment_d, width);
+		}
+	}
+	
 	module shoulder_pad() {
 		hull() {
 			translate([0, shoulder_pad_y_pos]) {
@@ -156,18 +176,6 @@ module chest_armor_blank() {
 			}
 		}
 	}
-	
-	armor_segment(chest_len, width);
-	hull() {
-		y = 12;
-		translate([shoulder_width/2 - ball_dist - shoulder_width_offset, y/2 + shoulder_height - socket_d/2 - 0.5, 0]) {
-			rotate(90) armor_segment(inner_segment_width, y);
-		}
-		lower_segment_offset = (inner_segment_width - width)/2;
-		translate([0, 6 + shoulder_height - segment_d + lower_segment_offset]) {
-			armor_segment(segment_d, width);
-		}
-	}
 		
 	module armor_segment(length, w) {
 		translate([-w/2, 0, -height/2]) {
@@ -177,7 +185,32 @@ module chest_armor_blank() {
 }
 
 module waist(is_cut = false) {
-	segment(waist_len, BALL, WAIST_SOCKET, is_cut = is_cut);
+	ball(is_cut, waist_len - ball_dist - socket_r);
+	translate([0, waist_len]) {
+		rotate(180) waist_socket(is_cut);
+	}
+}
+
+module waist_socket(is_cut = false) {
+	height = segment_height + (is_cut ? segment_cut_height_amt : 0);
+	width = socket_d + (is_cut ? segment_cut_width_amt : 0);
+	
+	translate([0, -0.5 + socket_d/2]) {
+		cross_brace(1, socket_d, is_cut);
+	}
+	difference() {
+		make_socket(waist_socket_gap, is_cut = is_cut) {
+			rounded_socket_blank(is_cut);
+		}
+		translate([0, 0.25]) {
+			armor_snap_inner_double(
+				length = 3.5, 
+				target_width = socket_d,
+				depth = socket_snap_depth,
+				is_cut = !is_cut
+			);
+		}
+	}	
 }
 
 module waist_armor_blank() {
@@ -202,19 +235,19 @@ module pelvis(is_cut = false) {
 	mid_len = hip_len - segment_width/2 - socket_d/2 - opposite;
 	
 	difference() {
-		segment(ball_dist + mid_len, BALL, 0, is_cut);
+		ball(is_cut, mid_len);
 		translate([0, ball_dist, 0]) {
-			armor_snap_inner_double(mid_len - 0.2, segment_width, snap_depth, !is_cut);
+			armor_snap_inner_double(mid_len - 0.2, segment_width, is_cut = !is_cut);
 		}
 	}
 	translate([hip_width/2, hip_len]) {
 		rotate(90 + hip_ball_angle) {
-			segment(ball_dist + segment_width/2, BALL, 0, is_cut);
+			ball(is_cut, segment_width/2);
 		}
 	}
 	translate([-hip_width/2, hip_len]) {
 		rotate( -90 - hip_ball_angle) {
-			segment(ball_dist + segment_width/2, BALL, 0, is_cut);
+			ball(is_cut, segment_width/2);
 		}
 	}
 	
@@ -228,7 +261,7 @@ module pelvis(is_cut = false) {
 			rotate(90) {
 				snap_width = hip_width - 2 * ball_dist - segment_width - 0.5;
 				translate([0, -snap_width/2]) {
-					one_side_double_snap(snap_width, segment_width, snap_depth, !is_cut);
+					one_side_double_snap(snap_width, segment_width, is_cut = !is_cut);
 				}
 			}
 		}

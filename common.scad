@@ -1,7 +1,10 @@
 $fa = $preview ? 1.6 : 0.8;
 $fs = $preview ? 0.8 : 0.4;
 
-function sphere_cut_radius(sphere_d, x) = let(r = sphere_d/2) sqrt(r^2 - x^2);
+function sphere_cut_radius(dist_from_center, r, d) = 
+	let(
+		radius = is_undef(r) ? d/2 : r
+	) sqrt(radius^2 - dist_from_center^2);
 
 module reflect(vector) {
     children();
@@ -40,7 +43,7 @@ module cube_one_round_corner(vector, corner_r) {
 
 module rounded_cylinder(h, d, top_d = 0, bottom_d = 0, center = false) {
 	translate([0, 0, center ? -h/2: 0]) {
-		hull() rotate_extrude() rounded_corner(d, h, top_d, bottom_d);
+		rotate_extrude() rounded_corner(d, h, top_d, bottom_d);
 	}
 }
 
@@ -98,30 +101,31 @@ module rounded_square_2(vector, c1 = 0, c2 = 0, c3 = 0, c4 = 0) {
 	x = vector[0];
 	y = vector[1];
 	
-	if (c1 > 0) translate([c1, c1]) corner(c1, 2);
-	if (c2 > 0) translate([x - c2, c2]) corner(c2, 3);
-	if (c3 > 0) translate([x - c3, y - c3]) corner(c3, 0);
-	if (c4 > 0) translate([c4, y - c4]) corner(c4, 1);
-	polygon(
-		[
-			[c1, 0],
-			[x - c2, 0],
-			[x, c2],
-			[x, y - c3],
-			[x - c3, y],
-			[c4, y],
-			[0, y - c4],
-			[0, c1],
-		]
-	);
+	points = [
+		if (c1 == 0) [[0, 0]] else translate_points([c1, c1], arc_points(c1, 180, 270)),
+		if (c2 == 0) [[x, 0]] else translate_points([x - c2, c2], arc_points(c2, 270, 360)),
+		if (c3 == 0) [[x, y]] else translate_points([x - c3, y - c3], arc_points(c3, 0, 90)),
+		if (c4 == 0) [[0, y]] else translate_points([c4, y - c4], arc_points(c4, 90, 180))
+	];
 	
-	module corner(r, quad) {
-		intersection() {
-			circle(r);
-			rotate(quad * 90) square([r, r]);
-		}
-	}
+	polygon(flatten(points));
 }
+
+function flatten(l) = [ for (a = l) for (b = a) b ];
+
+function translate_points(vector, points) =
+	[for (i = [0 : len(points) - 1]) 
+		[points[i][0] + vector[0], points[i][1] + vector[1]]
+	];
+
+function arc_points(r, start_angle, stop_angle) =
+	let(
+		n = $fn > 0 ? ($fn >= 3 ? $fn : 3) : ceil(max(min(360/$fa, r*2*PI/$fs), 5)),
+		deg = abs(start_angle - stop_angle),
+		segments = ceil(n/(360/deg))
+	) (
+		[for(a = [start_angle : deg/segments : stop_angle]) [r * cos(a), r * sin(a)]]
+	);
 
 module wedge(angle, y, z) {
 	x = get_opposite(angle/2, y);
@@ -155,8 +159,8 @@ module rounded_cube(vector, d, front_d, back_d, top_d, bottom_d, center = false)
 
 		translate(center ? [-x/2, -y/2, -z/2] : [0, 0, 0]) {
 			if (top_d == 0 && bottom_d == 0) {
-				translate([0, 0, bottom_d/2]) {
-					linear_extrude(z) rounded_square([x, y], d, front_d, back_d);
+				linear_extrude(z) {
+					rounded_square_2([x, y], back_d/2, back_d/2, front_d/2, front_d/2);
 				}
 			} else {
 				hull() {
@@ -268,6 +272,11 @@ module bolt(diameter, length, root, crest, pitch, depth, thread_offset = 0) {
 
 module rotate_z_relative_to_point(point, angle) {
 	translate([point[0], point[1]]) rotate(angle) translate([-point[0], -point[1]]) children();
+}
+
+module rotate_relative_to_point(point, angle) {
+	z = is_undef(point[2]) ? 0 : point[2];
+	translate(point) rotate(angle) translate([-point[0], -point[1], -z]) children();
 }
 
 module rounded_vector(p1 = [0, 0, 0], p2 = [0, 0, 0], d) {
