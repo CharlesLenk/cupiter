@@ -41,7 +41,6 @@ module rounded_socket_blank(is_cut = false, cylinder_length) {
 	intersection() {
 		hull() {
 			sphere(d = socket_width);
-			//rotate([-90, 0, 0]) cylinder(d = socket_width + 0.75, h = cylinder_length);
 			translate([0, cylinder_length/2, 0]) {
 				cube([socket_width, cylinder_length, height - 2], center = true);
 				cube([socket_width - 2, cylinder_length, height], center = true);

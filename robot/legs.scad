@@ -122,8 +122,7 @@ module leg_upper(is_cut = false) {
 		end2_len = hinge_socket_d/2, 
 		is_cut = is_cut, 
 		snaps = true, 
-		cross_brace = true,
-		snap_offset = 1.5
+		cross_brace = true
 	) {
 		rotator_socket(rotator_peg_l, is_cut);
 		hinge_socket(knee_joint_offset, is_cut);

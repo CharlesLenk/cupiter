@@ -230,16 +230,14 @@ module limb_segment(
 	end2_len = 0, 
 	is_cut = false, 
 	snaps = false,
-	cross_brace = false,
-	snap_offset = 0
+	cross_brace = false
 ) {
     segment_mid_y = length - end1_len - end2_len;
 	height = is_cut ? segment_cut_height : segment_height;
 	width = is_cut ? segment_cut_width : segment_width;
-    
-	//snap_len = 3.5;
-	snap_len = segment_mid_y - 3;
-	snap_edge_dist = 0.5;
+
+    snap_edge_dist = 1;
+	snap_len = segment_mid_y - 2 * snap_edge_dist;
 	end2_y = segment_mid_y > 0 ? length : end1_len + end2_len;
 	
 	// End one
@@ -251,22 +249,15 @@ module limb_segment(
 	
 	if (segment_mid_y > 0) {
 		translate([0, segment_mid_y/2 + end1_len, 0]) {
-								if (cross_brace) {
-						cross_brace(1, segment_width, is_cut);
-					}
+			if (cross_brace) {
+				cross_brace(1, segment_width, is_cut);
+			}
 			difference() {
 				union() {
 					cube([width, segment_mid_y + (is_cut ? 0.1 : 0), height], center = true);
 				}
 				if (snaps) {
-					translate([0, -segment_mid_y/2 + snap_edge_dist, 0]) {
-						armor_snap_inner_double(
-							length = snap_len, 
-							target_width = segment_width,
-							is_cut = !is_cut
-						);
-					}
-					translate([0, segment_mid_y/2 - snap_edge_dist - snap_len]) {
+					translate([0, -segment_mid_y/2 + snap_edge_dist]) {
 						armor_snap_inner_double(
 							length = snap_len, 
 							target_width = segment_width,

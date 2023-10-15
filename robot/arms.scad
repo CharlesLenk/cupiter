@@ -9,6 +9,8 @@ elbow_joint_offset = -2;
 elbow_max_angle = 160;
 arm_armor_height = segment_height + 2.5;
 
+arm_assembled();
+
 module shoulder_socket(is_cut = false) {
 	height = segment_height + (is_cut ? segment_cut_height_amt : 0);
 	width = socket_d + (is_cut ? segment_cut_width_amt : 0);
@@ -90,8 +92,7 @@ module arm_upper(is_cut = false) {
 		end2_len = hinge_socket_d/2, 
 		is_cut = is_cut, 
 		snaps = true, 
-		cross_brace = true,
-		snap_offset = 1.5
+		cross_brace = true
 	) {
 		ball(is_cut);
 		hinge_socket(elbow_joint_offset, is_cut);
