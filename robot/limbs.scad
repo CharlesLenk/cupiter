@@ -1,4 +1,4 @@
-include <../common.scad>
+include <../OpenSCAD-Utilities/common.scad>
 include <globals.scad>
 use <robot common.scad>
 use <hands.scad>
@@ -126,7 +126,7 @@ module rotator_socket(peg_len, is_cut = false) {
 }
 
 module hinge_peg(is_cut = false) {
-	hinge_socket_gap = -0.15;
+	hinge_socket_gap = -0.1;
 	hinge_peg_cap_d = hinge_peg_d + 1.25;
 	cut_offset = is_cut ? hinge_socket_gap : 0;
 	cap_h = (hinge_peg_cap_d - hinge_peg_d)/2;
@@ -167,7 +167,7 @@ module hinge_peg_holder(joint_offset = 0, is_cut = false) {
 	
 	module elbow_cube(is_cut = false) {
 		corner_d = 3;	
-		x_add = 1.55;
+		x_add = 1.4;
 		y_add = 1;
 		base_xy = hinge_peg_size/2;
 		cube_x = base_xy + x_add;
@@ -235,9 +235,9 @@ module limb_segment(
     segment_mid_y = length - end1_len - end2_len;
 	height = is_cut ? segment_cut_height : segment_height;
 	width = is_cut ? segment_cut_width : segment_width;
-    
-	snap_len = 3.5;
-	snap_edge_dist = 0.5;
+
+    snap_edge_dist = 1;
+	snap_len = segment_mid_y - 2 * snap_edge_dist;
 	end2_y = segment_mid_y > 0 ? length : end1_len + end2_len;
 	
 	// End one
@@ -249,22 +249,15 @@ module limb_segment(
 	
 	if (segment_mid_y > 0) {
 		translate([0, segment_mid_y/2 + end1_len, 0]) {
+			if (cross_brace) {
+				cross_brace(1, segment_width, is_cut);
+			}
 			difference() {
 				union() {
-					cube([width, segment_mid_y + 0.002, height], center = true);
-					if (cross_brace) {
-						cross_brace(1, segment_width, is_cut);
-					}
+					cube([width, segment_mid_y + (is_cut ? 0.1 : 0), height], center = true);
 				}
 				if (snaps) {
-					translate([0, -segment_mid_y/2 + snap_edge_dist, 0]) {
-						armor_snap_inner_double(
-							length = snap_len, 
-							target_width = segment_width,
-							is_cut = !is_cut
-						);
-					}
-					translate([0, segment_mid_y/2 - snap_edge_dist - snap_len]) {
+					translate([0, -segment_mid_y/2 + snap_edge_dist]) {
 						armor_snap_inner_double(
 							length = snap_len, 
 							target_width = segment_width,

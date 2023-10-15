@@ -1,4 +1,4 @@
-include <../common.scad>
+include <../OpenSCAD-Utilities/common.scad>
 include <globals.scad>
 include <limbs.scad>
 
@@ -19,12 +19,7 @@ module shoulder_socket(is_cut = false) {
 	d = socket_d + 0.5 + cut_d;
 	difference() {
 		make_socket(shoulder_socket_gap, is_cut = is_cut) {
-			hull() {
-				rounded_socket_blank(is_cut);
-				xy_cut(size = 2 * socket_d) {
-					rotate([-90, 0, 0]) cylinder(d = socket_d + 1, h = socket_d/2);
-				}
-			}
+			rounded_socket_blank(is_cut);
 		}
 		if (!is_cut) {
 			hull() {
@@ -35,7 +30,7 @@ module shoulder_socket(is_cut = false) {
 		armor_snap_inner(
 			length = 4, 
 			target_width = socket_d,
-			depth = 0.5,
+			depth = 0.6,
 			is_cut = !is_cut,
 			width_cut_adjust = 0.2
 		);
@@ -50,8 +45,10 @@ module shoulder(is_cut = false) {
 }
 
 module shoulder_armor() {
-	x = socket_d + 2.6;
-	y = segment_height + (armor_height - segment_height)/2;
+	shell_width = 1.4;
+	
+	x = socket_d + 2 * shell_width;
+	y = segment_height + shell_width;
 	z = 0.75 * armor_height;
 	
 	x2 = x - 3;
@@ -109,8 +106,8 @@ module arm_upper_armor_blank() {
 		limb_upper_armor_blank(
 			max_width = arm_armor_height, 
 			max_length = max_length,
-			min_width = arm_armor_height/2 + 0.9,
-			min_length = max_length - 9.3,
+			min_width = arm_armor_height/2 + 1.1,
+			min_length = max_length - 8.9,
 			cylinder_pos = [-elbow_joint_offset, arm_len - ball_dist]
 		);
 	}
@@ -142,7 +139,7 @@ module arm_lower_armor_blank() {
 		limb_lower_armor_blank(
 			arm_armor_height,
 			arm_lower_len - ball_dist + hinge_armor_y_offset,
-			arm_armor_height - 1.4,
+			arm_armor_height - 1.8,
 			cylinder_pos = [-elbow_joint_offset, arm_lower_len - ball_dist]
 		);
 	}

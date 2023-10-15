@@ -1,4 +1,4 @@
-include <../common.scad>
+include <../OpenSCAD-Utilities/common.scad>
 include <globals.scad>
 include <limbs.scad>
 
@@ -24,7 +24,7 @@ module hip_socket(is_cut = false) {
 		armor_snap_inner(
 			length = 4, 
 			target_width = socket_d,
-			depth = 0.5,
+			depth = 0.4,
 			is_cut = !is_cut,
 			width_cut_adjust = 0.2
 		);
@@ -93,8 +93,8 @@ module leg_upper_armor_blank() {
 		limb_upper_armor_blank(
 			max_width = rotator_socket_d, 
 			max_length = max_length,
-			min_width = rotator_socket_d/2 + 1.1,
-			min_length = max_length - 14.3,
+			min_width = rotator_socket_d/2 + 1.2,
+			min_length = max_length - 13.4,
 			cylinder_pos = [-knee_joint_offset, leg_upper_len]
 		);
 		fix_preview() {
@@ -155,7 +155,7 @@ module leg_lower_armor_blank() {
 		limb_lower_armor_blank(
 			rotator_socket_d,
 			leg_len - ball_dist + hinge_armor_y_offset,
-			rotator_socket_d - 2,
+			rotator_socket_d - 2.3,
 			cylinder_pos = [-knee_joint_offset, leg_len - ball_dist]
 		);
 	}
