@@ -6,7 +6,7 @@ use <arms.scad>
 use <legs.scad>
 
 assembled(
-	with_armor = true, 
+	with_armor = false, 
 	neck_angle_test = false,
 	simple_hands = false
 //	elbow_angle = elbow_max_angle(),

@@ -43,7 +43,12 @@ module foot() {
 				}
 			}
 			translate([0, 4.75, bottom_d/2]) {
-				rounded_cylinder(d = socket_d + 1.2, h = 5, bottom_d = 3, top_d = 0.5);
+				//rounded_cylinder(d = socket_d + 1.2, h = 5, bottom_d = 3, top_d = 0.5);
+			}
+			y = socket_d - 2.2;
+			x = socket_d + 1.2;
+			translate([-x/2, 4.75 - y/2, 1]) {
+				rounded_cube([x, y, 4.5], 4, bottom_d = 3, top_d = 1);
 			}
 		}
 		rotate([-90, 0, 0]) socket_with_snaps(true); 

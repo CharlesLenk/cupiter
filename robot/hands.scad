@@ -296,7 +296,7 @@ module hand(
 				cube([socket_d, segment_height, socket_d], center = true); 
 			}
 		}
-		sphere(d = ball_d - 0.2);
+		sphere(d = ball_d - 0.3);
 		translate([0, 0, -socket_d + 2.75]) {
 			cube([socket_d, socket_d, socket_d], center = true); 
 		}

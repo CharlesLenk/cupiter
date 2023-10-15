@@ -44,7 +44,7 @@ module one_side_double_snap(
 	is_cut = false
 ) {
 	snap_triangle_height = (depth + segment_cut_width_amt/2);
-	dist_between_edges = 0.2;
+	dist_between_edges = 0.5;
 	z_dist = snap_triangle_height / tan(90 - snap_angle/2) + dist_between_edges;
 	
 	translate([0, length]) {

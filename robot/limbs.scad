@@ -126,7 +126,7 @@ module rotator_socket(peg_len, is_cut = false) {
 }
 
 module hinge_peg(is_cut = false) {
-	hinge_socket_gap = -0.15;
+	hinge_socket_gap = -0.1;
 	hinge_peg_cap_d = hinge_peg_d + 1.25;
 	cut_offset = is_cut ? hinge_socket_gap : 0;
 	cap_h = (hinge_peg_cap_d - hinge_peg_d)/2;
@@ -167,7 +167,7 @@ module hinge_peg_holder(joint_offset = 0, is_cut = false) {
 	
 	module elbow_cube(is_cut = false) {
 		corner_d = 3;	
-		x_add = 1.55;
+		x_add = 1.4;
 		y_add = 1;
 		base_xy = hinge_peg_size/2;
 		cube_x = base_xy + x_add;
@@ -230,13 +230,15 @@ module limb_segment(
 	end2_len = 0, 
 	is_cut = false, 
 	snaps = false,
-	cross_brace = false
+	cross_brace = false,
+	snap_offset = 0
 ) {
     segment_mid_y = length - end1_len - end2_len;
 	height = is_cut ? segment_cut_height : segment_height;
 	width = is_cut ? segment_cut_width : segment_width;
     
-	snap_len = 3.5;
+	//snap_len = 3.5;
+	snap_len = segment_mid_y - 3;
 	snap_edge_dist = 0.5;
 	end2_y = segment_mid_y > 0 ? length : end1_len + end2_len;
 	
@@ -247,16 +249,51 @@ module limb_segment(
 		rotate(180) children(1);
 	}
 	
+	mid_width = 1;
+	mid_mid_y = segment_mid_y - 2.5;
+	
 	if (segment_mid_y > 0) {
 		translate([0, segment_mid_y/2 + end1_len, 0]) {
-			difference() {
-				union() {
-					cube([width, segment_mid_y + 0.002, height], center = true);
-					if (cross_brace) {
+								if (cross_brace) {
 						cross_brace(1, segment_width, is_cut);
 					}
+			difference() {
+				union() {
+					mid_lenasdf = mid_mid_y + (is_cut ? 0.1 : 0);
+					cube([width, segment_mid_y + (is_cut ? 0.1 : 0), height], center = true);
+					
+//					hull() {
+//						cube([width, segment_mid_y + 0.002, height], center = true);
+//					
+//						
+//
+//						translate([-width/2 - mid_width/2, -mid_lenasdf/2, -height/4]) {
+//							cube([width, mid_lenasdf, height/2]);
+//						}
+//					}
+//					hull() {
+//						translate([-width/2, -segment_mid_y/2, -height/2]) {
+//							cube([width, segment_mid_y - snap_offset, height]);
+//						}
+//						translate([-width/2 + mid_width/2, -mid_lenasdf/2, -height/4]) {
+//							cube([width, mid_lenasdf - snap_offset, height/2]);
+//						}
+//					}
+
 				}
 				if (snaps) {
+//					translate([0, -(mid_mid_y - 1)/2, 0]) {
+//						one_side_double_snap(
+//							length = mid_mid_y - 1 - snap_offset, 
+//							target_width = segment_width + mid_width,
+//							is_cut = !is_cut
+//						);
+//						mirror([1, 0, 0]) one_side_double_snap(
+//							length = mid_mid_y - 1, 
+//							target_width = segment_width + mid_width,
+//							is_cut = !is_cut
+//						);
+//					}
 					translate([0, -segment_mid_y/2 + snap_edge_dist, 0]) {
 						armor_snap_inner_double(
 							length = snap_len, 

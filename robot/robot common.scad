@@ -4,6 +4,9 @@ use <snaps.scad>
 
 socket_opening_angle = 120;
 
+
+socket_with_snaps(true);
+
 module make_socket(ball_offset = 0, socket_angle = 0, cut_angle = socket_opening_angle, is_cut = false) {
 	height = segment_height + (is_cut ? segment_cut_height_amt : 0);
 	width = socket_d + (is_cut ? segment_cut_width_amt : 0);
@@ -35,13 +38,17 @@ module ball_for_armor_subtractions() sphere(d = ball_d + 0.2);
 
 module rounded_socket_blank(is_cut = false, cylinder_length) {
 	height = is_cut ? segment_cut_height : segment_height;
-	socket_width = is_cut ? socket_d + 0.15 : socket_d;
+	socket_width = is_cut ? socket_d + 0.2 : socket_d;
 	cylinder_length = is_undef(cylinder_length) ? socket_width/2 : cylinder_length;
 	
 	intersection() {
 		hull() {
 			sphere(d = socket_width);
-			rotate([-90, 0, 0]) cylinder(d = socket_width + 0.4, h = cylinder_length);
+			//rotate([-90, 0, 0]) cylinder(d = socket_width + 0.75, h = cylinder_length);
+			translate([0, cylinder_length/2, 0]) {
+				cube([socket_width, cylinder_length, height - 2], center = true);
+				cube([socket_width - 2, cylinder_length, height], center = true);
+			}
 		}
 		translate([-socket_width/2, -socket_width/2, -height/2]) {
 			cube([socket_width, socket_width/2 + cylinder_length, height]);
