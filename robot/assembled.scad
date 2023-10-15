@@ -1,4 +1,4 @@
-include <../common.scad>
+include <../OpenSCAD-Utilities/common.scad>
 include <globals.scad>
 use <head.scad>
 use <body.scad>
@@ -6,7 +6,7 @@ use <arms.scad>
 use <legs.scad>
 
 assembled(
-	with_armor = false, 
+	with_armor = true, 
 	neck_angle_test = false,
 	simple_hands = false
 //	elbow_angle = elbow_max_angle(),

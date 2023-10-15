@@ -9,13 +9,6 @@ elbow_joint_offset = -2;
 elbow_max_angle = 160;
 arm_armor_height = segment_height + 2.5;
 
-//arm_assembled(elbow_angle = -elbow_max_angle);
-//arm_upper_armor();
-
-//shoulder_socket();
-
-shoulder_armor();
-
 module shoulder_socket(is_cut = false) {
 	height = segment_height + (is_cut ? segment_cut_height_amt : 0);
 	width = socket_d + (is_cut ? segment_cut_width_amt : 0);
@@ -24,12 +17,7 @@ module shoulder_socket(is_cut = false) {
 	d = socket_d + 0.5 + cut_d;
 	difference() {
 		make_socket(shoulder_socket_gap, is_cut = is_cut) {
-			hull() {
-				rounded_socket_blank(is_cut);
-//				xy_cut(size = 2 * socket_d) {
-//					rotate([-90, 0, 0]) cylinder(d = socket_d + 1, h = socket_d/2);
-//				}
-			}
+			rounded_socket_blank(is_cut);
 		}
 		if (!is_cut) {
 			hull() {

@@ -1,4 +1,4 @@
-include <../common.scad>
+include <../OpenSCAD-Utilities/common.scad>
 include <globals.scad>
 use <robot common.scad>
 use <hands.scad>
@@ -249,9 +249,6 @@ module limb_segment(
 		rotate(180) children(1);
 	}
 	
-	mid_width = 1;
-	mid_mid_y = segment_mid_y - 2.5;
-	
 	if (segment_mid_y > 0) {
 		translate([0, segment_mid_y/2 + end1_len, 0]) {
 								if (cross_brace) {
@@ -259,41 +256,9 @@ module limb_segment(
 					}
 			difference() {
 				union() {
-					mid_lenasdf = mid_mid_y + (is_cut ? 0.1 : 0);
 					cube([width, segment_mid_y + (is_cut ? 0.1 : 0), height], center = true);
-					
-//					hull() {
-//						cube([width, segment_mid_y + 0.002, height], center = true);
-//					
-//						
-//
-//						translate([-width/2 - mid_width/2, -mid_lenasdf/2, -height/4]) {
-//							cube([width, mid_lenasdf, height/2]);
-//						}
-//					}
-//					hull() {
-//						translate([-width/2, -segment_mid_y/2, -height/2]) {
-//							cube([width, segment_mid_y - snap_offset, height]);
-//						}
-//						translate([-width/2 + mid_width/2, -mid_lenasdf/2, -height/4]) {
-//							cube([width, mid_lenasdf - snap_offset, height/2]);
-//						}
-//					}
-
 				}
 				if (snaps) {
-//					translate([0, -(mid_mid_y - 1)/2, 0]) {
-//						one_side_double_snap(
-//							length = mid_mid_y - 1 - snap_offset, 
-//							target_width = segment_width + mid_width,
-//							is_cut = !is_cut
-//						);
-//						mirror([1, 0, 0]) one_side_double_snap(
-//							length = mid_mid_y - 1, 
-//							target_width = segment_width + mid_width,
-//							is_cut = !is_cut
-//						);
-//					}
 					translate([0, -segment_mid_y/2 + snap_edge_dist, 0]) {
 						armor_snap_inner_double(
 							length = snap_len, 

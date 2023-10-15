@@ -1,11 +1,8 @@
-include <../common.scad>
+include <../OpenSCAD-Utilities/common.scad>
 include <globals.scad>
 use <snaps.scad>
 
 socket_opening_angle = 120;
-
-
-socket_with_snaps(true);
 
 module make_socket(ball_offset = 0, socket_angle = 0, cut_angle = socket_opening_angle, is_cut = false) {
 	height = segment_height + (is_cut ? segment_cut_height_amt : 0);

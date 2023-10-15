@@ -1,4 +1,4 @@
-include <../common.scad>
+include <../OpenSCAD-Utilities/common.scad>
 include <globals.scad>
 include <limbs.scad>
 
@@ -9,12 +9,7 @@ leg_upper_len = leg_len - socket_d/2 - hip_armor_tab_width;
 knee_joint_offset = -2.3;
 knee_max_angle = 165;
 
-//leg_assembled(leg_angle = -knee_max_angle);
-hip_armor();
-translate([15, 0]) hip_socket();
-
-
-//leg_upper_armor();
+leg_assembled();
 
 module hip_socket(is_cut = false) {
 	height = segment_height + (is_cut ? segment_cut_height_amt : 0);
