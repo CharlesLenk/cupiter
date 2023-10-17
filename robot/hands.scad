@@ -53,6 +53,7 @@ module posed_hands(reflect = false) {
 				flat();
 				relaxed();
 				fist();
+				point();
 				love();
 				prosper();
 				peace();
@@ -178,7 +179,24 @@ module fist() {
 		thumb_angle = 75,
 		thumb_palm_extension_angle = 20,
 		thumb_palm_angle = 90,
-		thumb_z_boost = 2
+		thumb_z_boost = 1.5
+	);
+}
+
+module point() {
+	gesture = [
+		[90, 90, 90],
+		[90, 90, 90],
+		[90, 90, 90],
+		[0, 0, 0],
+		[10, -60]
+	];
+	hand(
+		gesture,
+		thumb_angle = 80,
+		thumb_palm_extension_angle = 15,
+		thumb_palm_angle = 90,
+		thumb_z_boost = 1.5
 	);
 }
 
