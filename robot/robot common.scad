@@ -33,24 +33,22 @@ module socket_cut(cut_angle = socket_opening_angle, ball_offset) {
 
 module ball_for_armor_subtractions() sphere(d = ball_d + 0.2);
 
-module rounded_socket_blank(is_cut = false, cylinder_length) {
+module rounded_socket_blank(is_cut = false, cylinder_length, chamfer_y = 1) {
 	height = is_cut ? segment_cut_height : segment_height;
 	socket_width = is_cut ? socket_d + 0.2 : socket_d;
 	cylinder_length = is_undef(cylinder_length) ? socket_width/2 : cylinder_length;
-	
-	intersection() {
-		hull() {
-			sphere(d = socket_width);
-			translate([0, cylinder_length/2, 0]) {
-				cube([socket_width, cylinder_length, height - 2], center = true);
-				cube([socket_width - 2, cylinder_length, height], center = true);
-			}
-		}
-		translate([-socket_width/2, -socket_width/2, -height/2]) {
-			cube([socket_width, socket_width/2 + cylinder_length, height]);
+	chamfer_x = 1;
+
+	rotate_extrude() {
+		intersection() {
+			square_with_chamfers(socket_width, height, chamfer_x, chamfer_y);
+			translate([0, -height/2]) square([socket_width/2, height]);
 		}
 	}
+	rotate([270, 0, 0]) linear_extrude(cylinder_length) square_with_chamfers(socket_width, height, chamfer_x, chamfer_y);
 }
+
+
 
 module ball(is_cut = false, tab_extension = 0) {
 	cut_amt = is_cut ? segment_cut_height_amt : 0;
@@ -157,6 +155,52 @@ module cross_brace(depth, target_width, is_cut) {
 			}
 		}
 	}
+}
+
+module armor_section(x, y, z, chamfer_x = 1.5, chamfer_y = 2.5) {
+	rotate([270, 0, 0]) {
+		linear_extrude(y) {
+			square_with_chamfers(x, z, chamfer_x, chamfer_y);
+		}
+	}
+}
+
+module armor_2d_round(x, y, chamfer_x, chamfer_y, d = 40) {
+	rotate(90) hull() {
+		translate([0, x/2]) circle_fragment(y, d);
+		translate([0, -x/2]) rotate(180) circle_fragment(y, d);
+	}
+}
+
+module circle_fragment(x, d) {
+	y_adjust = isosceles_triangle_height(d/2, x);
+	translate([0, -(d/2 - y_adjust)]) { 
+		intersection() {	
+			translate([0, -y_adjust]) {
+				circle(d = d);
+			}
+			translate([-x/2, 0]) {
+				square([x, d/2 - y_adjust]);
+			} 
+		}
+	}
+}
+
+function isosceles_triangle_height(a, b) = sqrt(a^2 - b^2/4);
+
+module square_with_chamfers(x, y, chamfer_x, chamfer_y) {
+	polygon(
+		[
+			[x/2, y/2 - chamfer_y],
+			[x/2 - chamfer_x, y/2],
+			[-x/2 + chamfer_x, y/2],
+			[-x/2, y/2 - chamfer_y],
+			[-x/2, -y/2 + chamfer_y],
+			[-x/2 + chamfer_x, -y/2],
+			[x/2 - chamfer_x, -y/2],
+			[x/2, -y/2 + chamfer_y],
+		]
+	);
 }
 
 module c1(armature_color = "#464646") color(armature_color) children();

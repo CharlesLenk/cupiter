@@ -1,36 +1,46 @@
 include <../OpenSCAD-Utilities/common.scad>
 include <globals.scad>
+include <limb constants.scad>
 use <robot common.scad>
 use <hands.scad>
 use <feet.scad>
 use <snaps.scad>
 
-hinge_armor_y_offset = 1;
 shoulder_socket_gap = -0.15;
 
 armor_height = segment_height + 3;
 limb_upper_armor_width = segment_height + 3;
 
-rotator_peg_l = 8;
-rotator_peg_d = 0.95 * ball_d;
-rotator_socket_l = rotator_peg_l + socket_shell_width;
-rotator_socket_d = rotator_peg_d + 2 * socket_shell_width;
-
 hinge_peg_armor_peg_d = 2.75;
 hinge_peg_armor_peg_h = 1.5;
 elbow_wall_width = 1.5;
-hinge_peg_d = 4.5;
+
 hinge_peg_h = segment_height - elbow_wall_width;
-hinge_socket_d = hinge_peg_d + 3;
+
 hinge_peg_size = hinge_socket_d + 2.7;
 
+
 module limb_upper_armor_blank(max_width, max_length, min_width, min_length, cylinder_pos) {
+	edge_d = 1;
+	max_width = max_width;
+	max_width_minkowski_adjusted = max_width - edge_d;
+	length = max_length - edge_d;
+	inner_height = armor_height - edge_d;
+
 	difference() {
-		translate([-max_width/2, 0, -armor_height/2]) {
-			hull() {
-				rounded_cube([min_width, max_length, armor_height], segment_d);
-				rounded_cube([max_width, min_length, armor_height], segment_d);
+		minkowski() {
+			difference() {
+				translate([0, length/2 + edge_d/2]) {
+					hull() {
+						cube([max_width_minkowski_adjusted - 2.5, length, inner_height], center = true);
+						cube([max_width_minkowski_adjusted, length, inner_height - 5], center = true);
+					}
+				}
+				translate([max_width_minkowski_adjusted/2, min_length - 5, -inner_height/2]) {
+					rotate([0, 0, 15]) cube([max_width, 20, inner_height]);
+				}
 			}
+			sphere(d = 1);
 		}
 		translate(cylinder_pos) {
 			cylinder(d = hinge_socket_d + 0.2, h = armor_height, center = true);
@@ -38,7 +48,55 @@ module limb_upper_armor_blank(max_width, max_length, min_width, min_length, cyli
 	}
 }
 
-module limb_lower_armor_blank(max_width, max_length, min_width, cylinder_pos) {
+// module limb_upper_armor_blank(max_width, max_length, min_width, min_length, cylinder_pos) {
+// 	difference() {
+// 		translate([-max_width/2, 0, -armor_height/2]) {
+// 			hull() {
+// 				rounded_cube([min_width, max_length, armor_height], segment_d);
+// 				rounded_cube([max_width, min_length, armor_height], segment_d);
+// 			}
+// 		}
+// 		translate(cylinder_pos) {
+// 			cylinder(d = hinge_socket_d + 0.2, h = armor_height, center = true);
+// 		}
+// 	}
+// }
+
+module limb_lower_armor_blank(max_width, max_length, min_width, cylinder_pos, width_adjust) {
+	edge_d = 1;
+	length = max_length - edge_d;
+	//max_width = rotator_socket_d + 2;
+	max_width_minkowski_adjusted = max_width - edge_d;
+	//width_adjust = 0;
+
+	min_width_minkowski_adjusted = min_width - edge_d;
+
+
+	min_width = min_width; //max_width_minkowski_adjusted - width_adjust;
+	height = armor_height - edge_d;
+
+	minkowski() {
+		hull() {
+			translate([-max_width_minkowski_adjusted/2, edge_d/2 - 1]) {
+				translate([1.25, 0,  -height/2]) cube([max_width_minkowski_adjusted/2 + width_adjust - 1.75, length, height]);
+				translate([0, 0, -(height-5)/2]) cube([min_width_minkowski_adjusted/2 + width_adjust, length - 1.25, height - 5]);
+			}
+		}
+		sphere(d = 1);
+	}
+
+	translate(cylinder_pos) {
+		rounded_cylinder(
+			d = hinge_socket_d, 
+			h = armor_height, 
+			top_d = segment_d,  
+			bottom_d = segment_d, 
+			center = true
+		);
+	}
+}
+
+module limb_lower_armor_blank_2(max_width, max_length, min_width, cylinder_pos) {
 	chamfer_depth = max_width/2 - min_width/2;
 	hull() {
 		translate([-max_width/2, chamfer_depth, -armor_height/2]) {
@@ -56,6 +114,58 @@ module limb_lower_armor_blank(max_width, max_length, min_width, cylinder_pos) {
 			bottom_d = segment_d, 
 			center = true
 		);
+	}
+}
+
+
+// difference() {
+//     union() {
+// intersection() {
+//     sphere(d = socket_d);
+//     translate([-10, -10, -1.5]) cube([20, 20, segment_height - 2]); 
+// }
+// translate([0, -4]) xy_cut(-2 + 0.5) rotator_peg_2(8, 1);
+// }
+// sphere(d = ball_d);
+// }
+
+// translate([15, 0]) 
+// difference() {
+//     union() {
+// intersection() {
+//     sphere(d = socket_d);
+//     translate([-10, -10, -1.5]) cube([20, 20, segment_height - 2]); 
+// }
+// translate([0, -4]) xy_cut(-2 + 0.5) rotator_peg_2(8, 1);
+// }
+// sphere(d = ball_d);
+//     translate([0, 0, -5]) cube([0.2, 20, 20]);
+// }
+
+
+module rotator_peg_2(peg_len, peg_ext_past_socket = 0, is_cut = false) {
+    rotator_peg_d = 4;
+	cut_adjust = is_cut ? 0.2 : 0;
+	cylinder_l = peg_len + peg_ext_past_socket;
+	
+	if (is_cut) {
+		rotate([90, 0, 0]) peg();
+	} else {
+		xy_cut(ball_cut_height, size = 2 * cylinder_l) {
+			rotate([90, 0, 0]) peg();
+		}
+	}
+
+	module peg() {
+		translate([0, 0, -peg_ext_past_socket]) {
+			difference() {
+				capped_cylinder(rotator_peg_d + cut_adjust, cylinder_l + cut_adjust/2);
+				snap_d2 = 2.5;
+				translate([0, 0, snap_d2/2 + peg_ext_past_socket + 1]) {
+					torus(rotator_peg_d - 0.75, snap_d2);
+				}
+			}
+		}
 	}
 }
 
@@ -77,7 +187,7 @@ module rotator_peg(peg_len, peg_ext_past_socket = 0, is_cut = false) {
 				capped_cylinder(rotator_peg_d + cut_adjust, cylinder_l + cut_adjust/2);
 				snap_d2 = 2.5;
 				translate([0, 0, snap_d2/2 + peg_ext_past_socket + 1]) {
-					torus(rotator_peg_d - 1.25, snap_d2);
+					torus(rotator_peg_d - 1.1, snap_d2);
 				}
 			}
 		}
@@ -109,12 +219,29 @@ module rotator_socket(peg_len, is_cut = false) {
 				translate([0, 0, -height/2]) {
 					linear_extrude(height) {
 						projection(cut = true) {
-							translate([0, 0, -segment_height/2 + 0.3]) {
+							translate([0, 0, -segment_height/2 + 0.6]) {
 								rotate([90, 0, 180]) capped_cylinder(rotator_peg_d, rotator_peg_l);
 							}
 						}
 					}				
 				}
+			}
+		}
+		translate([0, 1]) {
+			angle = 15;
+			rotate([0, angle, 0]) { 
+				armor_snap_inner(
+					length = 3.7, 
+					target_width = rotator_socket_d,
+					is_cut = !is_cut
+				);
+			}
+			rotate([0, -angle, 0]) {
+				armor_snap_inner(
+					length = 3.7, 
+					target_width = rotator_socket_d,
+					is_cut = !is_cut
+				);
 			}
 		}
 	}

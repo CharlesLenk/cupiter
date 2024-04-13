@@ -17,3 +17,4 @@ segment_cut_width_amt = 0.15;
 segment_cut_height = segment_height + segment_cut_height_amt;
 segment_cut_width = segment_width + segment_cut_width_amt;
 segment_d = 1;
+edge_d = 1;

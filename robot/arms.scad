@@ -1,15 +1,16 @@
 include <../OpenSCAD-Utilities/common.scad>
-include <globals.scad>
+include <limb constants.scad>
 include <limbs.scad>
+use <limb armor.scad>
 
-arm_len = 22;
-arm_lower_len = 0.9 * arm_len;
+elbow_max_angle = 158;
+arm_armor_height = segment_height + 3;
 
-elbow_joint_offset = -2;
-elbow_max_angle = 160;
-arm_armor_height = segment_height + 2.5;
+function elbow_max_angle() = elbow_max_angle;
 
-arm_assembled();
+//arm_lower_armor();
+
+//arm_assembled();
 
 module shoulder_socket(is_cut = false) {
 	height = segment_height + (is_cut ? segment_cut_height_amt : 0);
@@ -19,7 +20,7 @@ module shoulder_socket(is_cut = false) {
 	d = socket_d + 0.5 + cut_d;
 	difference() {
 		make_socket(shoulder_socket_gap, is_cut = is_cut) {
-			rounded_socket_blank(is_cut);
+			rounded_socket_blank(is_cut, chamfer_y = 1.7);
 		}
 		if (!is_cut) {
 			hull() {
@@ -57,37 +58,40 @@ module shoulder_armor() {
 	x3 = x2 - 3;
 	
 	armor_d = 7;
+
+	height = segment_height + 2.6;
 	
 	module armor_blank() {
-		intersection() {
-			difference() {
-				hull() {
-					rounded_cube([x, y, z], 1, armor_d, 1);
-					translate([x/2 - x2/2, 0]) rounded_cube([x2, y, z2], 1, 6, 1);
+		translate([0, -y + socket_d/2]) { 
+			minkowski() {
+				translate([0, edge_d/2]) {
+					hull() {
+						xy_cut(edge_d/2 - segment_height/2, size = 15) {
+							armor_section(socket_d + 2.4 - edge_d, y - edge_d, height - edge_d);
+						}
+						translate([0, -1.8]) 
+						xy_cut(segment_height/2 - 1, size = 15, from_top = true) {
+							xy_cut(edge_d/2 - segment_height/2, size = 15) {
+								armor_section(socket_d - 1.5, y - edge_d, height - edge_d);
+							}
+						}
+					}
 				}
-				fix_preview() translate([x/2 - x3/2, 0]) {
-					rounded_cube([x3, y - 1.5, z2], 1, 6 - 3, 0, 0, 0);
-				}
-			}
-			translate([0, y]) {
-				rotate([0, 270, 180]) cube_one_round_corner([z2, y, x], 2);
+				sphere(d = 1);
 			}
 		}
 	}
 	
 	difference() {
-		translate([-x/2, socket_d/2, -segment_height/2]) {
-			rotate([90, 0, 0]) {
-				armor_blank();
-			}
-		}
+		armor_blank();
+		translate([0, -4.6]) rounded_cube([6.7, 4, 20], center = true, top_d = 0, bottom_d = 0, d = 1);
 		rotate([0, 180, 0]) shoulder(true);
 	}
 }
 
 module arm_upper(is_cut = false) {
 	limb_segment(
-		length = arm_len, 
+		length = arm_upper_len, 
 		end1_len = ball_dist, 
 		end2_len = hinge_socket_d/2, 
 		is_cut = is_cut, 
@@ -99,23 +103,35 @@ module arm_upper(is_cut = false) {
 	};
 }
 
-module arm_upper_armor_blank() {	
-	max_length = arm_len - ball_dist - hinge_armor_y_offset - 0.1;
-	
-	translate([0, ball_dist]) {
-		limb_upper_armor_blank(
-			max_width = arm_armor_height, 
-			max_length = max_length,
-			min_width = arm_armor_height/2 + 1.1,
-			min_length = max_length - 8.9,
-			cylinder_pos = [-elbow_joint_offset, arm_len - ball_dist]
-		);
+translate([15, 0]) arm_upper();
+translate([15, 22]) arm_upper_armor();
+arm_upper_alt();
+translate([0, 22]) arm_upper_armor_alt();
+
+module arm_upper_alt(is_cut = false) {
+	limb_segment(
+		length = arm_upper_len - socket_d/2, 
+		end1_len = rotator_socket_l - 1, 
+		end2_len = hinge_socket_d/2, 
+		is_cut = is_cut, 
+		snaps = true, 
+		cross_brace = false
+	) {
+		rotator_socket(rotator_peg_l, is_cut);
+		hinge_socket(elbow_joint_offset, is_cut);
+	};
+}
+
+module arm_upper_armor_alt(is_top = false) {
+	apply_armor_cut(is_top) {
+		mirror([1, 0, 0]) translate([0, 0]) arm_upper_armor_blank();
+		arm_upper_alt(true);
 	}
 }
 
 module arm_upper_armor(is_top = false) {
 	apply_armor_cut(is_top) {
-		arm_upper_armor_blank();
+		mirror([1, 0, 0]) translate([0, ball_dist]) arm_upper_armor_blank();
 		arm_upper(true);
 	}
 }
@@ -123,31 +139,20 @@ module arm_upper_armor(is_top = false) {
 module arm_lower(is_cut = false) {
 	limb_segment(
 		length = arm_lower_len, 
-		end1_len = ball_dist, 
-		end2_len = hinge_peg_size/2, 
+		end1_len = hinge_peg_size/2, 
+		end2_len = ball_dist, 
 		is_cut = is_cut, 
 		snaps = true, 
 		cross_brace = true
 	) {
-		ball(is_cut);
 		hinge_peg_holder(elbow_joint_offset, is_cut);
+		ball(is_cut);
 	};
-}
-
-module arm_lower_armor_blank() {	
-	translate([0, ball_dist]) {
-		limb_lower_armor_blank(
-			arm_armor_height,
-			arm_lower_len - ball_dist + hinge_armor_y_offset,
-			arm_armor_height - 1.8,
-			cylinder_pos = [-elbow_joint_offset, arm_lower_len - ball_dist]
-		);
-	}
 }
 
 module arm_lower_armor(is_top = false) {
 	apply_armor_cut(is_top) {
-		arm_lower_armor_blank();
+		mirror([0, 0, 0]) arm_lower_armor_blank();
 		arm_lower(true);
 	}
 }
@@ -167,16 +172,21 @@ module arm_assembled(
 		rotate(arm_extension_angle) {
 			rotate([0, 270, 0]) {
 				c1() arm_upper();
-				if(with_armor) c2() arm_upper_armor_blank();
-			}	
-			translate([0, arm_len, 0]) {
-				rotate_with_offset_origin([0, 0, -elbow_joint_offset], [-elbow_angle, 0, 0]) {
-					translate([0, arm_lower_len, 0]) {
-						rotate([0, 270, 180]) {
+				
+			}
+			if(with_armor) {
+				translate([0, ball_dist]) {
+					rotate([0, 90, 0]) c2() arm_upper_armor_blank();	
+				}
+			}
+			translate([0, arm_upper_len, 0]) {
+				rotate_with_offset_origin([0, 0, -elbow_joint_offset], [elbow_angle, 0, 0]) {
+					translate([0, 0, 0]) {
+						rotate([0, 90, 0]) {
 							c1() arm_lower();
-							if(with_armor) c2() arm_lower_armor_blank();
 						}
 					}
+					if(with_armor) rotate([0, 90, 0]) c2() arm_lower_armor_blank();
 					translate([0, arm_lower_len]) {
 						if (simple_hands) {
 							hand_simple_assembled(with_armor);

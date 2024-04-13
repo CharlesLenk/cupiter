@@ -8,10 +8,10 @@ use <legs.scad>
 assembled(
 	with_armor = true, 
 	neck_angle_test = false,
-	simple_hands = false
-//	elbow_angle = elbow_max_angle(),
-//	knee_angle = knee_max_angle(),
-//	shoulder_angle = 24
+	simple_hands = false,
+	elbow_angle = 0,//elbow_max_angle(),
+	knee_angle = 0,//knee_max_angle(),
+	hip_angle = 0
 );
 
 module assembled(
@@ -26,7 +26,7 @@ module assembled(
 	armor_color = "#DDDDDD"
 ) {
 	head_assembled(neck_angle_test ? 16 : 0);
-	translate([0, head_height()]) {
+	translate([0, 0]) {
 		body_assembled(with_armor);
 		reflect([1, 0, 0]) {
 			translate([-shoulder_width()/2, shoulder_height()]) {
@@ -34,12 +34,12 @@ module assembled(
 					with_armor = with_armor,
 					elbow_angle = elbow_angle,
 					shrug_angle = shoulder_angle,
-					arm_extension_angle = 4,
+					arm_extension_angle = 7,
 					simple_hands = simple_hands
 				);
 			}
 			translate([-hip_width()/2, torso_len()]) {
-				rotate([-hip_angle, 0, 0]) {
+				rotate([hip_angle, 0, 0]) {
 					leg_assembled(with_armor, knee_angle);
 				}
 			}

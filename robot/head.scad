@@ -4,18 +4,91 @@ use <robot common.scad>
 
 lens_diameter = 12;
 eye_socket_diameter = lens_diameter + 2;
-head_cube_y_offset = 5.5;
+head_cube_y_offset = 5;
 
 wall_thickness = 1.5;
 head_cube_y = eye_socket_diameter + 2 * wall_thickness + 1;
 head_cube_z = 16;
-neck_len = 8.5;
+neck_len = 8;
 
 function head_height() = head_cube_y_offset + neck_len + head_cube_y/2;
+function neck_len() = neck_len;
+
+//head();
+// head_2();
+
+// head_2_assembled();
+// hull() {
+// 	sphere(d = 10);
+// 	translate([-0.5, 0])  {
+// 		translate([4.5, 0, -4]) sphere(d = 2);
+// 		translate([5, 0, -1]) sphere(d = 2);
+// 		translate([2, 3.5, -2]) sphere(d = 2);
+// 		translate([2, -3.5, -2]) sphere(d = 2);
+// 	}
+// 	//translate([1, 0, -2]) torus(d1 = 8, d2 = 1);
+// }
+
+module head_2_assembled() {
+	rotate([90, 0, 0]) { 
+		c2() head_2();
+		rotate([90, 0, 0]) c1() socket_with_snaps();
+		c1() rotate([270, 0, 0]) neck();
+	}
+}
+
+module head_2() {
+	x = 11;
+	y = 3;
+
+	chamfer_x = 2;
+	chamfer_y = 3;
+
+	difference() {
+		translate([0, 5.5, -3]) 
+		minkowski() {
+			//difference() {
+				rotate([-38, 0])
+				xy_cut(0.5)
+				rotate([38, 0]) 
+				hull() {
+					h1 = 9;
+					translate([0, 0, edge_d/2]) linear_extrude(h1 - edge_d/2) face_2d(x, y, chamfer_x, chamfer_y);
+
+					id1 = 6;
+					translate([0, -id1, h1]) 
+					rotate([0, 270, 0]) rotate_extrude(angle = 90) translate([id1, 0]) rotate(-90) face_2d(x, y, chamfer_x, chamfer_y);
+
+					id2 = 3;
+					translate([0, -id1, h1 - id2 + id1]) 
+					rotate([0, 270, 180]) rotate_extrude(angle = 90) translate([id2, 0]) rotate(-90) face_2d(x, y, chamfer_x, chamfer_y);
+				}
+				// translate([-x/2, -15, 0]) {
+				// 	cube([x, 10, 5]);
+				//} 
+			//}
+			sphere(d = edge_d);
+		}
+		rotate([90, 0, 0]) socket_with_snaps(true);
+	}
+}
+
+module face_2d(x, y, chamfer_x, chamfer_y) {
+	polygon(
+		[
+			[x/2, y - chamfer_y],
+			[x/2 - chamfer_x, y],
+			[-x/2 + chamfer_x, y],
+			[-x/2, y - chamfer_y],
+			[-x/2, 0],
+			[x/2, 0],
+		]
+	);
+}
 
 module head_assembled(neck_angle = 0) {
 	rotate(180) {
-		translate([0, -head_height()]) {
+		translate([0, 0]) {
 			rotate(neck_angle) {
 				rotate_z_relative_to_point([0, neck_len], neck_angle) {
 					translate([0, neck_len]) {
