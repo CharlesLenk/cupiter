@@ -12,7 +12,7 @@ knee_max_angle = 165;
 
 //leg_upper_armor();
 
-//leg_assembled();
+leg_assembled();
 
 function knee_max_angle() = knee_max_angle;
 
@@ -26,13 +26,13 @@ module hip_socket(is_cut = false) {
 		make_socket(shoulder_socket_gap, is_cut = is_cut) {
 			rounded_socket_blank(is_cut, chamfer_y = 1.7);
 		}
-		armor_snap_inner(
-			length = 4, 
-			target_width = socket_d,
-			depth = 0.4,
-			is_cut = !is_cut,
-			width_cut_adjust = 0.2
-		);
+		// armor_snap_inner(
+		// 	length = 4, 
+		// 	target_width = socket_d,
+		// 	depth = 0.4,
+		// 	is_cut = !is_cut,
+		// 	width_cut_adjust = 0.2
+		// );
 	}	
 }
 
@@ -45,7 +45,7 @@ module hip(is_cut = false) {
 	//}
 }
 
-hip();
+//hip_armor();
 
 module hip_armor() {
 	x = socket_d + 2.5;
@@ -59,20 +59,27 @@ module hip_armor() {
 	y = 9;
 	
 	difference() {
-		translate([0, -y + socket_d/2 + hip_armor_tab_width]) { 
+		translate([0, 0]) { 
 			minkowski() {
-				xy_cut(-(segment_height + 2)/2 + 1 + edge_d/2, size = 20) {
-					hull() {
-						translate([0, edge_d/2]) {
-							armor_section(socket_d + 1, y - edge_d, height);
-						}
-						translate([0, edge_d/2 - 2.5 + y/2]) {
-							armor_section(socket_d + 2, 5 - edge_d, height);
-						}
+				// xy_cut(-(segment_height + 2)/2 + 1 + edge_d/2, size = 20) {
+				// 	hull() {
+				// 		translate([0, edge_d/2]) {
+				// 			armor_section(socket_d + 1.5 - edge_d, y - edge_d, height);
+				// 		}
+				// 		translate([0, edge_d/2 - 5.5 + y]) {
+				// 			armor_section(socket_d + 2.5 - edge_d, 5.5 - edge_d, height);
+				// 		}
+				// 	}
+				// }
+				xy_cut(edge_d/2 - segment_height/2, size = 15) {
+					difference() {
+						foob(socket_d + 2.5 - edge_d, height, socket_d/2 + hip_armor_tab_width, 1.5, 2.5);
+						translate([0, 10 + socket_d/2 - edge_d/2 + hip_armor_tab_width - 0.1]) cube([20, 20, 20], center = true);
+						translate([0, -9.8 - ball_d/2 + edge_d/2]) cube([20, 20, 20], center = true);
 					}
 				}
 				sphere(d = edge_d);
-			}
+			}	
 		}
 		translate([0, socket_d/2]) {
 			rotate([-90, 0, 0]) cylinder(d = rotator_peg_d + 0.1, h = 10);

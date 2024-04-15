@@ -6,7 +6,7 @@ rotator_socket_l = rotator_peg_l + socket_shell_width;
 rotator_socket_d = rotator_peg_d + 2 * socket_shell_width;
 
 hinge_armor_y_offset = 1;
-hinge_peg_d = 4.5;
+hinge_peg_d = 4;
 hinge_socket_d = hinge_peg_d + 3;
 
 arm_upper_len = 22;

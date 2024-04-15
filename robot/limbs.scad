@@ -11,7 +11,7 @@ shoulder_socket_gap = -0.15;
 armor_height = segment_height + 3;
 limb_upper_armor_width = segment_height + 3;
 
-hinge_peg_armor_peg_d = 2.75;
+hinge_peg_armor_peg_d = 2.5;
 hinge_peg_armor_peg_h = 1.5;
 elbow_wall_width = 1.5;
 

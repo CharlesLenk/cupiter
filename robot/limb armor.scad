@@ -7,13 +7,12 @@ hinge_peg_armor_peg_h = 1.5;
 elbow_wall_width = 1.5;
 hinge_peg_h = segment_height - elbow_wall_width;
 
-
-upper_thigh_width = rotator_socket_d + 2;
-upper_thigh_length_front = 4;
+upper_thigh_width = socket_d + 2.5; //rotator_socket_d + 2;
+upper_thigh_length_front = 1;//4;
 thigh_length = leg_upper_len;
 lower_thigh_width_front = 4;
 
-upper_thigh_length_back = 8;
+upper_thigh_length_back = 6.5;
 lower_thight_width_back = 1.2;
 
 pivot_test = false;
@@ -33,7 +32,7 @@ edge_d = segment_d;
 armor_z = segment_height + 3;
 
 arm_height = 10;
-arm_width = 11;
+arm_width = 10;
 
 arm_upper_top_len = 4.5;
 arm_lower_bot_width_front = 3.5;
@@ -96,7 +95,8 @@ module arm_upper_armor_blank() {
 		arm_upper_bot_width_front,
 		arm_upper_bot_width_back,
 		arm_armor_upper_len,
-		elbow_joint_offset
+		elbow_joint_offset,
+		segment_height + 2.7
 	);
 }
 
@@ -106,7 +106,8 @@ module arm_lower_armor_blank() {
 		width_front_top = arm_lower_width_mid,
 		width_front_bot = arm_lower_bot_width_front,
 		width_back = arm_lower_bot_width_back,
-		joint_offset = elbow_joint_offset
+		joint_offset = elbow_joint_offset,
+		segment_height + 2.7
 	);
 }
 
@@ -150,7 +151,8 @@ module upper_limb_armor_rounded(
 	bot_width_front,
 	bot_width_back,
 	length,
-	joint_offset
+	joint_offset,
+	armor_z = armor_z
 ) {
     d = edge_d;
     minkowski() {
@@ -179,7 +181,8 @@ module limb_lower_rounded(
 	width_front_top,
 	width_front_bot,
 	width_back,
-	joint_offset
+	joint_offset,
+	armor_z = armor_z
 ) {
     d = edge_d;
     minkowski() {

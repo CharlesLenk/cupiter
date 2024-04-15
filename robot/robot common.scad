@@ -33,6 +33,19 @@ module socket_cut(cut_angle = socket_opening_angle, ball_offset) {
 
 module ball_for_armor_subtractions() sphere(d = ball_d + 0.2);
 
+module foob(x, z, cylinder_length, chamfer_x = 1, chamfer_y = 1) {
+	cylinder_length = is_undef(cylinder_length) ? socket_width/2 : cylinder_length;
+
+	rotate(180) 
+	rotate_extrude(angle = 180) {
+		intersection() {
+			square_with_chamfers(x, z, chamfer_x, chamfer_y);
+			translate([0, -z/2]) square([x/2, z]);
+		}
+	}
+	rotate([270, 0, 0]) linear_extrude(cylinder_length) square_with_chamfers(x, z, chamfer_x, chamfer_y);
+}
+
 module rounded_socket_blank(is_cut = false, cylinder_length, chamfer_y = 1) {
 	height = is_cut ? segment_cut_height : segment_height;
 	socket_width = is_cut ? socket_d + 0.2 : socket_d;
@@ -161,14 +174,45 @@ module armor_section(x, y, z, chamfer_x = 1.5, chamfer_y = 2.5) {
 	rotate([270, 0, 0]) {
 		linear_extrude(y) {
 			square_with_chamfers(x, z, chamfer_x, chamfer_y);
+			//armor_2d_round_2(x, z, 0, 0, 10);
 		}
 	}
 }
 
-module armor_2d_round(x, y, chamfer_x, chamfer_y, d = 40) {
+armor_2d_round_2(10, 10, 0, 0, 10);
+
+// translate([15, 0]) armor_2d_round(10, 10);
+// armor_2d_round_2(10, 10, d = 10);
+
+
+//circle_fragment_2(10, 5);
+
+module armor_2d_round(x, y, chamfer_x, chamfer_y, d = 20) {
 	rotate(90) hull() {
 		translate([0, x/2]) circle_fragment(y, d);
 		translate([0, -x/2]) rotate(180) circle_fragment(y, d);
+	}
+}
+
+module armor_2d_round_2(x, y, chamfer_x, chamfer_y, d = 20) {
+	rotate(90) hull() {
+		translate([0, x/2]) circle_fragment_2(y, d);
+		translate([0, -x/2]) rotate(180) circle_fragment_2(y, d);
+	}
+}
+
+module circle_fragment_2(x, d, mid = 2) {
+	y_adjust = 0;//isosceles_triangle_height(d/2, x - mid/2);
+	reflect([1, 0, 0]) 
+	translate([0, -(d/2 - y_adjust)]) { 
+		intersection() {	
+			translate([mid, -y_adjust]) {
+				circle(d = d);
+			}
+			translate([-x/2, 0]) {
+				square([x, d/2 - y_adjust]);
+			} 
+		}
 	}
 }
 

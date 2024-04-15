@@ -26,7 +26,7 @@ socket_snap_depth = 0.35;
 
 waist_width_chest = torso_width_start + 2;
 waist_width = torso_width_start + 1.7 ;
-waist_width_pelvis = torso_width_start + 2.5;
+waist_width_pelvis = torso_width_start + 3;
 
 //chest();
 chest_armor();
@@ -94,7 +94,7 @@ module chest(is_cut = false) {
 	
 	shoulder_upper_snap_len = 3.8;
 	shoulder_lower_snap_len = 4.6;
-	waist_snap_len = 6;
+	waist_snap_len = 5;
 	difference() {
 		union() {
 			rounded_socket_blank(is_cut, chest_len - socket_r);
@@ -120,7 +120,7 @@ module chest(is_cut = false) {
 		translate([-socket_d/2  - 0.1 - shoulder_upper_snap_len, shoulder_height]) {
 			rotate(-90) armor_snap_inner_double(shoulder_upper_snap_len, socket_d, socket_snap_depth, is_cut = !is_cut);
 		}
-		translate([0, chest_len - socket_d/2 - 2]) {
+		translate([0, chest_len - socket_d/2 - 1]) {
 			armor_snap_inner_double(waist_snap_len, socket_d, socket_snap_depth, is_cut = !is_cut);
 		}
 	}
@@ -170,7 +170,7 @@ module chest_armor_blank() {
 				translate([0, shoulder_height + edge_d/2, 0]) { 
 					rotate([0, 0, 90]) {
 						translate([0, -innerer_segment_width/2, 0]) {
-							armor_section(13, innerer_segment_width, height);
+							armor_section(12.5, innerer_segment_width, height);
 						}
 					}
 				}
@@ -328,7 +328,7 @@ module pelvis_armor_blank() {
 					);
 					translate([0, top_len - 0.7]) {
 						armor_section(
-							waist_width - edge_d, 
+							waist_width_pelvis + 1 - edge_d, 
 							0.7,
 							torso_height_start - edge_d
 						);
