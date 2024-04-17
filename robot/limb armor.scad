@@ -1,6 +1,6 @@
 include <../OpenSCAD-Utilities/common.scad>
 include <limb constants.scad>
-
+use <robot common.scad>
 
 hinge_peg_armor_peg_d = 2.75;
 hinge_peg_armor_peg_h = 1.5;
@@ -65,49 +65,151 @@ leg_lower_width_mid = get_limb_width_at_y(
 	y = leg_upper_len - upper_thigh_length_front - hinge_armor_y_offset
 );
 
+module upper_limb_armor_rounded_2(
+	top_width,
+	length,
+	height,
+	top_back_length,
+	bottom_front_width,
+	bottom_back_width,
+	joint_offset
+) {
+	minkowski() {
+		difference() {
+			translate([0, edge_d/2]) {
+				hull() {
+					z = height - edge_d;
+					x1 = top_width - edge_d;
+					armor_section_round(x1, 0.001, z);
+
+					translate([x1/4 - x1/2, top_back_length]) {
+						armor_section_round(x1/2, 0.001, z);
+					}
+
+					x = bottom_front_width + bottom_back_width - edge_d;
+					translate([-x/2 + bottom_front_width - edge_d/2, length - hinge_armor_y_offset - 0.1 - edge_d]) {
+						armor_section_round(x, 0.001, z, right_d = 40);
+					}
+				}
+			}
+			translate([joint_offset, length]) {
+				cylinder(d = hinge_socket_d + edge_d + 0.2, h = height, center = true);
+			}
+		}
+		sphere(d = 1);
+	}
+}
+
+module lower_limb_armor_rounded_2(
+	top_width_front,
+	width_back,
+	length,
+	height,
+	bottom_front_width,
+	joint_offset
+) {
+	minkowski() {
+		union() {
+			translate([0, edge_d/2 - hinge_armor_y_offset]) {
+				hull() {
+					z = height - edge_d;
+					x1 = top_width_front + width_back - edge_d;
+					translate([-x1/2 + top_width_front - edge_d/2, 0]) {
+						armor_section_round(x1, 0.001, z, right_d = 400);
+					}
+
+					x = bottom_front_width + width_back - edge_d;
+					translate([-x/2 + bottom_front_width - edge_d/2, length + hinge_armor_y_offset - 0.1 - edge_d]) {
+						armor_section_round(x, 0.001, z, right_d = 20);
+					}
+				}
+			}
+			translate([joint_offset, 0]) {
+				cylinder(d = hinge_socket_d - edge_d, h = height - edge_d, center = true);
+			}
+		}
+		sphere(d = 1);
+	}
+}
+
+
 module leg_upper_armor_blank() {
-	upper_limb_armor_rounded(
+	// upper_limb_armor_rounded(
+	// 	upper_thigh_width,
+	// 	upper_thigh_length_front,
+	// 	upper_thigh_length_back,
+	// 	leg_upper_bot_width_front,
+	// 	lower_thight_width_back,
+	// 	thigh_length,
+	// 	knee_joint_offset
+	// );
+	upper_limb_armor_rounded_2(
 		upper_thigh_width,
-		upper_thigh_length_front,
+		thigh_length,
+		armor_z,
 		upper_thigh_length_back,
 		leg_upper_bot_width_front,
 		lower_thight_width_back,
-		thigh_length,
 		knee_joint_offset
 	);
 }
 
 module leg_lower_armor_blank() {
-	limb_lower_rounded(
-		limb_length = leg_lower_len,
-		width_front_top = leg_lower_width_mid,
-		width_front_bot = lower_leg_lower_width_front,
+	// limb_lower_rounded(
+	// 	limb_length = leg_lower_len,
+	// 	width_front_top = leg_lower_width_mid,
+	// 	width_front_bot = lower_leg_lower_width_front,
+	// 	width_back = lower_leg_back_width,
+	// 	joint_offset = knee_joint_offset
+	// );
+	lower_limb_armor_rounded_2(
+		top_width_front = leg_lower_width_mid,
 		width_back = lower_leg_back_width,
+		length = leg_lower_len,
+		height = armor_z,
+		bottom_front_width = lower_leg_lower_width_front,
 		joint_offset = knee_joint_offset
 	);
 }
 
 module arm_upper_armor_blank() {
-	upper_limb_armor_rounded(
+	// upper_limb_armor_rounded(
+	// 	arm_width,
+	// 	arm_upper_top_len,
+	// 	arm_upper_top_len,
+	// 	arm_upper_bot_width_front,
+	// 	arm_upper_bot_width_back,
+	// 	arm_armor_upper_len,
+	// 	elbow_joint_offset,
+	// 	segment_height + 2.7
+	// );
+	upper_limb_armor_rounded_2(
 		arm_width,
-		arm_upper_top_len,
+		arm_armor_upper_len,
+		segment_height + 2.7,
 		arm_upper_top_len,
 		arm_upper_bot_width_front,
 		arm_upper_bot_width_back,
-		arm_armor_upper_len,
-		elbow_joint_offset,
-		segment_height + 2.7
+		elbow_joint_offset
 	);
 }
 
 module arm_lower_armor_blank() {
-	limb_lower_rounded(
-		limb_length = arm_armor_lower_len,
-		width_front_top = arm_lower_width_mid,
-		width_front_bot = arm_lower_bot_width_front,
+	// limb_lower_rounded(
+	// 	limb_length = arm_armor_lower_len,
+	// 	width_front_top = arm_lower_width_mid,
+	// 	width_front_bot = arm_lower_bot_width_front,
+	// 	width_back = arm_lower_bot_width_back,
+	// 	joint_offset = elbow_joint_offset,
+	// 	segment_height + 2.7
+	// );
+	lower_limb_armor_rounded_2(
+		top_width_front = arm_lower_width_mid,
 		width_back = arm_lower_bot_width_back,
-		joint_offset = elbow_joint_offset,
-		segment_height + 2.7
+		length = arm_armor_lower_len,
+		height = segment_height + 2.7,
+		bottom_front_width = arm_lower_bot_width_front,
+		joint_offset = elbow_joint_offset
 	);
 }
 

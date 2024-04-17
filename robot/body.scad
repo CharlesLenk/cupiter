@@ -25,8 +25,8 @@ waist_socket_gap = -0.2;
 socket_snap_depth = 0.35;
 
 waist_width_chest = torso_width_start + 2;
-waist_width = torso_width_start + 1.7 ;
-waist_width_pelvis = torso_width_start + 3;
+waist_width = torso_width_start + 2;
+waist_width_pelvis = torso_width_start + 4;
 
 //chest();
 chest_armor();
@@ -222,7 +222,7 @@ module waist_armor_blank() {
 				translate([0, edge_d/2]) {
 					hull() {
 						armor_section(
-							waist_width_chest - edge_d - 0.5, 
+							waist_width_chest - edge_d - 0.6, 
 							0.1,
 							height - edge_d
 						);
@@ -248,7 +248,7 @@ module waist_armor_blank() {
 							);
 							translate([0, length/3]) { 
 								armor_section(
-									waist_width_pelvis - edge_d - 0.7, 
+									waist_width_pelvis - edge_d - 1, 
 									0.1,
 									height - edge_d
 								);
