@@ -28,12 +28,12 @@ digit_lens = [
 ];
 digit_start_heights = [0, 0.9, 1.2, 0.9, -4];
 
-// translate([0, -20]) {
-//     hand_assembled();
-//     translate([15, 0]) hand_simple_assembled();
-// }
+translate([0, -20]) {
+    hand_assembled();
+    translate([15, 0]) hand_simple_assembled();
+}
 
-// posed_hands(reflect = true);
+posed_hands(reflect = true);
 
 module modify_hand_for_print() {
     xy_cut(height = -2.75, size = socket_d) {
