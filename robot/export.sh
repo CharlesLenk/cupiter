@@ -72,11 +72,11 @@ function generate_parts {
     do
         mkdir -p $out_dir/$name
         declare -n parts=$name
-        for part in "${!parts[@]}" 
+        for part in "${!parts[@]}"
         do
-            ("/mnt/c/Program Files/OpenSCAD/openscad.exe" -Dpart="\"$part\"" -q -o $win_out_dir/$name/$part.stl print\ map.scad; 
+            ("/mnt/c/Program Files/OpenSCAD/openscad.exe" -Dpart="\"$part\"" -q -o $win_out_dir/$name/$part.stl print\ map.scad;
                 printf 'Finished generating: %s/%s.stl\n' "$name" "$part";
-                for ((i=2;i<=${parts[$part]};i++)) do 
+                for ((i=2;i<=${parts[$part]};i++)) do
                     cp $out_dir/$name/$part.stl $out_dir/$name/$part\_$i.stl; printf 'Finished generating: %s/%s_%s.stl\n' "$name" "$part" "$i"
                 done
             ) &
