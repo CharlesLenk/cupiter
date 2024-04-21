@@ -28,12 +28,12 @@ digit_lens = [
 ];
 digit_start_heights = [0, 0.9, 1.2, 0.9, -4];
 
-translate([0, -20]) {
-    hand_assembled();
-    translate([15, 0]) hand_simple_assembled();
-}
+// translate([0, -20]) {
+//     hand_assembled();
+//     translate([15, 0]) hand_simple_assembled();
+// }
 
-posed_hands(reflect = true);
+// posed_hands(reflect = true);
 
 module modify_hand_for_print() {
     xy_cut(height = -2.75, size = socket_d) {
@@ -412,51 +412,35 @@ module finger(joint_angles, segment_heights, index = 0, splay_angle = 0) {
 
 module hand_armor() {
     hand_edge_margin = 0.5;
-    width = 4 * finger_width - 2 * hand_edge_margin;
-    c2_width = 4 * finger_width - 2 * palm_chamfer;
+    edge_d = 0.5;
+    width = 4 * finger_width - edge_d - hand_edge_margin;
 
     difference() {
-        hull() {
-            translate([0, hand_z_from_socket, 0]) {
-                translate([-width/2, palm_chamfer]) rounded_cube([
-                    width,
-                    palm_z - palm_chamfer,
-                    hand_armor_height
-                ], d = 1, top_d = 0.5, bottom_d = 0.5);
-
-                translate([finger_width, palm_chamfer]) {
-                    rounded_cube([
-                        finger_width - hand_edge_margin,
-                        palm_z - palm_chamfer + digit_start_heights[1],
-                        hand_armor_height
-                    ], d = 1, top_d = 0.5, bottom_d = 0.5);
+        translate([0, hand_z_from_socket, edge_d/2]) {
+            minkowski() {
+                linear_extrude(hand_armor_height - edge_d) {
+                    translate([0, edge_d/2 + hand_edge_margin/2]) {
+                        polygon(
+                            [
+                                [width/2 - palm_chamfer, 0],
+                                [width/2, palm_chamfer],
+                                [width/2, palm_z + digit_start_heights[3] - edge_d - hand_edge_margin/2],
+                                [width/4, palm_z + digit_start_heights[2] - edge_d - hand_edge_margin/2],
+                                [0, palm_z + digit_start_heights[2] - edge_d - hand_edge_margin/2],
+                                [-width/4, palm_z + digit_start_heights[1] - edge_d - hand_edge_margin/2],
+                                [-width/2, palm_z + digit_start_heights[0] - edge_d - hand_edge_margin/2],
+                                [-width/2, palm_chamfer],
+                                [-width/2 + palm_chamfer, 0],
+                            ]
+                        );
+                    }
                 }
-                translate([0, palm_chamfer]) {
-                    rounded_cube([
-                        finger_width,
-                        palm_z - palm_chamfer + digit_start_heights[2],
-                        hand_armor_height
-                    ], d = 1, top_d = 0.5, bottom_d = 0.5);
-                }
-                translate([-finger_width, palm_chamfer]) {
-                    rounded_cube([
-                        finger_width,
-                        palm_z - palm_chamfer + digit_start_heights[1],
-                        hand_armor_height
-                    ], d = 1, top_d = 0.5, bottom_d = 0.5);
-                }
-                translate([-c2_width/2, hand_edge_margin]) {
-                    rounded_cube([
-                        c2_width,
-                        palm_z/2,
-                        hand_armor_height
-                    ], d = 1, top_d = 0.5, bottom_d = 0.5);
-                }
+                sphere(d = edge_d);
             }
         }
         translate([0, 0, segment_height/2]) sphere(d = socket_d + 0.2);
     }
-    translate([0, hand_z_from_socket + palm_z * 0.65, hand_armor_height]) hand_armor_tabs();
+    translate([0, hand_z_from_socket + palm_z * 0.65, hand_armor_height - 0.1]) hand_armor_tabs();
 }
 
 module hand_simple_left() {
@@ -495,7 +479,7 @@ module hand_simple_left() {
             hand_hole();
         }
     }
-   
+
     module hand_blank() {
         difference() {
             union () {

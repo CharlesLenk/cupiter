@@ -28,7 +28,7 @@ waist_width_chest = torso_width_start + 2;
 waist_width = torso_width_start + 2;
 waist_width_pelvis = torso_width_start + 4;
 
-//body_assembled();
+body_assembled();
 
 function torso_len() = torso_len;
 function hip_width() = hip_width;
