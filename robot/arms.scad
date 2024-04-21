@@ -57,8 +57,8 @@ module arm_lower_armor_blank() {
 }
 
 module shoulder_socket(is_cut = false) {
-    height = segment_height + (is_cut ? segment_cut_height_amt : 0);
-    width = socket_d + (is_cut ? segment_cut_width_amt : 0);
+    height = segment_height + (is_cut ? segment_cut_height_offset : 0);
+    width = socket_d + (is_cut ? segment_cut_width_offset : 0);
     cut_d = is_cut ? 0.2 : 0;
 
     d = socket_d + 0.5 + cut_d;

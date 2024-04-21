@@ -5,8 +5,8 @@ use <snaps.scad>
 socket_opening_angle = 120;
 
 module apply_socket_cut(ball_offset = 0, socket_angle = 0, cut_angle = socket_opening_angle, is_cut = false) {
-    height = segment_height + (is_cut ? segment_cut_height_amt : 0);
-    width = socket_d + (is_cut ? segment_cut_width_amt : 0);
+    height = segment_height + (is_cut ? segment_cut_height_offset : 0);
+    width = socket_d + (is_cut ? segment_cut_width_offset : 0);
 
     difference() {
         children();
@@ -49,7 +49,7 @@ module rounded_socket_blank(is_cut = false, cylinder_length) {
 module ball_for_armor_subtractions() sphere(d = ball_d + 0.2);
 
 module ball(is_cut = false, tab_extension = 0) {
-    cut_amt = is_cut ? segment_cut_height_amt : 0;
+    cut_amt = is_cut ? segment_cut_height_offset : 0;
     height = is_cut ? segment_cut_height : segment_height;
     tab_width = is_cut ? segment_cut_width : segment_width;
 

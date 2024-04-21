@@ -182,8 +182,8 @@ module waist(is_cut = false) {
 }
 
 module waist_socket(is_cut = false) {
-    height = segment_height + (is_cut ? segment_cut_height_amt : 0);
-    width = socket_d + (is_cut ? segment_cut_width_amt : 0);
+    height = segment_height + (is_cut ? segment_cut_height_offset : 0);
+    width = socket_d + (is_cut ? segment_cut_width_offset : 0);
 
     translate([0, -0.5 + socket_d/2]) {
         cross_brace(1, socket_d, is_cut);
