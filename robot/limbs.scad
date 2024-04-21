@@ -1,6 +1,5 @@
 include <../OpenSCAD-Utilities/common.scad>
 include <globals.scad>
-include <limb constants.scad>
 use <robot common.scad>
 use <hands.scad>
 use <feet.scad>
@@ -8,164 +7,92 @@ use <snaps.scad>
 
 shoulder_socket_gap = -0.15;
 
-armor_height = segment_height + 3;
-limb_upper_armor_width = segment_height + 3;
+rotator_peg_l = 8;
+rotator_peg_d = segment_height + 0.4;
+rotator_socket_l = rotator_peg_l + socket_shell_width;
+rotator_socket_d = rotator_peg_d + 2 * socket_shell_width;
 
-hinge_peg_armor_peg_d = 2.5;
-hinge_peg_armor_peg_h = 1.5;
+// hinge_peg_armor_peg_d = 2.5;
+// hinge_peg_armor_peg_h = 1.5;
+
 elbow_wall_width = 1.5;
 
 hinge_peg_h = segment_height - elbow_wall_width;
-
+hinge_armor_y_offset = 1;
+hinge_peg_d = 4;
+hinge_socket_d = hinge_peg_d + 3;
 hinge_peg_size = hinge_socket_d + 2.7;
 
+function get_limb_width_at_y(
+	start_width,
+	end_width,
+	length,
+	y
+) = start_width - ((start_width - end_width) / length) * y;
 
-module limb_upper_armor_blank(max_width, max_length, min_width, min_length, cylinder_pos) {
-	edge_d = 1;
-	max_width = max_width;
-	max_width_minkowski_adjusted = max_width - edge_d;
-	length = max_length - edge_d;
-	inner_height = armor_height - edge_d;
-
-	difference() {
-		minkowski() {
-			difference() {
-				translate([0, length/2 + edge_d/2]) {
-					hull() {
-						cube([max_width_minkowski_adjusted - 2.5, length, inner_height], center = true);
-						cube([max_width_minkowski_adjusted, length, inner_height - 5], center = true);
-					}
-				}
-				translate([max_width_minkowski_adjusted/2, min_length - 5, -inner_height/2]) {
-					rotate([0, 0, 15]) cube([max_width, 20, inner_height]);
-				}
-			}
-			sphere(d = 1);
-		}
-		translate(cylinder_pos) {
-			cylinder(d = hinge_socket_d + 0.2, h = armor_height, center = true);
-		}
-	}
-}
-
-// module limb_upper_armor_blank(max_width, max_length, min_width, min_length, cylinder_pos) {
-// 	difference() {
-// 		translate([-max_width/2, 0, -armor_height/2]) {
-// 			hull() {
-// 				rounded_cube([min_width, max_length, armor_height], segment_d);
-// 				rounded_cube([max_width, min_length, armor_height], segment_d);
-// 			}
-// 		}
-// 		translate(cylinder_pos) {
-// 			cylinder(d = hinge_socket_d + 0.2, h = armor_height, center = true);
-// 		}
-// 	}
-// }
-
-module limb_lower_armor_blank(max_width, max_length, min_width, cylinder_pos, width_adjust) {
-	edge_d = 1;
-	length = max_length - edge_d;
-	//max_width = rotator_socket_d + 2;
-	max_width_minkowski_adjusted = max_width - edge_d;
-	//width_adjust = 0;
-
-	min_width_minkowski_adjusted = min_width - edge_d;
-
-
-	min_width = min_width; //max_width_minkowski_adjusted - width_adjust;
-	height = armor_height - edge_d;
+module limb_upper_armor_blank(
+	length,
+	height,
+	top_width,
+	top_back_length,
+	bottom_front_width,
+	bottom_back_width,
+	joint_offset
+) {
+	height = height - edge_d;
+	top_width = top_width - edge_d;
+	bottom_width = bottom_front_width + bottom_back_width - edge_d;
 
 	minkowski() {
-		hull() {
-			translate([-max_width_minkowski_adjusted/2, edge_d/2 - 1]) {
-				translate([1.25, 0,  -height/2]) cube([max_width_minkowski_adjusted/2 + width_adjust - 1.75, length, height]);
-				translate([0, 0, -(height-5)/2]) cube([min_width_minkowski_adjusted/2 + width_adjust, length - 1.25, height - 5]);
+		difference() {
+			translate([0, edge_d/2]) {
+				hull() {
+					armor_section(top_width, 0.001, height);
+					translate([top_width/4 - top_width/2, top_back_length]) {
+						armor_section(top_width/2, 0.001, height);
+					}
+					translate([-bottom_width/2 + bottom_front_width - edge_d/2, length - hinge_armor_y_offset - 0.1 - edge_d]) {
+						armor_section(bottom_width, 0.001, height, right_d = 40);
+					}
+				}
+			}
+			translate([joint_offset, length]) {
+				cylinder(d = hinge_socket_d + edge_d + 0.2, h = height, center = true);
 			}
 		}
 		sphere(d = 1);
 	}
-
-	translate(cylinder_pos) {
-		rounded_cylinder(
-			d = hinge_socket_d, 
-			h = armor_height, 
-			top_d = segment_d,  
-			bottom_d = segment_d, 
-			center = true
-		);
-	}
 }
 
-module limb_lower_armor_blank_2(max_width, max_length, min_width, cylinder_pos) {
-	chamfer_depth = max_width/2 - min_width/2;
-	hull() {
-		translate([-max_width/2, chamfer_depth, -armor_height/2]) {
-			rounded_cube([max_width/2 + min_width/2, max_length - chamfer_depth, armor_height], segment_d);
-		}
-		translate([-max_width/2 + chamfer_depth, 0, -armor_height/2]) {
-			rounded_cube([max_width/2 + min_width/2 - chamfer_depth, max_length, armor_height], segment_d);
-		}
-	}
-	translate(cylinder_pos) {
-		rounded_cylinder(
-			d = hinge_socket_d, 
-			h = armor_height, 
-			top_d = segment_d,  
-			bottom_d = segment_d, 
-			center = true
-		);
-	}
-}
+module limb_lower_armor_blank(
+	length,
+	height,
+	top_width_front,
+	width_back,
+	bottom_front_width,
+	joint_offset
+) {
+	height = height - edge_d;
+	top_width = top_width_front + width_back - edge_d;
+	bottom_width = bottom_front_width + width_back - edge_d;
 
-
-// difference() {
-//     union() {
-// intersection() {
-//     sphere(d = socket_d);
-//     translate([-10, -10, -1.5]) cube([20, 20, segment_height - 2]); 
-// }
-// translate([0, -4]) xy_cut(-2 + 0.5) rotator_peg_2(8, 1);
-// }
-// sphere(d = ball_d);
-// }
-
-// translate([15, 0]) 
-// difference() {
-//     union() {
-// intersection() {
-//     sphere(d = socket_d);
-//     translate([-10, -10, -1.5]) cube([20, 20, segment_height - 2]); 
-// }
-// translate([0, -4]) xy_cut(-2 + 0.5) rotator_peg_2(8, 1);
-// }
-// sphere(d = ball_d);
-//     translate([0, 0, -5]) cube([0.2, 20, 20]);
-// }
-
-
-module rotator_peg_2(peg_len, peg_ext_past_socket = 0, is_cut = false) {
-    rotator_peg_d = 4;
-	cut_adjust = is_cut ? 0.2 : 0;
-	cylinder_l = peg_len + peg_ext_past_socket;
-	
-	if (is_cut) {
-		rotate([90, 0, 0]) peg();
-	} else {
-		xy_cut(ball_cut_height, size = 2 * cylinder_l) {
-			rotate([90, 0, 0]) peg();
-		}
-	}
-
-	module peg() {
-		translate([0, 0, -peg_ext_past_socket]) {
-			difference() {
-				capped_cylinder(rotator_peg_d + cut_adjust, cylinder_l + cut_adjust/2);
-				snap_d2 = 2.5;
-				translate([0, 0, snap_d2/2 + peg_ext_past_socket + 1]) {
-					torus(rotator_peg_d - 0.75, snap_d2);
+	minkowski() {
+		union() {
+			translate([0, edge_d/2 - hinge_armor_y_offset]) {
+				hull() {
+					translate([-top_width/2 + top_width_front - edge_d/2, 0]) {
+						armor_section(top_width, 0.001, height, right_d = 400);
+					}
+					translate([-bottom_width/2 + bottom_front_width - edge_d/2, length + hinge_armor_y_offset - 0.1 - edge_d]) {
+						armor_section(bottom_width, 0.001, height, right_d = 20);
+					}
 				}
 			}
+			translate([joint_offset, 0]) {
+				cylinder(d = hinge_socket_d - edge_d, h = height, center = true);
+			}
 		}
+		sphere(d = 1);
 	}
 }
 
@@ -266,11 +193,11 @@ module hinge_peg(is_cut = false) {
 			}
 			cylinder(d2 = hinge_peg_d + cut_offset, d1 = hinge_peg_cap_d + cut_offset, h = cap_h);
 		}
-		if (!is_cut) {
-			translate([0, 0, hinge_peg_h - hinge_peg_armor_peg_h]) {
-				fix_preview() cylinder(d = hinge_peg_armor_peg_d, h = hinge_peg_armor_peg_h);
-			}
-		}
+		// if (!is_cut) {
+		// 	translate([0, 0, hinge_peg_h - hinge_peg_armor_peg_h]) {
+		// 		fix_preview() cylinder(d = hinge_peg_armor_peg_d, h = hinge_peg_armor_peg_h);
+		// 	}
+		// }
 	}
 }
 
@@ -308,11 +235,11 @@ module hinge_peg_holder(joint_offset = 0, is_cut = false) {
 					cylinder(d = hinge_socket_d + 0.1, h = z);
 				}
 			}
-			if (is_cut) {
-				translate([0, 0, z - hinge_peg_armor_peg_h]) {
-					cylinder(d = hinge_peg_armor_peg_d - 0.2, h = hinge_peg_armor_peg_h + 0.01);
-				}
-			}
+			// if (is_cut) {
+			// 	translate([0, 0, z - hinge_peg_armor_peg_h]) {
+			// 		cylinder(d = hinge_peg_armor_peg_d - 0.2, h = hinge_peg_armor_peg_h + 0.01);
+			// 	}
+			// }
 		}
 	}
 }

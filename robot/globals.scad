@@ -1,6 +1,6 @@
 ball_d = 7;
 ball_r = ball_d/2;
-ball_tab_len = 1.5;
+ball_tab_len = 1.4;
 ball_dist = ball_r + ball_tab_len;
 
 socket_shell_width = 1.5;
@@ -16,5 +16,6 @@ segment_cut_height_amt = 0.3;
 segment_cut_width_amt = 0.15;
 segment_cut_height = segment_height + segment_cut_height_amt;
 segment_cut_width = segment_width + segment_cut_width_amt;
-segment_d = 1;
 edge_d = 1;
+
+min_wall_width = 1.2;

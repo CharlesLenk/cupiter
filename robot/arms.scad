@@ -1,16 +1,60 @@
 include <../OpenSCAD-Utilities/common.scad>
-include <limb constants.scad>
 include <limbs.scad>
-use <limb armor.scad>
 
-elbow_max_angle = 158;
-arm_armor_height = segment_height + 3;
+elbow_max_angle = 160;
+
+arm_upper_len = 21;
+arm_lower_len = 0.9 * arm_upper_len;
+elbow_joint_offset = -2;
+
+arm_armor_upper_len = arm_upper_len - ball_dist;
+arm_armor_lower_len = arm_lower_len - ball_dist;
+
+arm_width = 10;
+arm_upper_top_len = 3.2;
+arm_lower_bot_width_front = 3.5;
+arm_lower_bot_width_back = 3.4;
+arm_upper_bot_width_back = 1.1;
+
+//arm_assembled();
 
 function elbow_max_angle() = elbow_max_angle;
 
-//arm_lower_armor();
+arm_upper_bot_width_front = get_limb_width_at_y(
+	start_width = arm_width/2, 
+	end_width = arm_lower_bot_width_front, 
+	length = arm_armor_upper_len + arm_armor_lower_len - arm_upper_top_len, 
+	y = arm_armor_upper_len - arm_upper_top_len - hinge_armor_y_offset - 0.1
+);
+arm_lower_width_mid = get_limb_width_at_y(
+	start_width = arm_width/2, 
+	end_width = arm_lower_bot_width_front, 
+	length = arm_armor_upper_len + arm_armor_lower_len - arm_upper_top_len, 
+	y = arm_armor_upper_len - arm_upper_top_len - hinge_armor_y_offset
+);
 
-//arm_assembled();
+module arm_upper_armor_blank() {
+	limb_upper_armor_blank(
+		length = arm_armor_upper_len,
+		height = segment_height + 2.7,
+		top_width = arm_width,
+		top_back_length = arm_upper_top_len,
+		bottom_front_width = arm_upper_bot_width_front,
+		bottom_back_width = arm_upper_bot_width_back,
+		joint_offset = elbow_joint_offset
+	);
+}
+
+module arm_lower_armor_blank() {
+	limb_lower_armor_blank(
+		length = arm_armor_lower_len,
+		height = segment_height + 2.7,
+		top_width_front = arm_lower_width_mid,
+		width_back = arm_lower_bot_width_back,
+		bottom_front_width = arm_lower_bot_width_front,
+		joint_offset = elbow_joint_offset
+	);
+}
 
 module shoulder_socket(is_cut = false) {
 	height = segment_height + (is_cut ? segment_cut_height_amt : 0);
@@ -19,8 +63,8 @@ module shoulder_socket(is_cut = false) {
 	
 	d = socket_d + 0.5 + cut_d;
 	difference() {
-		make_socket(shoulder_socket_gap, is_cut = is_cut) {
-			rounded_socket_blank(is_cut, chamfer_y = 1.7);
+		apply_socket_cut(shoulder_socket_gap, is_cut = is_cut) {
+			rounded_socket_blank(is_cut);
 		}
 		if (!is_cut) {
 			hull() {
@@ -45,158 +89,43 @@ module shoulder(is_cut = false) {
 	}
 }
 
-// rotate(-90) hinge_peg_holder();
-// rotate([0, 180, 0]) hinge_socket();
-// translate([0, 3, 0]) rotate([270, 0, 0]) cylinder(d = 5, h = 5);
-arm_assembled();
-
-// shoulder_armor();
-// shoulder(false);
-
-	// rotate([0, 180, 0]) shoulder(true);
-	// translate([-10, -22, -10]) cube([20, 20, 20]);
-
-//shoulder_armor();
-
-shoulder_ball_d = 5;
-shoulder_socket_d = shoulder_ball_d + 3;
-
-// shoulder_socket_test();
-
-// module shoulder_socket_test() {
-// 	hull() {
-// 		cylinder(h = shoulder_ball_d + 2.4, r = shoulder_socket_d/2, center = true);
-// 		translate([4, 0]) cylinder(h = shoulder_ball_d + 2.4, r = shoulder_socket_d/2, center = true);
-// 	}
-// 	rotate([270, 0, 0]) cylinder(h = shoulder_ball_d/2 + 8, r = shoulder_ball_d/2 + 0.3);
-// }
-
 module shoulder_armor() {
-	shell_width = 1.4;
-	
-	x = socket_d + 2 * shell_width;
-	y = segment_height + shell_width;
-	z = 0.75 * armor_height;
-	
-	x2 = x - 3;
-	z2 = socket_d/2 + armor_height/2;
-	
-	x3 = x2 - 3;
-	
-	armor_d = 7;
-
 	height = segment_height + 2.6;
-	
-	// module armor_blank() {
-	// 	minkowski() {
-	// 		translate([0, 0]) {
-	// 			hull() {
-	// 				aaa = 2;
-	// 				xy_cut(edge_d/2 - segment_height/2, size = 15) {
-	// 					translate([0, edge_d/2 - aaa]) armor_section(socket_d + 2.4 - edge_d, socket_d/2 - edge_d + aaa, height - edge_d);
-	// 				}
-	// 				translate([0, 0, -segment_height/2]) 
-	// 				rotate([90, 0, 0]) translate([0, edge_d/2]) armor_section(socket_d + 2.4 - edge_d, 4.8 - edge_d, height - edge_d);
 
-	// 				translate([0, -1.8]) 
-	// 				xy_cut(segment_height/2 - 1, size = 15, from_top = true) {
-	// 					// xy_cut(edge_d/2 - segment_height/2, size = 15) {
-	// 					// 	armor_section(socket_d - 1.5, y - edge_d, height - edge_d);
-	// 					// }
-	// 				}
-	// 				//translate([0, height/2 - 1.5, -2.5]) rotate([90, 0, 0]) armor_section(socket_d + 2.4 - edge_d, 0.01, height - edge_d);
-	// 			}
-	// 		}
-	// 		sphere(d = 1);
-	// 	}
-	// }
-
-	module armor_blank() {
+	difference() {
 		minkowski() {
-			translate([0, 0]) {
-				hull() {
-					xy_cut(edge_d/2 - segment_height/2, size = 15) {
-						difference() {
-							foob(socket_d - edge_d + 2.4, segment_height - edge_d + 2.4, socket_d/2, 1.2, 1.9);
-							translate([0, 10 + socket_d/2 - edge_d/2]) cube([20, 20, 20], center = true);
-							translate([0, -9.8 - ball_d/2 + edge_d/2]) cube([20, 20, 20], center = true);
-						}
-					}
-
-					// translate([0, -1.8]) 
-					// xy_cut(segment_height/2 - 1, size = 15, from_top = true) {
-					// 	// xy_cut(edge_d/2 - segment_height/2, size = 15) {
-					// 	// 	armor_section(socket_d - 1.5, y - edge_d, height - edge_d);
-					// 	// }
-					// }
-					//translate([0, height/2 - 1.5, -2.5]) rotate([90, 0, 0]) armor_section(socket_d + 2.4 - edge_d, 0.01, height - edge_d);
+			xy_cut(-segment_height/2 + edge_d/2, size = 15) {
+				difference() {
+					armor_blank(socket_d - edge_d + 2.4, segment_height - edge_d + 2.4);
+					translate([0, -9.8 - ball_d/2 + edge_d/2]) cube([20, 20, 20], center = true);
 				}
 			}
 			sphere(d = 1);
 		}
+		rotate([0, 180, 0]) shoulder(true);
 	}
 
-	
-	//armor_blank()
-	
-	difference() {
-		translate([0, 0]) armor_blank();
-		//translate([0, -4.5]) rounded_cube([6, 4, 20], center = true, top_d = 0, bottom_d = 0, d = 1);
-		//translate([0, 0, -0.5]) rotate([90, 0, 0]) rounded_cube([6, 6, 20], center = true, top_d = 0, bottom_d = 0, d = 1);
-		difference() {
-			rotate([0, 180, 0]) shoulder(true);
-			//translate([-10, -22, -10]) cube([20, 20, 20]);
+	module armor_blank(x, z) {
+		cylinder_length = socket_d/2 - edge_d/2;
+
+		hull() {
+			rotate(180) {
+				rotate_extrude(angle = 180) {
+					intersection() {
+						armor_2d(x, z);
+						translate([0, -z/2]) square([x/2, z]);
+					}
+				}
+			}
+			rotate([270, 0, 0]) linear_extrude(cylinder_length) armor_2d(x, z);
+
+			h_ext = 1.1;
+			translate([0, cylinder_length, h_ext/2]) {
+				rotate([270, 0, 0]) linear_extrude(0.001) armor_2d(x, z + h_ext, d = 6);
+			}
 		}
 	}
-
-	
 }
-
-// module shoulder_armor() {
-// 	shell_width = 1.4;
-	
-// 	x = socket_d + 2 * shell_width;
-// 	y = segment_height + shell_width;
-// 	z = 0.75 * armor_height;
-	
-// 	x2 = x - 3;
-// 	z2 = socket_d/2 + armor_height/2;
-	
-// 	x3 = x2 - 3;
-	
-// 	armor_d = 7;
-
-// 	height = segment_height + 2.6;
-	
-// 	module armor_blank() {
-// 		minkowski() {
-// 			translate([0, edge_d/2]) {
-// 				hull() {
-// 					xy_cut(edge_d/2 - segment_height/2, size = 15) {
-// 						armor_section(socket_d + 2.4 - edge_d, y - edge_d, height - edge_d);
-// 					}
-// 					translate([0, -1.8]) 
-// 					xy_cut(segment_height/2 - 1, size = 15, from_top = true) {
-// 						xy_cut(edge_d/2 - segment_height/2, size = 15) {
-// 							armor_section(socket_d - 1.5, y - edge_d, height - edge_d);
-// 						}
-// 					}
-// 					//translate([0, height/2 - 1.5, -2.5]) rotate([90, 0, 0]) armor_section(socket_d + 2.4 - edge_d, 0.01, height - edge_d);
-// 				}
-// 			}
-// 			sphere(d = 1);
-// 		}
-// 	}
-
-	
-// 	//armor_blank()
-	
-// 	difference() {
-// 		translate([0, -y + socket_d/2]) armor_blank();
-// 		translate([0, -4.6]) rounded_cube([6.7, 4, 20], center = true, top_d = 0, bottom_d = 0, d = 1);
-// 		rotate([0, 180, 0]) shoulder(true);
-// 	}
-// }
 
 module arm_upper(is_cut = false) {
 	limb_segment(
@@ -210,32 +139,6 @@ module arm_upper(is_cut = false) {
 		ball(is_cut);
 		hinge_socket(elbow_joint_offset, is_cut);
 	};
-}
-
-// translate([15, 0]) arm_upper();
-// translate([15, 22]) arm_upper_armor();
-// arm_upper_alt();
-// translate([0, 22]) arm_upper_armor_alt();
-
-module arm_upper_alt(is_cut = false) {
-	limb_segment(
-		length = arm_upper_len - socket_d/2, 
-		end1_len = rotator_socket_l - 1, 
-		end2_len = hinge_socket_d/2, 
-		is_cut = is_cut, 
-		snaps = true, 
-		cross_brace = false
-	) {
-		rotator_socket(rotator_peg_l, is_cut);
-		hinge_socket(elbow_joint_offset, is_cut);
-	};
-}
-
-module arm_upper_armor_alt(is_top = false) {
-	apply_armor_cut(is_top) {
-		mirror([1, 0, 0]) translate([0, 0]) arm_upper_armor_blank();
-		arm_upper_alt(true);
-	}
 }
 
 module arm_upper_armor(is_top = false) {

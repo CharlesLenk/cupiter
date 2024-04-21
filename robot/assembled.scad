@@ -6,8 +6,8 @@ use <arms.scad>
 use <legs.scad>
 
 assembled(
-	with_armor = true, 
-	neck_angle_test = false,
+	with_armor = false, 
+	neck_angle_test = false, // neck max angle
 	simple_hands = false,
 	elbow_angle = 0,//elbow_max_angle(),
 	knee_angle = 0,//knee_max_angle(),
@@ -19,11 +19,9 @@ module assembled(
 	elbow_angle = 0,
 	hip_angle = 0,
 	knee_angle = 0,
-	shoulder_angle = 0,
+	shoulder_angle = 0, //broken
 	neck_angle_test = false,
-	simple_hands = false,
-	armature_color = "#464646", 
-	armor_color = "#DDDDDD"
+	simple_hands = false
 ) {
 	head_assembled(neck_angle_test ? 16 : 0);
 	translate([0, 0]) {

@@ -5,6 +5,8 @@ printf 'Output directory: %s\n' "$win_out_dir"
 
 declare -A armature=(
     ["lens"]=1
+    ["antenna_left"]=1
+    ["antenna_right"]=1
     ["neck"]=1
     ["chest"]=1
     ["waist"]=1

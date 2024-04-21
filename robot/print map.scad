@@ -14,6 +14,8 @@ part_for_print(part);
 module part_for_print(part) { 
 	if (part == "head") head();
 	else if (part == "lens") lens();
+	else if (part == "antenna_left") antenna_left();
+	else if (part == "antenna_right") mirror([1, 0, 0]) antenna_left();
 	else if (part == "neck") neck();
 	else if (part == "chest") rotate(180) chest();
 	else if (part == "chest_armor") chest_armor();

@@ -486,7 +486,7 @@ module hand_simple_left() {
 					}
 				}
 			}
-			make_socket(ball_offset = wrist_socket_gap) {
+			apply_socket_cut(ball_offset = wrist_socket_gap) {
 				sphere(d = socket_d);
 			}
 		}
@@ -504,7 +504,7 @@ module hand_simple_left() {
 					hand_y - finger_z_from_hand, 
 					hand_z
 				], edge_d);
-				rounded_cube([hand_x, hand_y, knuckle_z], edge_d, bottom_d = segment_d);
+				rounded_cube([hand_x, hand_y, knuckle_z], edge_d, bottom_d = edge_d);
 				for(i = [0 : 3]) {
 					translate([i * finger_x, hand_y - finger_y, 0]) {
 						rounded_cube([finger_x, finger_y, finger_z], edge_d);
