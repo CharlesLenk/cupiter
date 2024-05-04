@@ -10,9 +10,8 @@ finger_width = 2.3;
 palm_z = 7;
 palm_chamfer = 1;
 wrist_len = 2.5;
-wrist_socket_gap = -0.10;
-hand_z_from_socket = socket_d/2 - 2.5;
-hand_armor_height = 1.3;
+hand_z_from_socket = socket_d/2 - 3;
+hand_armor_height = 1.35;
 
 hand_hole_size = 4;
 hand_hole_angle = 10;
@@ -28,18 +27,38 @@ digit_lens = [
 ];
 digit_start_heights = [0, 0.9, 1.2, 0.9, -4];
 
-translate([0, -20]) {
-    hand_assembled();
-    translate([15, 0]) hand_simple_assembled();
-}
+module hand_assembly(
+    frame_color = frame_color,
+    armor_color = armor_color,
+    armor = false,
+    explode = false
+) {
+    explode_y = explode ? 20 : 0;
 
-posed_hands(reflect = true);
+    rotate([0, 0, 0]) {
+        color(frame_color) grip();
+        if (armor) {
+            translate([0, segment_height/2 + explode_y]) {
+                rotate([90, 0, 0]) {
+                    color(armor_color) hand_armor();
+                }
+            }
+            if (explode) {
+                translate([0, explode_y/2 + 1, hand_z_from_socket + palm_z/2]) {
+                    rotate([0, 90, 0]) assembly_arrow();
+                }
+            }
+        }
+    }
+}
 
 module modify_hand_for_print() {
     xy_cut(height = -2.75, size = socket_d) {
         rotate([-30, 0, 0]) children();
     }
 }
+
+posed_hands();
 
 module posed_hands(reflect = false) {
     count_per_row = 4;
@@ -210,7 +229,7 @@ module prosper() {
     ];
     hand(
         gesture,
-        finger_splay_angles = [-18, -20, 18, 18]
+        finger_splay_angles = [-14, -15, 15, 15]
     );
 }
 
@@ -242,7 +261,7 @@ module five() {
     ];
     hand(
         gesture,
-        finger_splay_angles = [-30, -15, 0, 22]
+        finger_splay_angles = [-20, -10, 0, 10]
     );
 }
 
@@ -314,7 +333,7 @@ module hand(
                 cube([socket_d, segment_height, socket_d], center = true);
             }
         }
-        sphere(d = ball_d - 0.3);
+        sphere(d = ball_d + hand_advanced_tolerance);
         translate([0, 0, -socket_d + 2.75]) {
             cube([socket_d, socket_d, socket_d], center = true);
         }
@@ -382,10 +401,12 @@ module finger(joint_angles, segment_heights, index = 0, splay_angle = 0) {
     }
 
     module finger_segment(segment_heights, angle, index, splay_angle = 0) {
-        translate([0, 0, index > 0 ? segment_heights[index - 1] : 0]) {
-            if (index == 0) rotate(90) joint(splay_angle);
-            joint(angle);
-            rotate([angle, index > 0 ? 0 : splay_angle, 0]) {
+        splay_angle = index == 0 ? splay_angle : 0;
+
+        translate([0, 0, (index > 0 ? segment_heights[index - 1] : 0) - 0.01]) {
+            rotate(90) joint(splay_angle);
+            rotate([0, splay_angle, 0]) joint(angle);
+            rotate([angle, splay_angle, 0]) {
                 translate([-finger_width/2, -finger_width/2]) {
                     rounded_cube(
                         [finger_width, finger_width, segment_heights[index]],
@@ -470,11 +491,11 @@ module hand_simple_left() {
                     }
                 }
             }
-            apply_socket_cut(ball_offset = wrist_socket_gap) {
-                sphere(d = socket_d);
+            apply_socket_cut(ball_offset = hand_simple_tolerance) {
+                rounded_socket_blank(has_cylinder = false);
             }
         }
-        sphere(d = ball_d + wrist_socket_gap);
+        sphere(d = ball_d + hand_simple_tolerance);
         translate([-hand_x/2, hand_y_adjust, -segment_height/2]) {
             hand_hole();
         }
@@ -550,26 +571,9 @@ module hand_armor_tabs(is_cut = false) {
     }
 }
 
-module hand_assembled(with_armor = true) {
-    rotate([0, 180, 0]) {
-        mirror([1, 0, 0]) {
-            rotate([0, 90, 90]) {
-                c1() grip();
-                if (with_armor) {
-                    translate([0, segment_height/2]) {
-                        rotate([90, 0, 0]) {
-                            c2() hand_armor();
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 module hand_simple_assembled(with_armor = true) {
     rotate([0, 90, 0]) {
-        c1() hand_simple_left();
-        if (with_armor) c2() hand_simple_armor();
+        color(frame_color) hand_simple_left();
+        if (with_armor) color(armor_color) hand_simple_armor();
     }
 }

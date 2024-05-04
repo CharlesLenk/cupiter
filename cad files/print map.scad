@@ -22,7 +22,7 @@ module part_for_print(part) {
     else if (part == "waist") rotate(180) waist();
     else if (part == "waist_armor") waist_armor();
     else if (part == "pelvis") pelvis();
-    else if (part == "pelvis_armor") pelvis_armor();
+    else if (part == "pelvis_armor") rotate(180) pelvis_armor();
     else if (part == "hip") hip();
     else if (part == "hip_armor") rotate([270, 0, 0]) hip_armor();
     else if (part == "arm_upper") rotate(180) arm_upper();
@@ -40,7 +40,7 @@ module part_for_print(part) {
     else if (part == "foot") foot();
     else if (part == "shoulder") shoulder();
     else if (part == "shoulder_armor") rotate([270, 0, 0]) shoulder_armor();
-    else if (part == "head_and_foot_socket") socket_with_snaps();
+    else if (part == "socket_with_snap_tabs") socket_with_snaps();
     else if (part == "hand_simple_right") mirror([1, 0, 0]) hand_simple_left();
     else if (part == "hand_simple_left") hand_simple_left();
     else if (part == "hand_simple_armor") hand_simple_armor();

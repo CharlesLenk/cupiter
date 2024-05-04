@@ -12,7 +12,6 @@ module snap_bump(
     width_cut_adjust = 0
 ) {
     depth_cut_adjust = is_cut ? 0.15 : 0;
-    width_cut_adjust = is_cut ? width_cut_adjust : 0;
 
     translate([depth - target_width/2 + depth_cut_adjust, -width_cut_adjust/2]) {
         rotate([0, 90, 90]) {

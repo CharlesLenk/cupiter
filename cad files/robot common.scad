@@ -1,8 +1,9 @@
 include <../OpenSCAD-Utilities/common.scad>
 include <globals.scad>
+use <../OpenSCAD-Utilities/arrow.scad>
 use <snaps.scad>
 
-socket_opening_angle = 120;
+socket_opening_angle = 115;
 
 module apply_socket_cut(ball_offset = 0, socket_angle = 0, cut_angle = socket_opening_angle, is_cut = false) {
     height = segment_height + (is_cut ? segment_cut_height_offset : 0);
@@ -28,9 +29,9 @@ module socket_cut(cut_angle = socket_opening_angle, ball_offset) {
     }
 }
 
-module rounded_socket_blank(is_cut = false, cylinder_length) {
+module rounded_socket_blank(is_cut = false, cylinder_length, has_cylinder = true) {
     height = is_cut ? segment_cut_height : segment_height;
-    socket_width = is_cut ? socket_d + 0.2 : socket_d;
+    socket_width = is_cut ? socket_d + 0.25 : socket_d;
     cylinder_length = is_undef(cylinder_length) ? socket_width/2 : cylinder_length;
     round_from_edge = 2;
     d = 7;
@@ -41,8 +42,10 @@ module rounded_socket_blank(is_cut = false, cylinder_length) {
             translate([0, -height/2]) square([socket_width/2, height]);
         }
     }
-    rotate([270, 0, 0]) linear_extrude(cylinder_length) {
-        armor_2d(socket_width, height, round_from_edge, d);
+    if (has_cylinder) {
+        rotate([270, 0, 0]) linear_extrude(cylinder_length) {
+            armor_2d(socket_width, height, round_from_edge, d);
+        }
     }
 }
 
@@ -79,9 +82,9 @@ module ball(is_cut = false, tab_extension = 0) {
 }
 
 module apply_armor_cut(is_top = false) {
-    armor_tightness_adjust = 0.1;
+    armor_tightness_adjust = 0.05;
 
-    xy_cut((is_top ? -1 : 1) * armor_tightness_adjust, from_top = true, size = 100) {
+    xy_cut(armor_tightness_adjust, from_top = true, size = 100) {
         rotate([0, is_top ? 180 : 0, 0]) {
             difference() {
                 children(0);
@@ -130,14 +133,13 @@ module snaps_tabs(x, y, z, is_cut = false) {
 }
 
 module socket_with_snaps(is_cut = false) {
-    head_and_foot_socket_gap = -0.2;
     cut_adjust = is_cut ? 0.15 : 0;
     height = is_cut ? segment_cut_height : segment_height;
 
     tab_len = 3.5;
     tab_width = 4;
 
-    apply_socket_cut(head_and_foot_socket_gap, is_cut = is_cut) {
+    apply_socket_cut(head_and_foot_tolerance, is_cut = is_cut) {
         rounded_socket_blank(is_cut);
     }
 
@@ -161,10 +163,27 @@ module cross_brace(depth, target_width, is_cut) {
     }
 }
 
-module armor_section(x, y, z, left_d = 0, right_d = 0) {
-    rotate([270, 0, 0]) {
-        linear_extrude(y) {
-            armor_2d(x, z, 3, 8, left_d, right_d);
+module shoulder_cut(x, pos_y, neg_y, pos_z, neg_z, ext, d) {
+    rotate([0, 270, 0])
+    translate([-neg_z, -pos_y, -x/2]) {
+        linear_extrude(x) {
+            hull() {
+                difference() {
+                    square([pos_z + neg_z, pos_y + neg_y]);
+                    square([d/2, d/2]);
+                }
+                translate([d/2, d/2 - ext]) circle(d = d);
+            }
+        }
+    }
+}
+
+module armor_section(x, y, z, left_d = 0, right_d = 0, center = false, round_len = 3) {
+    translate([0, center ? -y/2 : 0]) {
+        rotate([270, 0, 0]) {
+            linear_extrude(y) {
+                armor_2d(x, z, round_len, 8, left_d, right_d);
+            }
         }
     }
 }
@@ -208,5 +227,15 @@ module square_with_chamfers(x, y, chamfer_x, chamfer_y) {
     );
 }
 
-module c1(armature_color = "#464646") color(armature_color) children();
-module c2(armor_color = "#DDDDDD") color(armor_color) children();
+module frame_color(frame_color = "#464646") color(frame_color) children();
+module armor_color(armor_color = "#DDDDDD") color(armor_color) children();
+module frame_color_guide(frame_color = "#A0CFEC") color(frame_color) children();
+module armor_color_guide(armor_color = "#E0E5E5") color(armor_color) children();
+
+module echo_cam() {
+    echo(str("\n",round($vpt[0]),",",round($vpt[1]),",",round($vpt[2]),",",round($vpr[0]),",",round($vpr[1]),",",round($vpr[2]),",",round($vpd),"\n"));
+}
+
+module assembly_arrow() {
+    arrow(head_width = 4, length = 7, center = true);
+}

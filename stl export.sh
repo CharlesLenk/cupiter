@@ -3,7 +3,7 @@ out_dir=/mnt/c/Users/$username/Desktop/robot_export
 win_out_dir=$(wslpath -w $out_dir)
 printf 'Output directory: %s\n' "$win_out_dir"
 
-declare -A armature=(
+declare -A frame=(
     ["lens"]=1
     ["antenna_left"]=1
     ["antenna_right"]=1
@@ -17,7 +17,7 @@ declare -A armature=(
     ["leg_upper"]=2
     ["leg_lower"]=2
     ["shoulder"]=2
-    ["head_and_foot_socket"]=3
+    ["socket_with_snap_tabs"]=3
 )
 
 declare -A armor=(
@@ -38,11 +38,7 @@ declare -A armor=(
     ["foot"]=2
 )
 
-declare -A hands=(
-    ["hand_simple_right"]=1
-    ["hand_simple_left"]=1
-    ["hand_grip_right"]=1
-    ["hand_grip_left"]=1
+declare -A hand_complex_posed=(
     ["hand_flat_right"]=1
     ["hand_flat_left"]=1
     ["hand_relaxed_right"]=1
@@ -61,10 +57,23 @@ declare -A hands=(
     ["hand_open_grip_left"]=1
 )
 
-declare -A hand_armor=(
-    ["hand_simple_armor"]=2
+declare -A hand_complex_grip=(
+    ["hand_grip_right"]=1
+    ["hand_grip_left"]=1
+)
+
+declare -A hand_complex_armor=(
     ["hand_armor_right"]=1
     ["hand_armor_left"]=1
+)
+
+declare -A hand_simple_grip=(
+    ["hand_simple_right"]=1
+    ["hand_simple_left"]=1
+)
+
+declare -A hand_simple_armor=(
+    ["hand_simple_armor"]=2
 )
 
 function generate_parts {
@@ -74,16 +83,17 @@ function generate_parts {
         declare -n parts=$name
         for part in "${!parts[@]}"
         do
-            ("/mnt/c/Program Files/OpenSCAD/openscad.exe" -Dpart="\"$part\"" -q -o $win_out_dir/$name/$part.stl print\ map.scad;
+            ("/mnt/c/Program Files/OpenSCAD/openscad.exe" -Dpart="\"$part\"" -q -o $win_out_dir/$name/$part.stl "cad files"/print\ map.scad;
                 printf 'Finished generating: %s/%s.stl\n' "$name" "$part";
                 for ((i=2;i<=${parts[$part]};i++)) do
-                    cp $out_dir/$name/$part.stl $out_dir/$name/$part\_$i.stl; printf 'Finished generating: %s/%s_%s.stl\n' "$name" "$part" "$i"
+                    cp $out_dir/$name/$part.stl $out_dir/$name/$part\_$i.stl;
+                    printf 'Finished generating: %s/%s_%s.stl\n' "$name" "$part" "$i"
                 done
             ) &
         done
     done
 }
 
-generate_parts armature armor hands hand_armor
+generate_parts frame armor hand_complex_posed hand_complex_grip hand_complex_armor hand_simple_grip hand_simple_armor
 wait
-echo "Done!"
+printf "Done!"
