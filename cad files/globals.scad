@@ -46,5 +46,7 @@ waist_tolerance = -0.2;
 
 hip_shoulder_tolerance = -0.15;
 elbow_knee_tolerance = -0.05;
+leg_rotator_tolerance = 0.15;
+
 hand_advanced_tolerance = -0.2;
 hand_simple_tolerance = -0.1;

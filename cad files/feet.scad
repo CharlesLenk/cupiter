@@ -35,10 +35,10 @@ module foot_assembly(
 
 module foot() {
     foot_width = 12;
-    heal_len = 3;
+    heal_len = 3.5;
     foot_mid_len = 8;
     toe_width = 6;
-    toe_lenth = 21;
+    toe_lenth = 18 + heal_len;
     arbitrary_block_height = 10;
     foot_pad_height = 1.7;
 

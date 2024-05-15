@@ -20,7 +20,7 @@ module part_for_print(part) {
     else if (part == "chest") rotate(180) chest();
     else if (part == "chest_armor") chest_armor();
     else if (part == "waist") rotate(180) waist();
-    else if (part == "waist_armor") waist_armor();
+    else if (part == "waist_armor") rotate(180) waist_armor();
     else if (part == "pelvis") pelvis();
     else if (part == "pelvis_armor") rotate(180) pelvis_armor();
     else if (part == "hip") hip();

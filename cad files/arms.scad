@@ -11,9 +11,10 @@ arm_armor_lower_len = arm_lower_len - ball_dist;
 
 arm_width = 10;
 arm_upper_top_len = 3.2;
+arm_upper_bot_width_back = 1.1;
 arm_lower_bot_width_front = 3.5;
 arm_lower_bot_width_back = 3.4;
-arm_upper_bot_width_back = 1.1;
+
 
 arm_assembly(
     explode_frame = true,
@@ -225,6 +226,13 @@ module shoulder_armor() {
             sphere(d = 1);
         }
         rotate([0, 180, 0]) shoulder(true);
+        translate([0, 0, -1.5 * segment_height]) {
+            linear_extrude(segment_height) {
+                projection(cut = true) {
+                    translate([0, 0, segment_height/2]) shoulder(true);
+                }
+            }
+        }
     }
 
     module armor_blank(x, z) {
@@ -250,12 +258,12 @@ module shoulder_armor() {
             }
             shoulder_cut(
                 x,
-                pos_y = 2.1,
+                pos_y = 2.9,
                 neg_y = cylinder_length,
                 pos_z = segment_height/2 + h_ext + 1.2 - edge_d/2,
-                neg_z = segment_height/2 - edge_d/2 + 0.15,
-                1.2,
-                2
+                neg_z = segment_height/2 - edge_d/2 + 0.3,
+                0,
+                3
             );
         }
     }

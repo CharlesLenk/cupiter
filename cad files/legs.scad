@@ -14,19 +14,19 @@ lower_leg_back_width = 3.7;
 lower_leg_lower_width_front = 4;
 armor_z = segment_height + 3;
 
-leg_assembly(
-    explode_frame = true,
-    hip_armor = true,
-    leg_upper_armor = true,
-    leg_lower_armor = true,
-    foot_socket = true,
-    foot = true,
-    explode_hip_armor = true,
-    explode_leg_upper_armor = true,
-    explode_leg_lower_armor = true,
-    explode_foot_socket = true,
-    explode_foot = true
-);
+// leg_assembly(
+//     explode_frame = true,
+//     hip_armor = true,
+//     leg_upper_armor = true,
+//     leg_lower_armor = true,
+//     foot_socket = true,
+//     foot = true,
+//     explode_hip_armor = true,
+//     explode_leg_upper_armor = true,
+//     explode_leg_lower_armor = true,
+//     explode_foot_socket = true,
+//     explode_foot = true
+// );
 
 module leg_assembly(
     frame_color = frame_color,
@@ -207,6 +207,8 @@ module hip(is_cut = false) {
     }
 }
 
+hip_armor();
+
 module hip_armor() {
     difference() {
         minkowski() {
@@ -218,10 +220,16 @@ module hip_armor() {
             tab_cut_x = rotator_peg_d - 1.5;
             peg_cut_len = socket_d;
             cylinder(d = peg_cut_d, h = peg_cut_len);
-
-            translate([-tab_cut_x/2, 0]) cube([tab_cut_x, peg_cut_d/2, peg_cut_len]);
+            translate([-tab_cut_x/2, 0]) cube([tab_cut_x, peg_cut_d + 10, peg_cut_len]);
         }
         hip(true);
+        translate([0, 0, -1.5 * segment_height]) {
+            linear_extrude(segment_height) {
+                projection(cut = true) {
+                    translate([0, 0, segment_height/2]) hip(true);
+                }
+            }
+        }
     }
 
     module armor_blank(x, z) {
@@ -235,17 +243,15 @@ module hip_armor() {
                 }
                 rotate([270, 0, 0]) linear_extrude(socket_d/2 + hip_armor_tab_width - edge_d/2) armor_2d(x, z);
             }
-            translate([0, 0, 0]) {
-                shoulder_cut(
-                    x,
-                    pos_y = 2.7,
-                    neg_y = socket_d/2 + hip_armor_tab_width - edge_d/2,
-                    pos_z = armor_z/2 - edge_d/2,
-                    neg_z = segment_height/2 - edge_d/2 + 0.15,
-                    0,
-                    3
-                );
-            }
+            shoulder_cut(
+                x,
+                pos_y = 2.7,
+                neg_y = socket_d/2 + hip_armor_tab_width - edge_d/2,
+                pos_z = armor_z/2 - edge_d/2,
+                neg_z = segment_height/2 - edge_d/2 + 0.3,
+                0,
+                3
+            );
         }
     }
 }
@@ -274,8 +280,8 @@ module leg_upper_armor(is_top = false) {
 module leg_lower(is_cut = false) {
     limb_segment(
         length = leg_lower_len,
-        end1_len = ball_dist,
-        end2_len = hinge_peg_size/2,
+        end1_len = hinge_peg_size/2,
+        end2_len = ball_dist,
         is_cut = is_cut,
         snaps = true,
         cross_brace = true

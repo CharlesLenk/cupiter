@@ -6,7 +6,7 @@ use <snaps.scad>
 rotator_peg_l = 8;
 rotator_peg_d = segment_height + 0.4;
 rotator_socket_l = rotator_peg_l + socket_shell_width;
-rotator_socket_d = rotator_peg_d + 2 * socket_shell_width;
+rotator_socket_d = rotator_peg_d + 2 * socket_shell_width + leg_rotator_tolerance;
 
 elbow_wall_width = 1.5;
 
@@ -90,8 +90,8 @@ module limb_lower_armor_blank(
 }
 
 module rotator_peg(peg_len, peg_ext_past_socket = 0, is_cut = false) {
-    cut_offset = 0.15;
     cylinder_l = peg_len + peg_ext_past_socket;
+    tolerance = is_cut ? leg_rotator_tolerance : 0;
 
     if (is_cut) {
         rotate([90, 0, 0]) peg();
@@ -104,10 +104,10 @@ module rotator_peg(peg_len, peg_ext_past_socket = 0, is_cut = false) {
     module peg() {
         translate([0, 0, -peg_ext_past_socket]) {
             difference() {
-                capped_cylinder(rotator_peg_d + 2 * cut_offset, cylinder_l + cut_offset);
+                capped_cylinder(rotator_peg_d + tolerance, cylinder_l + tolerance/2);
                 snap_d2 = 2.5;
                 translate([0, 0, snap_d2/2 + peg_ext_past_socket + 1]) {
-                    torus(rotator_peg_d - 0.5, snap_d2);
+                    torus(rotator_peg_d - 0.7, snap_d2);
                 }
             }
         }
@@ -152,6 +152,7 @@ module rotator_socket(peg_len, is_cut = false) {
             rotate([0, angle, 0]) {
                 armor_snap_inner(
                     length = 3.7,
+                    depth = 0.4,
                     target_width = rotator_socket_d,
                     is_cut = !is_cut
                 );
@@ -159,6 +160,7 @@ module rotator_socket(peg_len, is_cut = false) {
             rotate([0, -angle, 0]) {
                 armor_snap_inner(
                     length = 3.7,
+                    depth = 0.4,
                     target_width = rotator_socket_d,
                     is_cut = !is_cut
                 );
@@ -167,7 +169,7 @@ module rotator_socket(peg_len, is_cut = false) {
     }
     if (is_cut) {
         rotate([-90, 0, 0]) {
-            capped_cylinder(d = rotator_peg_d + 0.3, h = peg_len + 0.1);
+            capped_cylinder(d = rotator_peg_d + 0.2, h = peg_len + 0.1);
         }
     }
 }
@@ -203,7 +205,7 @@ module hinge_peg_holder(joint_offset = 0, is_cut = false) {
     }
 
     module elbow_cube(is_cut = false) {
-        corner_d = 3;
+        corner_d = 2.6;
         x_add = 1.4;
         y_add = 1;
         base_xy = hinge_peg_size/2;
