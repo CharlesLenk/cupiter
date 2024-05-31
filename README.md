@@ -11,8 +11,8 @@ As of 2024, the OpenSCAD development preview has a new rendering engine called M
 ## Option One - Export Script
 
 In order to generate the parts, a Python export script is provided. This script currently works on Windows only, but should be easy to modify to run on other platforms. The script assumes that you:
-* have the OpenSCAD preview version installed in your windows Program Files directory.
-* have a `Desktop` folder.
+* have OpenSCAD or OpenSCAD preview version installed in the default folder.
+* have a `Desktop` folder that can be written to.
 
 When exporting the project, the following folders will be generated:
 * `frame`

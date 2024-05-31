@@ -27,8 +27,6 @@ function hip_width() = hip_width;
 function shoulder_width() = shoulder_width;
 function shoulder_height() = shoulder_height;
 
-pelvis_armor();
-
 module torso_assembly(
     frame_color = frame_color,
     armor_color = armor_color,

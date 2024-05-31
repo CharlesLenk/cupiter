@@ -2,8 +2,6 @@ include <../OpenSCAD-Utilities/common.scad>
 include <globals.scad>
 use <robot common.scad>
 
-foot_assembly(explode_foot = false);
-
 module foot_assembly(
     frame_color = frame_color,
     armor_color = armor_color,

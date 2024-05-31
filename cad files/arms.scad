@@ -15,25 +15,6 @@ arm_upper_bot_width_back = 1.1;
 arm_lower_bot_width_front = 3.5;
 arm_lower_bot_width_back = 3.4;
 
-
-arm_assembly(
-    explode_frame = true,
-    shoulder_armor = true,
-    explode_shoulder_armor = true,
-    arm_upper_armor = true,
-    explode_arm_upper_armor = true,
-    arm_lower_armor = true,
-    explode_arm_lower_armor = true,
-    hand = true,
-    explode_hand = true,
-    hand_armor = true,
-    explode_hand_armor = true
-);
-
-// arm_upper();
-// arm_upper_armor();
-// rotate([0, 180, 0]) arm_upper_armor(true);
-
 function elbow_max_angle() = elbow_max_angle;
 
 module arm_assembly(

@@ -14,20 +14,6 @@ lower_leg_back_width = 3.7;
 lower_leg_lower_width_front = 4;
 armor_z = segment_height + 3;
 
-// leg_assembly(
-//     explode_frame = true,
-//     hip_armor = true,
-//     leg_upper_armor = true,
-//     leg_lower_armor = true,
-//     foot_socket = true,
-//     foot = true,
-//     explode_hip_armor = true,
-//     explode_leg_upper_armor = true,
-//     explode_leg_lower_armor = true,
-//     explode_foot_socket = true,
-//     explode_foot = true
-// );
-
 module leg_assembly(
     frame_color = frame_color,
     armor_color = armor_color,
