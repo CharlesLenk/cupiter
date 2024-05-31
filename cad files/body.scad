@@ -27,6 +27,8 @@ function hip_width() = hip_width;
 function shoulder_width() = shoulder_width;
 function shoulder_height() = shoulder_height;
 
+pelvis_armor();
+
 module torso_assembly(
     frame_color = frame_color,
     armor_color = armor_color,
@@ -324,14 +326,14 @@ module pelvis(is_cut = false) {
     w = is_cut ? segment_cut_width : segment_width;
     h = is_cut ? segment_cut_height : segment_height;
 
-    hip_ball_angle = 15;
+    hip_ball_angle = 10;
 
     opposite = (ball_dist + segment_width/2) * sin(hip_ball_angle);
-    mid_len = hip_len - segment_width/2 - socket_d/2 - opposite;
+    mid_len = hip_len - ball_dist - segment_width/2 - opposite;
 
     difference() {
         ball(is_cut, mid_len);
-        translate([0, ball_dist, 0]) {
+        translate([0, ball_dist]) {
             armor_snap_inner_double(mid_len - 0.2, segment_width, is_cut = !is_cut);
         }
     }
@@ -346,7 +348,7 @@ module pelvis(is_cut = false) {
         }
     }
 
-    translate([0, mid_len + ball_dist + segment_width/2]) {
+    translate([0, hip_len - opposite]) {
         difference() {
             adjacent = (ball_dist + segment_width/2) * cos(hip_ball_angle);
             rounded_cube(
@@ -367,7 +369,7 @@ module pelvis_armor_blank() {
     waist_width = torso_width_start + 3.5;
     waist_length = 6.5;
 
-    length = 0.5 + segment_width/2 + hip_len - 1;
+    length = segment_width/2 + hip_len - 0.2;
 
     lower_width = hip_width - 2 * ball_dist;
     mid_width = lower_width * 1.5;
@@ -408,7 +410,7 @@ module pelvis_armor_blank() {
                 hull() {
                     armor_section(
                         mid_width - edge_d,
-                        length - 4.5 - waist_ball_overlap_adjust - edge_d,
+                        length - 4 - waist_ball_overlap_adjust - edge_d,
                         torso_height_start - edge_d
                     );
                     armor_section(

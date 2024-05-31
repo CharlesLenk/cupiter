@@ -6,8 +6,7 @@ use <body.scad>
 use <arms.scad>
 use <legs.scad>
 
-assembly();
-echo_cam();
+assembly(arm_retract_angle = 80);
 
 module socket_assembly_note() {
     socket_dist = 15;
@@ -30,7 +29,7 @@ module assembly(
     frame_color = frame_color,
     armor_color = armor_color,
     with_armor = true,
-    arm_extension_angle = 80,
+    arm_retract_angle = 0,
     arm_lift_angle = 0,
     elbow_angle = 0,
     hip_angle = 0,
@@ -42,7 +41,7 @@ module assembly(
         with_armor = with_armor,
         head = true,
         hip_armor = true,
-        arm_extension_angle = arm_extension_angle,
+        arm_retract_angle = arm_retract_angle,
         arm_lift_angle = arm_lift_angle,
         elbow_angle = elbow_angle,
         hip_angle = hip_angle,
@@ -59,7 +58,7 @@ module body_assembly(
     explode_legs = false,
     hip_armor = false,
     explode_hip_armor = false,
-    arm_extension_angle = 0,
+    arm_retract_angle = 0,
     arm_lift_angle = 0,
     elbow_angle = 0,
     hip_angle = 0,
@@ -77,7 +76,7 @@ module body_assembly(
         shoulder_armor = true,
         head = head,
         explode_head = explode_head,
-        arm_extension_angle = arm_extension_angle,
+        arm_retract_angle = arm_retract_angle,
         arm_lift_angle = arm_lift_angle,
         elbow_angle = elbow_angle
     );
@@ -122,7 +121,7 @@ module upper_body_assembly(
     head = false,
     explode_head = false,
 
-    arm_extension_angle = 0,
+    arm_retract_angle = 0,
     arm_lift_angle = 0,
     elbow_angle = 0
 ) {
@@ -166,7 +165,7 @@ module upper_body_assembly(
                     arm_lower_armor = true,
                     hand = true,
                     hand_armor = true,
-                    arm_extension_angle = arm_extension_angle,
+                    arm_retract_angle = arm_retract_angle,
                     elbow_angle = elbow_angle
                 );
             }

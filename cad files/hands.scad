@@ -402,14 +402,16 @@ module finger(joint_angles, segment_heights, index = 0, splay_angle = 0) {
 
     module finger_segment(segment_heights, angle, index, splay_angle = 0) {
         splay_angle = index == 0 ? splay_angle : 0;
+        // Adjustment to avoid coplanar faces that result in STL mesh errors
+        joint_overlap = 0.01;
 
-        translate([0, 0, (index > 0 ? segment_heights[index - 1] : 0) - 0.01]) {
+        translate([0, 0, (index > 0 ? segment_heights[index - 1] : 0)]) {
             rotate(90) joint(splay_angle);
             rotate([0, splay_angle, 0]) joint(angle);
             rotate([angle, splay_angle, 0]) {
-                translate([-finger_width/2, -finger_width/2]) {
+                translate([-finger_width/2, -finger_width/2, -joint_overlap]) {
                     rounded_cube(
-                        [finger_width, finger_width, segment_heights[index]],
+                        [finger_width, finger_width, segment_heights[index] + 2 * joint_overlap],
                         1, top_d = (index == len(joint_angles) - 1) ? 1 : 0, bottom_d = 0
                     );
                 }

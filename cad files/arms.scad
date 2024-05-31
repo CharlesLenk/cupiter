@@ -54,7 +54,7 @@ module arm_assembly(
     hand_armor = false,
     explode_hand_armor = false,
 
-    arm_extension_angle = 0,
+    arm_retract_angle = 0,
     elbow_angle = 0
 ) {
     shoulder_armor = with_armor && (explode_shoulder_armor ? true : shoulder_armor);
@@ -87,7 +87,7 @@ module arm_assembly(
             }
         }
     }
-    rotate([arm_extension_angle, 0, 0]) {
+    rotate([arm_retract_angle, 0, 0]) {
         translate([0, frame_explode_y, 0]) {
             rotate([0, 180, 0]) color(frame_color) arm_upper();
             if (arm_upper_armor) {

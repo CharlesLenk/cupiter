@@ -62,7 +62,7 @@ module antenna_left(is_cut = false) {
         rotate(45 - antenna_angle) {
             translate([0, 0, antenna_depth]) {
                 linear_extrude(peg_h + 0.15) {
-                    offset(0.05) {
+                    offset(0.04) {
                         peg_polygon();
                     }
                 }

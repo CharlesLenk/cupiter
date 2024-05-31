@@ -40,13 +40,13 @@ module part_for_print(part) {
     if (part == "body_legs_assembled") body_assembly();
     if (part == "body_hip_armor") body_assembly(explode_hip_armor = true);
     if (part == "body_assembled") body_assembly(hip_armor = true);
-    if (part == "body_arms_lowered") body_assembly(hip_armor = true, arm_angle = 80);
+    if (part == "body_arms_lowered") body_assembly(hip_armor = true, arm_retract_angle = 80);
 
     if (part == "head_exploded") head_assembly(explode = true);
     if (part == "head_assembled") head_assembly();
 
-    if (part == "body_head_exploded") body_assembly(explode_head = true, hip_armor = true, arm_angle = 80);
-    if (part == "assembled") assembly();
+    if (part == "body_head_exploded") body_assembly(explode_head = true, hip_armor = true, arm_retract_angle = 80);
+    if (part == "assembled") assembly(arm_retract_angle = 80);
 
     if (part == "socket_assembly_note") socket_assembly_note();
     if (part == "shoulder_note") shoulder_note();

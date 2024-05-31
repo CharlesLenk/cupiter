@@ -52,30 +52,31 @@ module rounded_socket_blank(is_cut = false, cylinder_length, has_cylinder = true
 module ball_for_armor_subtractions() sphere(d = ball_d + 0.2);
 
 module ball(is_cut = false, tab_extension = 0) {
-    cut_amt = is_cut ? segment_cut_height_offset : 0;
-    height = is_cut ? segment_cut_height : segment_height;
-    tab_width = is_cut ? segment_cut_width : segment_width;
+    if (is_cut) {
+        translate([-segment_cut_width/2, 0, -segment_cut_height/2]) {
+            cube([segment_cut_width, ball_d/2 + ball_tab_len + tab_extension, segment_cut_height]);
+        }
+    } else {
+        xy_cut(ball_cut_height, size = ball_d) {
+            sphere(d = ball_d);
+        }
+        translate([-segment_width/2, 0]) {
+            rotate([0, 90, 0]) {
+                linear_extrude(segment_width){
+                    polygon(
+                        [
+                            [segment_height/4, 0],
+                            [segment_height/4, ball_d/2],
+                            [segment_height/2, ball_d/2 + ball_tab_len],
+                            if (tab_extension > 0) [segment_height/2, ball_d/2 + ball_tab_len + tab_extension],
 
-    xy_cut(ball_cut_height, size = ball_d) {
-        sphere(d = ball_d);
-    }
-
-    translate([-tab_width/2, 0]) {
-        rotate([0, 90, 0]) {
-            linear_extrude(tab_width){
-                polygon(
-                    [
-                        [height/4, 0],
-                        [height/4, ball_d/2],
-                        [height/2, ball_d/2 + ball_tab_len],
-                        if (tab_extension > 0) [height/2, ball_d/2 + ball_tab_len + tab_extension],
-
-                        if (tab_extension > 0) [-height/2, ball_d/2 + ball_tab_len + tab_extension],
-                        [-height/2, ball_d/2 + ball_tab_len],
-                        [-height/4, ball_d/2],
-                        [-height/4, 0],
-                    ]
-                );
+                            if (tab_extension > 0) [-segment_height/2, ball_d/2 + ball_tab_len + tab_extension],
+                            [-segment_height/2, ball_d/2 + ball_tab_len],
+                            [-segment_height/4, ball_d/2],
+                            [-segment_height/4, 0],
+                        ]
+                    );
+                }
             }
         }
     }
