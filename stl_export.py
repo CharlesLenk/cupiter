@@ -1,8 +1,8 @@
 import os
-import platform
 import shutil
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen, PIPE
+from export_util import get_openscad_location
 
 part_groups = {
     'frame': {
@@ -75,17 +75,6 @@ part_groups = {
 
 def get_base_output_directory():
     return os.path.join(os.path.expanduser('~'), 'Desktop') + '/robot_export/'
-
-def get_openscad_location():
-    system = platform.system()
-    location = ''
-    if (system == 'Windows'):
-        nightly_path = 'C:\\Program Files\\OpenSCAD (Nightly)\\openscad.exe'
-        if (shutil.which(nightly_path) is not None):
-            location = nightly_path
-        else:
-            location = 'C:\\Program Files\\OpenSCAD\\openscad.exe'
-    return location
 
 def generate_part(openscad_location, output_directory, folder, part, count):
     part_file_name = part + '.stl'
