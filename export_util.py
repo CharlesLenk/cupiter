@@ -10,4 +10,8 @@ def get_openscad_location():
             location = nightly_path
         else:
             location = 'C:\\Program Files\\OpenSCAD\\openscad.exe'
+    elif (system == 'Darwin'):
+        location = ''
+    elif (system == 'Linux'):
+        location = 'openscad'
     return location

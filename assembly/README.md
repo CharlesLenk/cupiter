@@ -1,7 +1,7 @@
 # Assembly
 All parts are designed to snap together or hold together using tension, and no tools or glue are needed for assembly.
 
-Some parts can be much harder to assemble based on the order. Following the steps below is recommended, or at least assembling the frame before attaching the armor.
+Some parts can be much harder to assemble based on the order in which they are assembled. Following the steps below is recommended, or at least assembling the frame before attaching the armor.
 
 ## Assembly Tips
 Snaping together the ball and socked joints is easier if you angle the flat side of the ball toward the edge of the socket.

@@ -71,7 +71,7 @@ def generate_image(openscad_location, image_name, camera_pos):
         output += 'Failed to generate: ' + image_file_name + ', Error: ' + str(err)
     return output
 
-def print_parts():
+def generate_images():
     with ThreadPoolExecutor(max_workers = os.cpu_count()) as executor:
         futures = []
         openscad_location = get_openscad_location()
@@ -81,4 +81,4 @@ def print_parts():
         for future in futures:
             print(future.result())
 
-print_parts()
+generate_images()
