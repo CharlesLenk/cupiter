@@ -1,4 +1,4 @@
-include <OpenSCAD-Utilities/common.scad>
+include <openscad-utilities/common.scad>
 include <globals.scad>
 
 snap_angle = 100;

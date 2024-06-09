@@ -1,4 +1,4 @@
-include <OpenSCAD-Utilities/common.scad>
+include <openscad-utilities/common.scad>
 include <limbs.scad>
 use <hands.scad>
 

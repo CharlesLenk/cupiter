@@ -3,7 +3,7 @@ Because OpenSCAD is designed for parametric CAD, but the visual design for Cupit
 
 ## Cloning the Repository
 
-This project uses a submodule for some common OpenSCAD code. If the submodule is not initialized, the `OpenSCAD-Utilities` directory will be empty, and the project won't compile. To get the submodule code whening cloning, add the `--recurse-submodules` option to the clone command. If you've already cloned the project, run the command `git submodule update --init` in the project root to pull down the submodule.
+This project uses a submodule for some common OpenSCAD code. If the submodule is not initialized, the `openscad-utilities` directory will be empty, and the project won't compile. To get the submodule code whening cloning, add the `--recurse-submodules` option to the clone command. If you've already cloned the project, run the command `git submodule update --init` in the project root to pull down the submodule.
 
 ## Editing the Project
 This project is written in native OpenSCAD and can be edited without any additional software, however there are easier ways to edit it. Since OpenSCAD has a fairly limited text editor, particularly when working across multiple files, I recommend using [VSCode](https://code.visualstudio.com/) with Leathong's [OpenSCAD extension](https://marketplace.visualstudio.com/items?itemName=Leathong.openscad-language-support).

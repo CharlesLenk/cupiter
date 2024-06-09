@@ -1,6 +1,6 @@
-include <OpenSCAD-Utilities/common.scad>
+include <openscad-utilities/common.scad>
 include <globals.scad>
-use <../OpenSCAD-Utilities/arrow.scad>
+use <../openscad-utilities/arrow.scad>
 use <snaps.scad>
 
 socket_opening_angle = 115;
