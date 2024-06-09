@@ -83,7 +83,7 @@ def generate_part(openscad_location, output_directory, folder, part, count):
     process = Popen([openscad_location,
                      '-Dpart="' + part + '"',
                      '-o' + output_directory + part_file_name,
-                     'cad files/print map.scad'], stdout=PIPE, stderr=PIPE)
+                     'src/scad/print map.scad'], stdout=PIPE, stderr=PIPE)
     out, err = process.communicate()
 
     output = ""

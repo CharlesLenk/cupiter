@@ -11,7 +11,7 @@ def get_openscad_location():
         else:
             location = 'C:\\Program Files\\OpenSCAD\\openscad.exe'
     elif (system == 'Darwin'):
-        location = ''
+        location = '/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD.app'
     elif (system == 'Linux'):
         location = 'openscad'
     return location
