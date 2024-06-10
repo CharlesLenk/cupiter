@@ -1,20 +1,23 @@
-# Intro
-This project is a 3D Printable posable action figure that resembles a robot.
+# Cupiter
 
-# Generating the Parts
-In order to generate the parts, an export script is provided. This script currently works on Windows only, but runs using `bash` and should be easy to modify to run on other platforms. The script assumes that you:
-* are using `bash`, not `sh`
-* are running it in the Windows Subsystem for Linux (WSL) with default settings
-* have OpenSCAD installed in your windows Program Files directory
-* have a `Desktop` folder in the default windows location
+Cupiter is a 3D Printable posable action figure that resembles a robot. In this repository you'll find:
+* [Printing and assembly instructions](instructions/README.md).
+* The full [source code](src/README.md) for all parts of this project.
+* A script for exporting the parts.
 
-# Printing
-This project is designed to be printed on standard consumer grade FDM printers with a 0.4mm nozzle and 0.15mm layer height. Most parts, with the exception of some hand options, should be printed without supports.
+![](images/main_image.png)
 
-PETG or similar filament is recommended. It may be possible to print some parts in PLA, however many parts will be too brittle for assembly, and the joints will loosen very fast because PLA deforms more under strain.
+## About
 
-Excluding the hands, for which there are multiple options, all frame parts are in the `frame` folder, and all armor parts are in the `armor` folder. If mutiple copies of a part are needed, the folders will contain the correct number of copies, so you can simply plate all files in a given folder without worrying about adjusting the count of any parts.
+I've been working on this project off and on (mostly off) for several years. At first, my goal was just to create a very simple desk toy inspired by Lego Bionicles. The project got away from me though, and turned into something much larger as I went from almost no experience with CAD
 
-Two main types of hands are availabe:
-1. "simple" hands that are designed to be easy to print without supports. To use the simple hands, look for the `hands/hand_simple_[right/left].stl` and `hand_armor/hand_simple_armor.stl` files.
-2. All the other hands which are posed in more dynamic positions, and must be printed with supports. For these hands, organic supports are recommended.
+![](images/progress.png)
+
+### Inspirations
+
+* Lego Bionicles were some of my favorite toys growing up. The early designs of Cupiter were even lego-like, includign pegs with snaps to attach additional parts, and simple ball and socket joints.
+* Aaron Thomas' [Endo](https://www.toyforge.in/products/endo-the-skeleton). Endo is a more advanced project than mine, made by a more talented designer, but I did find it inspiring since if it was possible to push 3D printing this far, I knew what I was going for was achievable. This project heavily inspired the elbow and knee joints used for some of the middle versions of Cupiter.
+* Soozafone's [Lucky 13](https://www.printables.com/model/148367-lucky-13-printable-jointed-figure). Lucky 13 came out a few years after I started this project and, after a mild round of despair having been beaten to the punch, it inspired me to revisit my work. Printing and assembling the two projects, you'll find the designs substantially different in construction, but I absolutely took visual cues from Lucky 13 like the second waist joint, posable shoulders, and more human-like proportions.
+
+## License
+Source code and generated models are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
