@@ -2,13 +2,13 @@
 
 ## Printing
 
-This project is designed to be printed on standard consumer grade FDM printers with a 0.4mm nozzle and 0.15mm layer height. Most parts, with the exception of some hand options, should be printed without supports or brims for the best result.
+All parts are designed to be printed on standard consumer grade FDM printers with a 0.4mm nozzle and 0.15mm layer height. Most parts, with the exception of some hand options, should be printed without supports or brims for the best result.
 
 PETG or similar filament is recommended. It may be possible to print some parts in PLA, however many parts will be too brittle for assembly, and the joints will loosen very fast because PLA deforms more under strain.
 
 ### Project Folders
 
-The parts for this project are divided into a number of folders, some of which contain optional parts. If multiple copies of a part are needed, the folders will contain the correct number of copies, so you can simply plate all files in a given folder without worrying about adjusting the count of any parts.
+The parts are divided into a number of folders, some of which contain optional parts. If multiple copies of a part are needed, the folders will contain the correct number of copies, so you can simply plate all files in a given folder without worrying about adjusting the count of any parts.
 
 The `frame` and `armor` folders contain all parts other than the hand options.
 * `frame`
@@ -16,7 +16,7 @@ The `frame` and `armor` folders contain all parts other than the hand options.
 * `armor`
   * Contains all the armor parts that clip over the frame.
 
-The following hand parts are optional, and the best one to choose dependends on the capabilities of your printer. Pick at least one set of hands and hand armor.
+The following hand parts are optional, and the best one to choose depends on the capabilities of your printer. Pick at least one set of hands and hand armor.
 * `hand_simple`
   * A blocky hand in a grip pose that is designed to print without supports.
 * `hand_simple_armor`

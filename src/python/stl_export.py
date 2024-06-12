@@ -74,7 +74,7 @@ part_groups = {
 }
 
 def get_base_output_directory():
-    return os.path.join(os.path.expanduser('~'), 'Desktop') + '/robot_export/'
+    return os.path.join(os.path.expanduser('~'), 'Desktop') + '/cupiter_export/'
 
 def generate_part(openscad_location, output_directory, folder, part, count):
     part_file_name = part + '.stl'

@@ -1,5 +1,5 @@
 # About the Code
-Because OpenSCAD is designed for parametric CAD, but the visual design for Cupiter is part sculping, the code is a mix of well designed parameterized functions, and magic number hacks because something looked better if it was 0.2 millimeters larger. Where possible, I've attempted to have parts scale and adjust appropriately, but many edits will require manual tweaks for visual design.
+Because OpenSCAD is designed for parametric CAD, but the visual design for Cupiter is part sculpting, the code is a mix of well designed parameterized functions, and magic number hacks because something looked better if it was 0.2 millimeters larger. Where possible, I've attempted to have parts scale and adjust appropriately, but many edits will require manual tweaks for visual design.
 
 ## Cloning the Repository
 

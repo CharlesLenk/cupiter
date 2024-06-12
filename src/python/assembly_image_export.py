@@ -47,9 +47,6 @@ images_map = {
     'assembled': '0,35,6,34,0,240,315'
 }
 
-def get_base_output_directory():
-    return os.path.join(os.path.expanduser('~'), 'Desktop') + '/robot_export/'
-
 def generate_image(openscad_location, image_name, camera_pos):
     image_file_name = image_name + '.png'
 
