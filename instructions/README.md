@@ -16,7 +16,7 @@ The `frame` and `armor` folders contain all parts other than the hand options.
 * `armor`
   * Contains all the armor parts that clip over the frame.
 
-The following hand parts are optional, and the best one to choose dependends on the capabilities of your printer. Pick at least one set of hands and hand armor.
+The following hand parts are optional, and the best one to choose depends on the capabilities of your printer. Pick at least one set of hands and hand armor.
 * `hand_simple`
   * A blocky hand in a grip pose that is designed to print without supports.
 * `hand_simple_armor`
