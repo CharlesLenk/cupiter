@@ -3,11 +3,6 @@ include <globals.scad>
 use <robot common.scad>
 use <snaps.scad>
 
-rotator_peg_l = 8;
-rotator_peg_d = segment_height + 0.4;
-rotator_socket_l = rotator_peg_l + socket_shell_width;
-rotator_socket_d = rotator_peg_d + 2 * socket_shell_width + leg_rotator_tolerance;
-
 elbow_wall_width = 1.5;
 
 hinge_peg_h = segment_height - elbow_wall_width;
@@ -87,91 +82,6 @@ module limb_lower_armor_blank(
             }
         }
         sphere(d = 1);
-    }
-}
-
-module rotator_peg(peg_len, peg_ext_past_socket = 0, is_cut = false) {
-    cylinder_l = peg_len + peg_ext_past_socket;
-    tolerance = is_cut ? leg_rotator_tolerance : 0;
-
-    if (is_cut) {
-        rotate([90, 0, 0]) peg();
-    } else {
-        xy_cut(ball_cut_height, size = 2 * cylinder_l) {
-            rotate([90, 0, 0]) peg();
-        }
-    }
-
-    module peg() {
-        translate([0, 0, -peg_ext_past_socket]) {
-            difference() {
-                capped_cylinder(rotator_peg_d + tolerance, cylinder_l + tolerance/2);
-                snap_d2 = 2.5;
-                translate([0, 0, snap_d2/2 + peg_ext_past_socket + 1]) {
-                    torus(rotator_peg_d - 0.7, snap_d2);
-                }
-            }
-        }
-    }
-}
-
-module rotator_socket(peg_len, is_cut = false) {
-    rotator_peg = is_cut ? 0.1 : 0;
-    height = is_cut ? segment_cut_height : segment_height;
-    diameter = rotator_socket_d + 2 * rotator_peg;
-    length = rotator_socket_l + rotator_peg;
-    width = is_cut ? segment_cut_width : segment_width;
-
-    difference() {
-        union() {
-            intersection() {
-                rotate([-90, 0, 0]) {
-                    capped_cylinder(diameter, length, width);
-                }
-                cube([diameter, 2 * length, height], center = true);
-            }
-            translate([-width/2, 0, -height/2]) {
-                cube([width, rotator_socket_l, height]);
-            }
-        }
-        if (!is_cut) {
-            fix_preview() {
-                rotate(180) rotator_peg(peg_len, is_cut = true);
-                translate([0, 0, -height/2]) {
-                    linear_extrude(height) {
-                        projection(cut = true) {
-                            translate([0, 0, -segment_height/2 + 0.6]) {
-                                rotate([90, 0, 180]) capped_cylinder(rotator_peg_d, rotator_peg_l);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        translate([0, 1]) {
-            angle = 15;
-            rotate([0, angle, 0]) {
-                armor_snap_inner(
-                    length = 3.7,
-                    depth = 0.4,
-                    target_width = rotator_socket_d,
-                    is_cut = !is_cut
-                );
-            }
-            rotate([0, -angle, 0]) {
-                armor_snap_inner(
-                    length = 3.7,
-                    depth = 0.4,
-                    target_width = rotator_socket_d,
-                    is_cut = !is_cut
-                );
-            }
-        }
-    }
-    if (is_cut) {
-        rotate([-90, 0, 0]) {
-            capped_cylinder(d = rotator_peg_d + 0.2, h = peg_len + 0.1);
-        }
     }
 }
 

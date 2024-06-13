@@ -35,18 +35,16 @@ module hand_assembly(
 ) {
     explode_y = explode ? 20 : 0;
 
-    rotate([0, 0, 0]) {
-        color(frame_color) grip();
-        if (armor) {
-            translate([0, segment_height/2 + explode_y]) {
-                rotate([90, 0, 0]) {
-                    color(armor_color) hand_armor();
-                }
+    color(frame_color) grip();
+    if (armor) {
+        translate([0, segment_height/2 + explode_y]) {
+            rotate([90, 0, 0]) {
+                color(armor_color) hand_armor();
             }
-            if (explode) {
-                translate([0, explode_y/2 + 1, hand_z_from_socket + palm_z/2]) {
-                    rotate([0, 90, 0]) assembly_arrow();
-                }
+        }
+        if (explode) {
+            translate([0, explode_y/2 + 1, hand_z_from_socket + palm_z/2]) {
+                rotate([0, 90, 0]) assembly_arrow();
             }
         }
     }
