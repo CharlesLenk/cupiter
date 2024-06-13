@@ -1,3 +1,0 @@
-[submodule "openscad-utilities"]
-	path = src/scad/openscad-utilities
-	url = https://github.com/CharlesLenk/openscad-utilities
