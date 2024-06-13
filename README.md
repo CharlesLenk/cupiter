@@ -2,8 +2,7 @@
 
 Cupiter is a 3D Printable poseable action figure that resembles a robot. In this repository you'll find:
 * [Printing and assembly instructions](instructions/README.md).
-* The full [source code](src/README.md) for all parts of this project.
-* A script for exporting the parts.
+* The full [source code](src/README.md) for this project.
 
 ![](images/main_image.png)
 
@@ -21,7 +20,7 @@ I've been working on Cupiter off and on (mostly off) for several years. At first
 
 ### Special Thanks
 
-* I owe a lot to the developers and maintainers of OpenSCAD. It's been amazing having a project like this as a free resource.
+* I owe a lot to the developers and maintainers of [OpenSCAD](https://openscad.org/). It's been amazing having a project like this as a free resource.
 
 ## License
 Source code and generated models are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).

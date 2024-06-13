@@ -3,12 +3,12 @@ Because OpenSCAD is designed for parametric CAD, but the visual design for Cupit
 
 ## Cloning the Repository
 
-This project uses a submodule for some common OpenSCAD code. If the submodule is not initialized, the `openscad-utilities` directory will be empty, and the project won't compile. To get the submodule code whening cloning, add the `--recurse-submodules` option to the clone command. If you've already cloned the project, run the command `git submodule update --init` in the project root to pull down the submodule.
+This project uses a submodule for some common OpenSCAD code. If the submodule is not initialized, the `openscad-utilities` directory will be empty, and the project won't compile. To get the submodule code when cloning, add the `--recurse-submodules` option to the clone command. If you've already cloned the project, run the command `git submodule update --init` in the project root to pull down the submodule.
 
 ## Editing the Project
-This project is written in native OpenSCAD and can be edited without any additional software, however there are easier ways to edit it. Since OpenSCAD has a fairly limited text editor, particularly when working across multiple files, I recommend using [VSCode](https://code.visualstudio.com/) with Leathong's [OpenSCAD extension](https://marketplace.visualstudio.com/items?itemName=Leathong.openscad-language-support).
+This project is written in native OpenSCAD and can be edited without any additional software, however I recommend using [VSCode](https://code.visualstudio.com/) with Leathong's [OpenSCAD extension](https://marketplace.visualstudio.com/items?itemName=Leathong.openscad-language-support).
 
-OpenSCAD has an option to automatically refresh the preview whenever a file is updated, even if the updates come from an external tool. In this way, you can have multiple instances of OpenSCAD showing previews of different parts in different files, and have all previews refresh to show your edits whenever you save in VSCode, which makes viewing changes to assemblies of multiple parts much easier.
+OpenSCAD has an "Automatic Reload and Preview" option that will refresh the preview whenever a file is updated, even if the updates come from an external tool. In this way, you can have multiple instances of OpenSCAD showing previews of different parts in different files, and have all previews refresh to show your edits whenever you save in VSCode, which makes viewing changes to assemblies of multiple parts much easier.
 
 ### Navigating the Files
 * arms.scad
@@ -44,7 +44,7 @@ There are two options for generating the parts. Either through a provided export
 
 As of 2024, the OpenSCAD development preview uses a new rendering engine called Manifold, which is many times faster. When exporting or working on this project, it's recommended that you use a development snapshot of OpenSCAD with Manifold enabled. This project is tested as working with version `2024.05.02 (git 1057a82e9)` specifically, in the event that issues are encountered with newer versions.
 
-### Option One - Export Script
+### Exporting with the Script
 
 In order to generate the parts, a [Python](https://www.python.org/) export script is provided. I've made an effort to make the script multi-platform, but you may need to edit it based on your specific configuration. The script assumes that you:
 * have a version of OpenSCAD installed in the default folder for your OS.
@@ -52,6 +52,6 @@ In order to generate the parts, a [Python](https://www.python.org/) export scrip
 
 The export will have the folder structure given in the [instructions](../instructions/README.md)
 
-### Option Two - Manually
+### Exporting Manually
 
 This option is not recommended. `print map.scad` is invoked by the export script to generate each part. In this file, there is a large `if/else` condition where the call to generate each part can be seen. You can either write OpenSCAD code using these calls to build up a print plate, or the part selector can be manually edited to select each part, which can then be rendered and exported through the OpenSCAD UI like any other project.

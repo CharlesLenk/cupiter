@@ -84,3 +84,41 @@ module armor_snap_outer(
         }
     }
 }
+
+module snaps_tabs(x, y, z, is_cut = false) {
+    cut_adjust = is_cut ? 0.15 : 0;
+
+    snap_tab_width = 1;
+    width = x;
+
+    intersection() {
+        translate([0, y - 1, -z/2]) {
+            rotate([90, 0, 0]) {
+                armor_snap_outer(
+                    length = z,
+                    target_width = width - 2 * snap_tab_width,
+                    depth = 1.5,
+                    is_cut = is_cut
+                );
+            }
+        }
+        translate([0, y/2, 0]) {
+            cube([20, y, z], center = true);
+        }
+    }
+
+    if (is_cut) {
+        translate([-width/2, 0, -z/2]) {
+            cube([width, y + 1, z]);
+        }
+    } else {
+        translate([0, 0.001, -z/2]) {
+            translate([- width/2, 0, 0]) {
+                cube([snap_tab_width, y - 0.75, z]);
+            }
+            translate([width/2 - snap_tab_width, 0, 0]) {
+                cube([snap_tab_width, y - 0.75, z]);
+            }
+        }
+    }
+}

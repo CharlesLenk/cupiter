@@ -114,8 +114,8 @@ module arm_assembly(
                                 hand_assembly(
                                     frame_color = frame_color,
                                     armor_color = armor_color,
-                                    hand_armor,
-                                    explode_hand_armor
+                                    armor = hand_armor,
+                                    explode = explode_hand_armor
                                 );
                             }
                         }
@@ -243,8 +243,8 @@ module shoulder_armor() {
                 neg_y = cylinder_length,
                 pos_z = segment_height/2 + h_ext + 1.2 - edge_d/2,
                 neg_z = segment_height/2 - edge_d/2 + 0.3,
-                0,
-                3
+                ext = 0,
+                d = 3
             );
         }
     }

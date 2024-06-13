@@ -1,6 +1,6 @@
 include <openscad-utilities/common.scad>
 include <globals.scad>
-use <../openscad-utilities/arrow.scad>
+use <openscad-utilities/arrow.scad>
 use <snaps.scad>
 
 socket_opening_angle = 115;
@@ -95,44 +95,6 @@ module apply_armor_cut(is_top = false) {
     }
 }
 
-module snaps_tabs(x, y, z, is_cut = false) {
-    cut_adjust = is_cut ? 0.15 : 0;
-
-    snap_tab_width = 1;
-    width = x;
-
-    intersection() {
-        translate([0, y - 1, -z/2]) {
-            rotate([90, 0, 0]) {
-                armor_snap_outer(
-                    length = z,
-                    target_width = width - 2 * snap_tab_width,
-                    depth = 1.5,
-                    is_cut = is_cut
-                );
-            }
-        }
-        translate([0, y/2, 0]) {
-            cube([20, y, z], center = true);
-        }
-    }
-
-    if (is_cut) {
-        translate([-width/2, 0, -z/2]) {
-            cube([width, y + 1, z]);
-        }
-    } else {
-        translate([0, 0.001, -z/2]) {
-            translate([- width/2, 0, 0]) {
-                cube([snap_tab_width, y - 0.75, z]);
-            }
-            translate([width/2 - snap_tab_width, 0, 0]) {
-                cube([snap_tab_width, y - 0.75, z]);
-            }
-        }
-    }
-}
-
 module socket_with_snaps(is_cut = false) {
     cut_adjust = is_cut ? 0.15 : 0;
     height = is_cut ? segment_cut_height : segment_height;
@@ -165,15 +127,16 @@ module cross_brace(depth, target_width, is_cut) {
 }
 
 module shoulder_cut(x, pos_y, neg_y, pos_z, neg_z, ext, d) {
-    rotate([0, 270, 0])
-    translate([-neg_z, -pos_y, -x/2]) {
-        linear_extrude(x) {
-            hull() {
-                difference() {
-                    square([pos_z + neg_z, pos_y + neg_y]);
-                    square([d/2, d/2]);
+    rotate([0, 270, 0]) {
+        translate([-neg_z, -pos_y, -x/2]) {
+            linear_extrude(x) {
+                hull() {
+                    difference() {
+                        square([pos_z + neg_z, pos_y + neg_y]);
+                        square([d/2, d/2]);
+                    }
+                    translate([d/2, d/2 - ext]) circle(d = d);
                 }
-                translate([d/2, d/2 - ext]) circle(d = d);
             }
         }
     }
@@ -226,15 +189,6 @@ module square_with_chamfers(x, y, chamfer_x, chamfer_y) {
             [x/2, -y/2 + chamfer_y],
         ]
     );
-}
-
-module frame_color(frame_color = "#464646") color(frame_color) children();
-module armor_color(armor_color = "#DDDDDD") color(armor_color) children();
-module frame_color_guide(frame_color = "#A0CFEC") color(frame_color) children();
-module armor_color_guide(armor_color = "#E0E5E5") color(armor_color) children();
-
-module echo_cam() {
-    echo(str("\n",round($vpt[0]),",",round($vpt[1]),",",round($vpt[2]),",",round($vpr[0]),",",round($vpr[1]),",",round($vpr[2]),",",round($vpd),"\n"));
 }
 
 module assembly_arrow() {
