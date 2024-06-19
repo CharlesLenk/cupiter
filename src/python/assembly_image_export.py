@@ -55,7 +55,7 @@ def generate_image(openscad_location, image_name, camera_pos):
                      '-D$fs=0.4',
                      '-D$fa=0.8',
                      '--camera=' + camera_pos,
-                     '-o' + 'instructions/images/' + image_file_name,
+                     '-o' + '../../instructions/images/' + image_file_name,
                      '--colorscheme=Tomorrow Night',
                      '--imgsize=2000,1200',
                      '../scad/assembly image map.scad'], stdout=PIPE, stderr=PIPE)

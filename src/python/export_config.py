@@ -20,8 +20,8 @@ def assign_config_value(config, friendly_name, config_field_name, default_value)
     print('Saving {}={} in export.conf'.format(config_field_name, value))
 
     config[config_field_name] = value
-    with open(conf_file_name, 'w') as fp:
-        json.dump(config, fp, indent=2)
+    with open(conf_file_name, 'w') as file:
+        json.dump(config, file, indent=2)
     return value
 
 def get_default_openscad_location():
