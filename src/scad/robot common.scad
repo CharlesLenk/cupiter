@@ -159,20 +159,18 @@ module armor_2d(x, y, round_len = 3, d = 8, left_d = 0, right_d = 0) {
 
     hull() {
         reflect([0, 1, 0]) {
-            translate([0, mid/2]) circle_fragment(x, y, left_d, round_len);
-            mirror([1, 0, 0]) translate([0, mid/2]) circle_fragment(x, y, right_d, round_len);
+            translate([0, mid/2]) circle_fragment(x, left_d, round_len);
+            mirror([1, 0, 0]) translate([0, mid/2]) circle_fragment(x, right_d, round_len);
         }
     }
 }
 
-module circle_fragment(x, y, d, round_len) {
+module circle_fragment(x, d, round_len) {
     intersection() {
         translate([-d/2 + x/2, 0]) {
             circle(d = d);
         }
-        translate([0, 0]) {
-            square([x/2, round_len]);
-        }
+        square([x/2, round_len]);
     }
 }
 

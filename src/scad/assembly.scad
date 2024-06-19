@@ -6,7 +6,11 @@ use <body.scad>
 use <arms.scad>
 use <legs.scad>
 
-assembly(arm_retract_angle = 80);
+//assembly(arm_retract_angle = 80);\
+
+translate([0, -neck_len]) rotate([90, 0, 0]) head_alt_2();
+
+body_assembly(arm_retract_angle = 80);
 
 module socket_assembly_note() {
     socket_dist = 15;

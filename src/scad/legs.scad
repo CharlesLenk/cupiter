@@ -160,6 +160,8 @@ module leg_upper_armor_blank() {
     );
 }
 
+leg_lower_armor_blank();
+
 module leg_lower_armor_blank() {
     limb_lower_armor_blank(
         length = leg_lower_armor_len,

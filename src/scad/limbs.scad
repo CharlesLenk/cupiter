@@ -70,10 +70,10 @@ module limb_lower_armor_blank(
             translate([0, edge_d/2 - hinge_armor_y_offset]) {
                 hull() {
                     translate([-top_width/2 + top_width_front - edge_d/2, 0]) {
-                        armor_section(top_width, 0.001, height, right_d = 400);
+                        armor_section(x = top_width, y = 0.001, z = height, right_d = 100);
                     }
                     translate([-bottom_width/2 + bottom_front_width - edge_d/2, length + hinge_armor_y_offset - 0.1 - edge_d]) {
-                        armor_section(bottom_width, 0.001, height, right_d = 20);
+                        armor_section(x = bottom_width, y = 0.001, z = height, right_d = 20);
                     }
                 }
             }

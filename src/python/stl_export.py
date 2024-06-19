@@ -2,7 +2,7 @@ import os
 import shutil
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen, PIPE
-from export_util import get_openscad_location
+from export_config import get_openscad_location, get_stl_output_directory
 
 part_groups = {
     'frame': {
@@ -73,9 +73,6 @@ part_groups = {
     }
 }
 
-def get_base_output_directory():
-    return os.path.join(os.path.expanduser('~'), 'Desktop') + '/cupiter_export/'
-
 def generate_part(openscad_location, output_directory, folder, part, count):
     part_file_name = part + '.stl'
     os.makedirs(output_directory, exist_ok=True)
@@ -83,7 +80,7 @@ def generate_part(openscad_location, output_directory, folder, part, count):
     process = Popen([openscad_location,
                      '-Dpart="' + part + '"',
                      '-o' + output_directory + part_file_name,
-                     'src/scad/print map.scad'], stdout=PIPE, stderr=PIPE)
+                     '../scad/print map.scad'], stdout=PIPE, stderr=PIPE)
     out, err = process.communicate()
 
     output = ""
@@ -99,15 +96,16 @@ def generate_part(openscad_location, output_directory, folder, part, count):
 
 def print_parts():
     with ThreadPoolExecutor(max_workers = os.cpu_count()) as executor:
-        futures = []
-        base_output_directory = get_base_output_directory()
         openscad_location = get_openscad_location()
-
+        base_output_directory = get_stl_output_directory()
+        print('Starting SLT generation')
+        futures = []
         for folder, part_group in part_groups.items():
             output_directory = base_output_directory + folder + '/'
             for part, count in part_group.items():
                 futures.append(executor.submit(generate_part, openscad_location, output_directory, folder, part, count))
         for future in futures:
             print(future.result())
+        print('Done!')
 
 print_parts()

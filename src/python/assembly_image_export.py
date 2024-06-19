@@ -1,7 +1,7 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen, PIPE
-from export_util import get_openscad_location
+from export_config import get_openscad_location
 
 images_map = {
     'socket_assembly_note': '-2,5,-2,230,0,113,67',
@@ -58,7 +58,7 @@ def generate_image(openscad_location, image_name, camera_pos):
                      '-o' + 'instructions/images/' + image_file_name,
                      '--colorscheme=Tomorrow Night',
                      '--imgsize=2000,1200',
-                     'src/scad/assembly image map.scad'], stdout=PIPE, stderr=PIPE)
+                     '../scad/assembly image map.scad'], stdout=PIPE, stderr=PIPE)
     out, err = process.communicate()
 
     output = ""
@@ -70,12 +70,13 @@ def generate_image(openscad_location, image_name, camera_pos):
 
 def generate_images():
     with ThreadPoolExecutor(max_workers = os.cpu_count()) as executor:
-        futures = []
         openscad_location = get_openscad_location()
-
+        print('Starting image generation')
+        futures = []
         for image_name, camera_pos in images_map.items():
             futures.append(executor.submit(generate_image, openscad_location, image_name, camera_pos))
         for future in futures:
             print(future.result())
+        print('Done!')
 
 generate_images()
