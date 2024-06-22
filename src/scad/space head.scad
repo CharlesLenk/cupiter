@@ -2,6 +2,7 @@ include <openscad-utilities/common.scad>
 include <globals.scad>
 use <robot common.scad>
 use <antenna.scad>
+use <snaps.scad>
 
 head_alt_width = 13;
 head_alt_front_r = 4;
@@ -14,42 +15,16 @@ head_alt_x_dist = 3;
 head_alt_height = 19;
 head_alt_cut_angle = 40;
 
-chin_r = 20;
+chin_r = 21;
 
-space_head();
+head_alt_antenna_angle = -45;
 
-head_alt_antenna_angle = 90;
+space_head_assembly(
+    explode = true
+);
+echo_cam();
 
-eye_r = 1.5;
-
-// translate([0, 5.96, 3])
-
-
-// difference() {
-
-// translate([0, 6, 3])
-// rotate([-90, 0, 0])
-// rotate(90)
-
-//     thing(eye_r, 4);
-
-// }
-
-// difference() {
-//     space_head();
-//     test(true);
-// }
-
-// translate([0, -0.01])
-// color("GREY")
-// intersection() {
-//     space_head();
-//     test();
-// }
-
-// lens();
-// lens_cut();
-//space_head_assembly();
+visor_depth = -0.1;
 
 module space_head_assembly(
     frame_color = frame_color,
@@ -57,25 +32,25 @@ module space_head_assembly(
     explode = false
 ) {
     lens_explode_z = explode ? 15 : 0;
-    antenna_explode_x = explode ? 25 : 0;
+    antenna_explode_x = explode ? 20 : 0;
 
     if (explode) {
         reflect([1, 0, 0]) {
-            translate([antenna_explode_x, 6, 0]) {
+            translate([antenna_explode_x/1.2, 0, 6]) {
                 rotate(270) assembly_arrow();
             }
         }
     }
     if (explode) {
-        translate([0, head_cube_y_offset, head_cube_z/2 + lens_explode_z/2]) {
-            rotate([90, 0, 0]) assembly_arrow();
+        translate([0, head_alt_socket_pos[1] + 10, 6]) {
+            rotate([0, 0, 0]) assembly_arrow();
         }
     }
     color(armor_color) space_head();
     antenna_position(antenna_explode_x) {
         color(frame_color) space_head_antenna_left();
     }
-    translate([0, 4, 0]) color(frame_color) visor();
+    translate([0, visor_depth + lens_explode_z, 0]) color(frame_color) visor();
 }
 
 module space_head_antenna_left(is_cut = false) {
@@ -83,38 +58,54 @@ module space_head_antenna_left(is_cut = false) {
 }
 
 module visor() {
-    intersection() {
-        space_head();
-        lens_cut();
+    difference() {
+        intersection() {
+            space_head_without_visor();
+            visor_cut();
+        }
+        visor_pegs(true);
     }
 }
 
 head_alt_socket_pos = [0, 0.5, -4];
 
 module visor_cut(is_cut) {
-    cut_depth = segment_cut_height/2 + 2;
+    cut_depth = segment_cut_height/2 + 2 + visor_depth;
     d = is_cut ? 3.1 : 3;
     hull() {
         reflect([1, 0, 0]) {
             translate([0.5, cut_depth, 0]) rotate([-90, 0, 0]) cylinder(d = d, h = 10);
-            translate([3.5, cut_depth, 9]) rotate([-90, 0, 0]) cylinder(d = d, h = 10);
+            translate([4, cut_depth, 8.5]) rotate([-90, 0, 0]) cylinder(d = d, h = 10);
         }
     }
 }
 
-// translate([0, segment_cut_height/2 + 2, 6])
-// snaps_tabs(4, 2, 2, false, snap_depth = 1.2);
+module space_head() {
+    difference() {
+        space_head_without_visor();
+        visor_cut(true);
+    }
+    visor_pegs();
+}
+
+module visor_pegs(is_cut = false) {
+    cut_adjust = is_cut ? 0.1 : 0;
+    translate([0, segment_cut_height/2 + 2 + visor_depth, 0]) {
+        translate([0, 0, 0.5]) rotate([270, 0, 0]) rounded_cylinder(2 + cut_adjust, 2 + cut_adjust, 1, 0);
+        reflect([1, 0, 0]) translate([2.5, 0, 8.5]) rotate([270, 0, 0]) rounded_cylinder(2 + cut_adjust, 2 + cut_adjust, 1, 0);
+    }
+}
 
 module antenna_position(x_offset = 0) {
     reflect([1, 0, 0]) {
         translate(
             [
-                head_alt_width/2,
+                head_alt_width/2 + x_offset,
                 head_alt_socket_pos[1],
                 head_alt_height - head_alt_depth/2 + head_alt_socket_pos[2]
             ]
         ) {
-            rotate([45 - head_alt_antenna_angle + 180, 0, 0]) {
+            rotate([head_alt_antenna_angle + 180, 0, 0]) {
                 rotate([0, 270, 0]) {
                     children();
                 }
@@ -123,10 +114,10 @@ module antenna_position(x_offset = 0) {
     }
 }
 
-module space_head() {
+module space_head_without_visor() {
     head_alt_width_adjusted = head_alt_width - edge_d;
     head_alt_height = head_alt_height - edge_d;
-    head_alt_mid_h = 1;
+    head_alt_mid_h = 0;
 
     module head_form() {
         hull() {
@@ -140,17 +131,6 @@ module space_head() {
                                         circle_corner(head_alt_x_dist, head_alt_width_adjusted/2 - head_alt_flat_with/2, head_alt_front_r);
                                     }
                                 }
-                            }
-                        }
-                    }
-                }
-            }
-            translate([-head_alt_x_dist + head_alt_depth_adjusted/2, 0, head_alt_height - head_alt_depth_adjusted/2 - head_alt_mid_h]) {
-                linear_extrude(head_alt_mid_h) {
-                    hull() {
-                        reflect([0, 1, 0]) {
-                            translate([0, head_alt_flat_with/2]) {
-                                circle_corner(head_alt_x_dist, head_alt_width_adjusted/2 - head_alt_flat_with/2, head_alt_front_r);
                             }
                         }
                     }
@@ -218,6 +198,5 @@ module space_head() {
             space_head_antenna_left(true);
         }
         rotate([90, 0, 0]) socket_with_snaps(true);
-        lens_cut(true);
     }
 }

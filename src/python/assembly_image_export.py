@@ -4,6 +4,7 @@ from subprocess import Popen, PIPE
 from export_config import get_openscad_location
 
 images_map = {
+    'alternate_hands':      '38,8,13,37,0,29,156',
     'socket_assembly_note': '-2,5,-2,230,0,113,67',
     'shoulder_note':        '-3,-16,1,224,0,251,126',
 
@@ -41,10 +42,15 @@ images_map = {
     'body_assembled':       '-9,55,6,21,0,187,390',
     'body_arms_lowered':    '-9,55,6,21,0,187,390',
 
-    'head_exploded':        '9,5,5,60,0,47,126',
-    'head_assembled':       '9,5,5,60,0,47,126',
-    'body_head_exploded':   '0,35,6,34,0,240,315',
-    'assembled':            '0,35,6,34,0,240,315'
+    'camera_head_exploded':         '9,5,5,60,0,47,126',
+    'camera_head_assembled':        '9,5,5,60,0,47,126',
+    'body_camera_head_exploded':    '0,35,6,34,0,240,315',
+    'body_camera_head_assembled':   '0,35,6,34,0,240,315',
+
+    'space_head_exploded':          '-5,5,9,61,0,219,113',
+    'space_head_assembled':         '-5,5,9,61,0,219,113',
+    'body_space_head_exploded':     '0,35,6,34,0,240,315',
+    'body_space_head_assembled':    '0,35,6,34,0,240,315'
 }
 
 def generate_image(openscad_location, image_name, camera_pos):

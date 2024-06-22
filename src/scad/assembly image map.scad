@@ -1,11 +1,13 @@
+include <globals.scad>
 use <camera head.scad>
 use <space head.scad>
 use <arms.scad>
+use <hands.scad>
 use <body.scad>
 use <legs.scad>
 use <assembly.scad>
 
-part = "";
+part = "alternate_hands";
 part_for_print(part);
 
 module part_for_print(part) {
@@ -43,12 +45,19 @@ module part_for_print(part) {
     if (part == "body_assembled") body_assembly(hip_armor = true);
     if (part == "body_arms_lowered") body_assembly(hip_armor = true, arm_retract_angle = 80);
 
-    if (part == "head_exploded") head_assembly(explode = true);
-    if (part == "head_assembled") head_assembly();
+    if (part == "camera_head_exploded") camera_head_assembly(explode = true);
+    if (part == "camera_head_assembled") camera_head_assembly();
 
-    if (part == "body_head_exploded") body_assembly(explode_head = true, hip_armor = true, arm_retract_angle = 80);
-    if (part == "assembled") assembly(arm_retract_angle = 80);
+    if (part == "body_camera_head_exploded") body_assembly(explode_head = true, hip_armor = true, arm_retract_angle = 80);
+    if (part == "body_camera_head_assembled") assembly(arm_retract_angle = 80);
 
     if (part == "socket_assembly_note") socket_assembly_note();
     if (part == "shoulder_note") shoulder_note();
+
+    if (part == "alternate_hands") color(frame_color) posed_hands();
+
+    if (part == "space_head_exploded") space_head_assembly(explode = true);
+    if (part == "space_head_assembled") space_head_assembly();
+    if (part == "body_space_head_exploded") body_assembly(space_head = true, explode_head = true, hip_armor = true, arm_retract_angle = 80);
+    if (part == "body_space_head_assembled") assembly(space_head = true, arm_retract_angle = 80);
 }

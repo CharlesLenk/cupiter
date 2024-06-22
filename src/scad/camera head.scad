@@ -17,7 +17,7 @@ function neck_max_angle() = 18;
 //head_assembly();
 //socket_with_snaps();
 
-module head_assembly(
+module camera_head_assembly(
     frame_color = frame_color,
     armor_color = armor_color,
     explode = false

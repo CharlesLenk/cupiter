@@ -27,6 +27,7 @@ The following hand parts are optional, and the best one to choose depends on the
   * Armor for the back of the complex hands. Print one set for each pair of complex hands you choose to print.
 * `hand_complex_posed`
   * A series of alternate, more detailed hands in a variety of poses. Each pose has a right and left hand version so they can be mixed and matched. All options require supports to print; Organic supports will produce the best result.
+  ![](images/alternate_hands.png)
 
 ## Assembly
 
@@ -47,7 +48,7 @@ Some parts look similar and it can be hard to tell the correct orientation. From
 
 ![](images/shoulder_note.png)
 
-### Arm Assembly
+### Arm Assembly (2x)
 ![](images/arm_frame_exploded.png)
 ![](images/arm_frame.png)
 ![](images/arm_upper_armor.png)
@@ -68,7 +69,7 @@ Some parts look similar and it can be hard to tell the correct orientation. From
 ![](images/upper_body_shoulder_armor.png)
 ![](images/upper_body_assembled.png)
 
-### Leg Assembly
+### Leg Assembly (2x)
 ![](images/leg_frame_exploded.png)
 ![](images/leg_frame.png)
 ![](images/leg_upper_armor.png)
@@ -85,7 +86,15 @@ Some parts look similar and it can be hard to tell the correct orientation. From
 ![](images/body_arms_lowered.png)
 
 ### Head Assembly
-![](images/head_exploded.png)
-![](images/head_assembled.png)
-![](images/body_head_exploded.png)
-![](images/assembled.png)
+![](images/camera_head_exploded.png)
+![](images/camera_head_assembled.png)
+![](images/body_camera_head_exploded.png)
+![](images/body_camera_head_assembled.png)
+
+## Alternate Parts
+
+### Space Head Assembly
+![](images/space_head_exploded.png)
+![](images/space_head_assembled.png)
+![](images/body_space_head_exploded.png)
+![](images/body_space_head_assembled.png)
