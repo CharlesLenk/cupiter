@@ -1,9 +1,5 @@
 antenna_depth = 1.35;
 
-function antenna_depth() = antenna_depth;
-
-antenna_left();
-
 module antenna_left(is_cut = false, antenna_angle = 0, antenna_depth = antenna_depth) {
     base_d = 5;
     peg_h = 3;

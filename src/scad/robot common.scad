@@ -142,15 +142,6 @@ module shoulder_cut(x, pos_y, neg_y, pos_z, neg_z, ext, d) {
     }
 }
 
-module circle_fragment(x, d, round_len) {
-    intersection() {
-        translate([-d/2 + x/2, 0]) {
-            circle(d = d);
-        }
-        square([x/2, round_len]);
-    }
-}
-
 module armor_section(x, y, z, left_d, right_d, center = false, round_len = 3) {
     translate([0, center ? -y/2 : 0]) {
         rotate([270, 0, 0]) {

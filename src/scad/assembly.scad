@@ -7,9 +7,7 @@ use <body.scad>
 use <arms.scad>
 use <legs.scad>
 
-//assembly(arm_retract_angle = 80, space_head = true);
-
-body_assembly(arm_retract_angle = 80, hip_armor = true, space_head = true, head = true, explode_head = true);
+assembly(arm_retract_angle = 80);
 
 module socket_assembly_note() {
     socket_dist = 15;

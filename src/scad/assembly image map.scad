@@ -7,7 +7,7 @@ use <body.scad>
 use <legs.scad>
 use <assembly.scad>
 
-part = "alternate_hands";
+part = "";
 part_for_print(part);
 
 module part_for_print(part) {
@@ -47,7 +47,6 @@ module part_for_print(part) {
 
     if (part == "camera_head_exploded") camera_head_assembly(explode = true);
     if (part == "camera_head_assembled") camera_head_assembly();
-
     if (part == "body_camera_head_exploded") body_assembly(explode_head = true, hip_armor = true, arm_retract_angle = 80);
     if (part == "body_camera_head_assembled") assembly(arm_retract_angle = 80);
 

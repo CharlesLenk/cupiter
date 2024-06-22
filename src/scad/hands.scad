@@ -56,9 +56,6 @@ module modify_hand_for_print() {
     }
 }
 
-posed_hands();
-echo_cam();
-
 module posed_hands(reflect = false) {
     count_per_row = 5;
     x_dist = 15;

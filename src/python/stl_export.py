@@ -56,7 +56,7 @@ part_map = {
             'hand_five_left': 1,
             'hand_open_grip_right': 1,
             'hand_open_grip_left': 1,
-            'armor': {
+            'hand_complex_armor': {
                 'hand_armor_right': 1,
                 'hand_armor_left': 1
             }
@@ -73,7 +73,7 @@ part_map = {
     'hand_complex_grip': {
         'hand_grip_right': 1,
         'hand_grip_left': 1,
-        'armor': {
+        'hand_complex_armor': {
             'hand_armor_right': 1,
             'hand_armor_left': 1
         },
@@ -81,7 +81,7 @@ part_map = {
     'hand_simple': {
         'hand_simple_right': 1,
         'hand_simple_left': 1,
-        'armor': {
+        'hand_simple_armor': {
             'hand_simple_armor': 2
         }
     }

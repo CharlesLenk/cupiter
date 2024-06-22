@@ -4,27 +4,20 @@ use <robot common.scad>
 use <antenna.scad>
 use <snaps.scad>
 
-head_alt_width = 13;
-head_alt_front_r = 4;
+head_width = 13;
+head_front_r = 4;
+head_flat_width = max(0, head_width - 2 * head_front_r);
 
-head_alt_flat_with = max(0, head_alt_width - 2 * head_alt_front_r);
-
-head_alt_depth = 15;
-head_alt_depth_adjusted = head_alt_depth - edge_d;
-head_alt_x_dist = 3;
-head_alt_height = 19;
-head_alt_cut_angle = 40;
-
+head_depth = 15;
+head_depth_adjusted = head_depth - edge_d;
+head_x_dist = 3;
+head_height = 19;
+head_cut_angle = 40;
 chin_r = 21;
 
-head_alt_antenna_angle = -45;
-
-space_head_assembly(
-    explode = true
-);
-echo_cam();
-
+head_antenna_angle = -45;
 visor_depth = -0.1;
+head_socket_pos = [0, 0.5, -4];
 
 module space_head_assembly(
     frame_color = frame_color,
@@ -42,7 +35,7 @@ module space_head_assembly(
         }
     }
     if (explode) {
-        translate([0, head_alt_socket_pos[1] + 10, 6]) {
+        translate([0, head_socket_pos[1] + 10, 6]) {
             rotate([0, 0, 0]) assembly_arrow();
         }
     }
@@ -67,7 +60,7 @@ module visor() {
     }
 }
 
-head_alt_socket_pos = [0, 0.5, -4];
+
 
 module visor_cut(is_cut) {
     cut_depth = segment_cut_height/2 + 2 + visor_depth;
@@ -100,12 +93,12 @@ module antenna_position(x_offset = 0) {
     reflect([1, 0, 0]) {
         translate(
             [
-                head_alt_width/2 + x_offset,
-                head_alt_socket_pos[1],
-                head_alt_height - head_alt_depth/2 + head_alt_socket_pos[2]
+                head_width/2 + x_offset,
+                head_socket_pos[1],
+                head_height - head_depth/2 + head_socket_pos[2]
             ]
         ) {
-            rotate([head_alt_antenna_angle + 180, 0, 0]) {
+            rotate([head_antenna_angle + 180, 0, 0]) {
                 rotate([0, 270, 0]) {
                     children();
                 }
@@ -115,20 +108,20 @@ module antenna_position(x_offset = 0) {
 }
 
 module space_head_without_visor() {
-    head_alt_width_adjusted = head_alt_width - edge_d;
-    head_alt_height = head_alt_height - edge_d;
-    head_alt_mid_h = 0;
+    head_width_adjusted = head_width - edge_d;
+    head_height = head_height - edge_d;
+    head_mid_h = 0;
 
     module head_form() {
         hull() {
-            translate([0, 0, -head_alt_depth_adjusted/2 + head_alt_height]) {
+            translate([0, 0, -head_depth_adjusted/2 + head_height]) {
                 rotate([90, 0, 0]) {
                     rotate_extrude() {
-                        translate([-head_alt_x_dist + head_alt_depth_adjusted/2, 0]) {
+                        translate([-head_x_dist + head_depth_adjusted/2, 0]) {
                             hull() {
                                 reflect([0, 1, 0]) {
-                                    translate([0, head_alt_flat_with/2]) {
-                                        circle_corner(head_alt_x_dist, head_alt_width_adjusted/2 - head_alt_flat_with/2, head_alt_front_r);
+                                    translate([0, head_flat_width/2]) {
+                                        circle_corner(head_x_dist, head_width_adjusted/2 - head_flat_width/2, head_front_r);
                                     }
                                 }
                             }
@@ -137,18 +130,18 @@ module space_head_without_visor() {
                 }
             }
             reflect([0, 1, 0]) {
-                chin_len = head_alt_height - head_alt_depth_adjusted/2 - head_alt_mid_h;
-                translate([-head_alt_x_dist + head_alt_depth_adjusted/2, 0, chin_len]) {
+                chin_len = head_height - head_depth_adjusted/2 - head_mid_h;
+                translate([-head_x_dist + head_depth_adjusted/2, 0, chin_len]) {
                     rotate([0, 270, 0]) {
                         intersection() {
-                            translate([-chin_len, 0, -head_alt_x_dist]) {
-                                cube([chin_len, head_alt_depth_adjusted/2, head_alt_x_dist]);
+                            translate([-chin_len, 0, -head_x_dist]) {
+                                cube([chin_len, head_depth_adjusted/2, head_x_dist]);
                             }
-                            translate([0, -chin_r + head_alt_front_r + head_alt_flat_with/2]) {
+                            translate([0, -chin_r + head_front_r + head_flat_width/2]) {
                                 rotate_extrude()
-                                translate([chin_r - head_alt_front_r, 0])
+                                translate([chin_r - head_front_r, 0])
                                 rotate(270)
-                                circle_corner(head_alt_x_dist, head_alt_width_adjusted/2 - head_alt_flat_with/2, head_alt_front_r);
+                                circle_corner(head_x_dist, head_width_adjusted/2 - head_flat_width/2, head_front_r);
                             }
                         }
                     }
@@ -157,12 +150,12 @@ module space_head_without_visor() {
        }
     }
 
-    module head_form_with_back_cut() {
-        cut_offset = head_alt_depth_adjusted/2 - head_alt_x_dist + 1;
+    module with_back_cut() {
+        cut_offset = head_depth_adjusted/2 - head_x_dist + 1;
         translate([cut_offset, 0]) {
-            rotate([0, head_alt_cut_angle, 0]) {
+            rotate([0, head_cut_angle, 0]) {
                 xy_cut(size = 40) {
-                    rotate([0, -head_alt_cut_angle, 0]) {
+                    rotate([0, -head_cut_angle, 0]) {
                         translate([-cut_offset, 0]) {
                             head_form();
                         }
@@ -174,12 +167,12 @@ module space_head_without_visor() {
 
     module with_jaw_cut() {
         difference() {
-            translate(head_alt_socket_pos) {
-                rotate(90) head_form_with_back_cut();
+            translate(head_socket_pos) {
+                rotate(90) with_back_cut();
             }
-            translate([-head_alt_width/2, -segment_cut_height/2 - head_alt_depth + edge_d/2, 2]) {
+            translate([-head_width/2, -segment_cut_height/2 - head_depth + edge_d/2, 2]) {
                 rotate([0, 90, 0]) {
-                    rounded_cube([8, segment_cut_height + head_alt_depth, head_alt_width], d = 4, top_d = 0, bottom_d = 0);
+                    rounded_cube([8, segment_cut_height + head_depth, head_width], d = 4, top_d = 0, bottom_d = 0);
                 }
             }
         }
@@ -194,9 +187,7 @@ module space_head_without_visor() {
 
     difference() {
         head_form_rounded();
-        antenna_position() {
-            space_head_antenna_left(true);
-        }
+        antenna_position() space_head_antenna_left(true);
         rotate([90, 0, 0]) socket_with_snaps(true);
     }
 }

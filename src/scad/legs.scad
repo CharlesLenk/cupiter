@@ -19,6 +19,21 @@ rotator_peg_d = segment_height + 0.4;
 rotator_socket_l = rotator_peg_l + socket_shell_width;
 rotator_socket_d = rotator_peg_d + 2 * socket_shell_width + leg_rotator_tolerance;
 
+leg_upper_bot_width_front = get_limb_width_at_y(
+    start_width = leg_upper_top_width/2,
+    end_width = lower_leg_lower_width_front,
+    length = leg_upper_len + leg_lower_armor_len,
+    y = leg_upper_len - hinge_armor_y_offset - 0.1
+);
+leg_lower_width_mid = get_limb_width_at_y(
+    start_width = leg_upper_top_width/2,
+    end_width = lower_leg_lower_width_front,
+    length = leg_upper_len + leg_lower_armor_len,
+    y = leg_upper_len - hinge_armor_y_offset
+);
+
+function knee_max_angle() = knee_max_angle;
+
 module leg_assembly(
     frame_color = frame_color,
     armor_color = armor_color,
@@ -133,21 +148,6 @@ module leg_assembly(
     }
 }
 
-function knee_max_angle() = knee_max_angle;
-
-leg_upper_bot_width_front = get_limb_width_at_y(
-    start_width = leg_upper_top_width/2,
-    end_width = lower_leg_lower_width_front,
-    length = leg_upper_len + leg_lower_armor_len,
-    y = leg_upper_len - hinge_armor_y_offset - 0.1
-);
-leg_lower_width_mid = get_limb_width_at_y(
-    start_width = leg_upper_top_width/2,
-    end_width = lower_leg_lower_width_front,
-    length = leg_upper_len + leg_lower_armor_len,
-    y = leg_upper_len - hinge_armor_y_offset
-);
-
 module leg_upper_armor_blank() {
     limb_upper_armor_blank(
         length = leg_upper_len,
@@ -159,8 +159,6 @@ module leg_upper_armor_blank() {
         joint_offset = knee_joint_offset
     );
 }
-
-leg_lower_armor_blank();
 
 module leg_lower_armor_blank() {
     limb_lower_armor_blank(

@@ -16,18 +16,19 @@ The `frame` and `armor` folders contain all parts other than the hand options.
 * `armor`
   * Contains all the armor parts that clip over the frame.
 
-The following hand parts are optional, and the best one to choose depends on the capabilities of your printer. Pick at least one set of hands and hand armor.
+Two main options are avaialble for hands, and the best one to choose depends on the capabilities of your printer. Pick at least one set of hands.
 * `hand_simple`
-  * A blocky hand in a grip pose that is designed to print without supports.
-* `hand_simple_armor`
-  * Armor that goes on the back of the simple hand.
+  * A blocky hand in a grip pose that is designed to print without supports. `hand_simple_armor` contains the armor for the back of the hands.
 * `hand_complex_grip`
-  * A more detailed hand in a grip pose. Requires supports to print; Organic supports will produce the best result.
-* `hand_complex_armor`
-  * Armor for the back of the complex hands. Print one set for each pair of complex hands you choose to print.
+  * A more detailed hand in a grip pose. Requires supports to print; Organic supports will produce the best result. `hand_complex_armor` contains the armor for the back of the hands
+
+The `alternatives` folder contains additional options for some parts.
 * `hand_complex_posed`
-  * A series of alternate, more detailed hands in a variety of poses. Each pose has a right and left hand version so they can be mixed and matched. All options require supports to print; Organic supports will produce the best result.
+  * A series of alternate, more detailed hands in a variety of poses. Each pose has a right and left hand version so they can be mixed and matched. All hand require supports to print; Organic supports will produce the best result. One set of `hand_complex_armor` should be printed for each set of hands.
   ![](images/alternate_hands.png)
+* `space_head`
+  * An alternate head option that can be used instead of the camera head. The `accessories` folder contains the required antenna and visor.
+  ![](images/space_head_assembled.png)
 
 ## Assembly
 

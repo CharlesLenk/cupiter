@@ -14,8 +14,7 @@ antenna_angle = 45;
 
 function neck_max_angle() = 18;
 
-//head_assembly();
-//socket_with_snaps();
+camera_head_assembly();
 
 module camera_head_assembly(
     frame_color = frame_color,
@@ -50,7 +49,7 @@ module camera_head_antenna_left(is_cut = false) {
 
 module antenna_position(x_offset = 0) {
     reflect([1, 0, 0]) {
-        translate([(eye_socket_diameter + 2 * antenna_depth() + 1)/2 + 1.2 + x_offset, 6]) {
+        translate([(eye_socket_diameter + 1)/2 + 1.2 + x_offset, 6]) {
             rotate([-antenna_angle, 0, 0]) {
                 rotate([0, 270, 0]) {
                     children();
@@ -59,8 +58,6 @@ module antenna_position(x_offset = 0) {
         }
     }
 }
-
-shroud();
 
 module shroud() {
     y_adjust = 1.5;
