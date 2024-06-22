@@ -60,8 +60,6 @@ module visor() {
     }
 }
 
-
-
 module visor_cut(is_cut) {
     cut_depth = segment_cut_height/2 + 2 + visor_depth;
     d = is_cut ? 3.1 : 3;
@@ -73,6 +71,10 @@ module visor_cut(is_cut) {
     }
 }
 
+module space_head_for_print() {
+    rotate([head_cut_angle, 0, 180]) space_head();
+}
+
 module space_head() {
     difference() {
         space_head_without_visor();
@@ -80,6 +82,8 @@ module space_head() {
     }
     visor_pegs();
 }
+
+space_head_for_print();
 
 module visor_pegs(is_cut = false) {
     cut_adjust = is_cut ? 0.1 : 0;
