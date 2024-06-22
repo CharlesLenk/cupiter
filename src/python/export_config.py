@@ -54,5 +54,5 @@ def get_stl_output_directory():
     if config.get('stlOutputDirectory'):
         return config.get('stlOutputDirectory')
     else:
-        default = os.path.join(os.path.expanduser('~'), 'Desktop') + '/cupiter_export/'
+        default = os.path.join(os.path.expanduser('~'), 'Desktop') + '/cupiter_export'
         return assign_config_value(config, 'STL output directory', 'stlOutputDirectory', default)

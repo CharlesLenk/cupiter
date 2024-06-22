@@ -106,7 +106,7 @@ module socket_with_snaps(is_cut = false) {
         rounded_socket_blank(is_cut);
     }
 
-    translate([0, socket_d/2]) snaps_tabs(tab_width, tab_len, height, is_cut);
+    translate([0, socket_d/2 - 0.01]) snaps_tabs(tab_width, tab_len, height, is_cut);
 }
 
 module cross_brace(depth, target_width, is_cut) {
@@ -142,7 +142,16 @@ module shoulder_cut(x, pos_y, neg_y, pos_z, neg_z, ext, d) {
     }
 }
 
-module armor_section(x, y, z, left_d = 0, right_d = 0, center = false, round_len = 3) {
+module circle_fragment(x, d, round_len) {
+    intersection() {
+        translate([-d/2 + x/2, 0]) {
+            circle(d = d);
+        }
+        square([x/2, round_len]);
+    }
+}
+
+module armor_section(x, y, z, left_d, right_d, center = false, round_len = 3) {
     translate([0, center ? -y/2 : 0]) {
         rotate([270, 0, 0]) {
             linear_extrude(y) {
@@ -152,25 +161,23 @@ module armor_section(x, y, z, left_d = 0, right_d = 0, center = false, round_len
     }
 }
 
-module armor_2d(x, y, round_len = 3, d = 8, left_d = 0, right_d = 0) {
+module armor_2d(x, y, round_len = 3, d = 8, left_d, right_d) {
     mid = y - 2 * round_len;
-    left_d = left_d == 0 ? d : left_d;
-    right_d = right_d == 0 ? d : right_d;
+    left_d = is_positive(left_d) ? left_d : d;
+    right_d = is_positive(right_d) ? right_d : d;
 
     hull() {
         reflect([0, 1, 0]) {
-            translate([0, mid/2]) circle_fragment(x, left_d, round_len);
-            mirror([1, 0, 0]) translate([0, mid/2]) circle_fragment(x, right_d, round_len);
+            translate([0, mid/2]) circle_corner(x/2, round_len, left_d/2);
+            mirror([1, 0, 0]) translate([0, mid/2]) circle_corner(x/2, round_len, right_d/2);
         }
     }
 }
 
-module circle_fragment(x, d, round_len) {
+module circle_corner(x, y, r) {
     intersection() {
-        translate([-d/2 + x/2, 0]) {
-            circle(d = d);
-        }
-        square([x/2, round_len]);
+        translate([-r + x, r > y ? 0 : -r + y]) circle(r);
+        square([x, y]);
     }
 }
 

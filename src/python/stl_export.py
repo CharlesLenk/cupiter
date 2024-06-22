@@ -4,11 +4,11 @@ from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen, PIPE
 from export_config import get_openscad_location, get_stl_output_directory
 
-part_groups = {
+part_map = {
     'frame': {
         'lens': 1,
-        'antenna_left': 1,
-        'antenna_right': 1,
+        'camera_head_antenna_left': 1,
+        'camera_head_antenna_right': 1,
         'neck': 1,
         'chest': 1,
         'waist': 1,
@@ -22,7 +22,7 @@ part_groups = {
         'socket_with_snap_tabs': 3
     },
     'armor': {
-        'head': 1,
+        'camera_head': 1,
         'chest_armor': 2,
         'waist_armor': 2,
         'pelvis_armor': 2,
@@ -38,40 +38,66 @@ part_groups = {
         'shoulder_armor': 2,
         'foot': 2
     },
-    'hand_complex_posed': {
-        'hand_flat_right': 1,
-        'hand_flat_left': 1,
-        'hand_relaxed_right': 1,
-        'hand_relaxed_left': 1,
-        'hand_fist_right': 1,
-        'hand_fist_left': 1,
-        'hand_love_right': 1,
-        'hand_love_left': 1,
-        'hand_prosper_right': 1,
-        'hand_prosper_left': 1,
-        'hand_peace_right': 1,
-        'hand_peace_left': 1,
-        'hand_five_right': 1,
-        'hand_five_left': 1,
-        'hand_open_grip_right': 1,
-        'hand_open_grip_left': 1
+    'alternatives': {
+        'hand_complex_posed': {
+            'hand_flat_right': 1,
+            'hand_flat_left': 1,
+            'hand_relaxed_right': 1,
+            'hand_relaxed_left': 1,
+            'hand_fist_right': 1,
+            'hand_fist_left': 1,
+            'hand_love_right': 1,
+            'hand_love_left': 1,
+            'hand_prosper_right': 1,
+            'hand_prosper_left': 1,
+            'hand_peace_right': 1,
+            'hand_peace_left': 1,
+            'hand_five_right': 1,
+            'hand_five_left': 1,
+            'hand_open_grip_right': 1,
+            'hand_open_grip_left': 1,
+            'armor': {
+                'hand_armor_right': 1,
+                'hand_armor_left': 1
+            }
+        },
+        'space_head': {
+            'space_head': 1,
+            'accessories': {
+                'visor': 1,
+                'space_head_antenna_left': 1,
+                'space_head_antenna_right': 1
+            }
+        }
     },
     'hand_complex_grip': {
         'hand_grip_right': 1,
-        'hand_grip_left': 1
-    },
-    'hand_complex_armor': {
-        'hand_armor_right': 1,
-        'hand_armor_left': 1
+        'hand_grip_left': 1,
+        'armor': {
+            'hand_armor_right': 1,
+            'hand_armor_left': 1
+        },
     },
     'hand_simple': {
         'hand_simple_right': 1,
-        'hand_simple_left': 1
-    },
-    'hand_simple_armor': {
-        'hand_simple_armor': 2
+        'hand_simple_left': 1,
+        'armor': {
+            'hand_simple_armor': 2
+        }
     }
 }
+
+def flatten_to_folders_and_parts(parts, current_path = ''):
+    flattened = {}
+    for key, value in parts.items():
+        if (type(value) is int):
+            if flattened.get(current_path):
+                flattened[current_path].update({ key: value })
+            else:
+                flattened[current_path] = { key: value }
+        else:
+            flattened.update(flatten_to_folders_and_parts(value, current_path + '/' + key))
+    return flattened
 
 def generate_part(openscad_location, output_directory, folder, part, count):
     part_file_name = part + '.stl'
@@ -98,9 +124,9 @@ def print_parts():
     with ThreadPoolExecutor(max_workers = os.cpu_count()) as executor:
         openscad_location = get_openscad_location()
         base_output_directory = get_stl_output_directory()
-        print('Starting SLT generation')
+        print('Starting STL generation')
         futures = []
-        for folder, part_group in part_groups.items():
+        for folder, part_group in flatten_to_folders_and_parts(part_map).items():
             output_directory = base_output_directory + folder + '/'
             for part, count in part_group.items():
                 futures.append(executor.submit(generate_part, openscad_location, output_directory, folder, part, count))

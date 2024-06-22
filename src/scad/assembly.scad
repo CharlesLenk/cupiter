@@ -1,7 +1,8 @@
 include <openscad-utilities/common.scad>
 include <globals.scad>
 use <robot common.scad>
-use <head.scad>
+use <camera head.scad>
+use <space head.scad>
 use <body.scad>
 use <arms.scad>
 use <legs.scad>

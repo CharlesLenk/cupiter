@@ -1,4 +1,5 @@
-use <head.scad>
+use <camera head.scad>
+use <space head.scad>
 use <arms.scad>
 use <body.scad>
 use <legs.scad>
