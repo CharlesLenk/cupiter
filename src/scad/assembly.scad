@@ -1,7 +1,8 @@
 include <openscad-utilities/common.scad>
 include <globals.scad>
 use <robot common.scad>
-use <head.scad>
+use <camera head.scad>
+use <space head.scad>
 use <body.scad>
 use <arms.scad>
 use <legs.scad>
@@ -28,6 +29,7 @@ module shoulder_note() {
 module assembly(
     frame_color = frame_color,
     armor_color = armor_color,
+    space_head = false,
     with_armor = true,
     arm_retract_angle = 0,
     arm_lift_angle = 0,
@@ -38,6 +40,7 @@ module assembly(
     body_assembly(
         frame_color = frame_color,
         armor_color = armor_color,
+        space_head = space_head,
         with_armor = with_armor,
         head = true,
         hip_armor = true,
@@ -52,6 +55,7 @@ module assembly(
 module body_assembly(
     frame_color = frame_color,
     armor_color = armor_color,
+    space_head = false,
     with_armor = true,
     head = false,
     explode_head = false,
@@ -71,6 +75,7 @@ module body_assembly(
     upper_body_assembly(
         frame_color = frame_color,
         armor_color = armor_color,
+        space_head = space_head,
         with_armor = with_armor,
         chest_armor = true,
         shoulder_armor = true,
@@ -111,6 +116,7 @@ module body_assembly(
 module upper_body_assembly(
     frame_color = frame_color,
     armor_color = armor_color,
+    space_head = false,
     with_armor = true,
     explode_arms = false,
     chest_armor = false,
@@ -131,11 +137,24 @@ module upper_body_assembly(
     head_explode_y = explode_head ? 30 : 0;
 
     if (head) {
-        translate([0, -neck_len - head_explode_y]) {
-            rotate(180) head_assembly(
-                frame_color = frame_color,
-                armor_color = armor_color
-            );
+        if (space_head) {
+            translate([0, -neck_len - head_explode_y]) {
+                rotate([90, 0, 0]) {
+                    space_head_assembly(
+                        frame_color = frame_color,
+                        armor_color = armor_color
+                    );
+                }
+            }
+        } else {
+            translate([0, -neck_len - head_explode_y]) {
+                rotate(180) {
+                    camera_head_assembly(
+                        frame_color = frame_color,
+                        armor_color = armor_color
+                    );
+                }
+            }
         }
         if (explode_head) {
             translate([0, -neck_len - head_explode_y/2 - 2]) {

@@ -85,7 +85,7 @@ module armor_snap_outer(
     }
 }
 
-module snaps_tabs(x, y, z, is_cut = false) {
+module snaps_tabs(x, y, z, is_cut = false, snap_depth = 0.5) {
     cut_adjust = is_cut ? 0.15 : 0;
 
     snap_tab_width = 1;
@@ -96,8 +96,8 @@ module snaps_tabs(x, y, z, is_cut = false) {
             rotate([90, 0, 0]) {
                 armor_snap_outer(
                     length = z,
-                    target_width = width - 2 * snap_tab_width,
-                    depth = 1.5,
+                    target_width = width,
+                    depth = snap_depth,
                     is_cut = is_cut
                 );
             }
@@ -113,11 +113,13 @@ module snaps_tabs(x, y, z, is_cut = false) {
         }
     } else {
         translate([0, 0.001, -z/2]) {
-            translate([- width/2, 0, 0]) {
-                cube([snap_tab_width, y - 0.75, z]);
-            }
-            translate([width/2 - snap_tab_width, 0, 0]) {
-                cube([snap_tab_width, y - 0.75, z]);
+            reflect([1, 0, 0]) {
+                translate([-width/2, 0, 0]) {
+                    hull() {
+                        cube([snap_tab_width, y - 1 + get_opposite(snap_angle/2, snap_depth), z]);
+                        translate([snap_tab_width/2, 0, 0]) cube([snap_tab_width/2, y, z]);
+                    }
+                }
             }
         }
     }

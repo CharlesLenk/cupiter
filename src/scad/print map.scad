@@ -1,7 +1,8 @@
 include <openscad-utilities/common.scad>
 include <globals.scad>
 use <robot common.scad>
-use <head.scad>
+use <camera head.scad>
+use <space head.scad>
 use <body.scad>
 use <arms.scad>
 use <legs.scad>
@@ -12,10 +13,10 @@ part = "";
 part_for_print(part);
 
 module part_for_print(part) {
-    if (part == "head") head();
+    if (part == "camera_head") camera_head();
     else if (part == "lens") lens();
-    else if (part == "antenna_left") antenna_left();
-    else if (part == "antenna_right") mirror([1, 0, 0]) antenna_left();
+    else if (part == "camera_head_antenna_left") camera_head_antenna_left();
+    else if (part == "camera_head_antenna_right") mirror([1, 0, 0]) camera_head_antenna_left();
     else if (part == "neck") neck();
     else if (part == "chest") rotate(180) chest();
     else if (part == "chest_armor") chest_armor();
@@ -28,7 +29,7 @@ module part_for_print(part) {
     else if (part == "arm_upper") rotate(180) arm_upper();
     else if (part == "arm_upper_armor_left") arm_upper_armor(true);
     else if (part == "arm_upper_armor_right") arm_upper_armor();
-    else if (part == "arm_lower") rotate(180)arm_lower();
+    else if (part == "arm_lower") rotate(180) arm_lower();
     else if (part == "arm_lower_armor_left") arm_lower_armor(true);
     else if (part == "arm_lower_armor_right") arm_lower_armor();
     else if (part == "leg_upper") leg_upper();
@@ -64,4 +65,8 @@ module part_for_print(part) {
     else if (part == "hand_open_grip_left") mirror([1, 0, 0]) modify_hand_for_print() open_grip();
     else if (part == "hand_armor_right") hand_armor();
     else if (part == "hand_armor_left") mirror([1, 0, 0]) hand_armor();
+    else if (part == "space_head") space_head_for_print();
+    else if (part == "visor") rotate([90, 0, 0]) visor();
+    else if (part == "space_head_antenna_left") space_head_antenna_left();
+    else if (part == "space_head_antenna_right") mirror([1, 0, 0]) space_head_antenna_left();
 }

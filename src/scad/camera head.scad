@@ -1,6 +1,7 @@
 include <openscad-utilities/common.scad>
 include <globals.scad>
 use <robot common.scad>
+use <antenna.scad>
 
 lens_diameter = 12;
 eye_socket_diameter = lens_diameter + 2;
@@ -11,9 +12,11 @@ head_cube_y = eye_socket_diameter + 2 * min_wall_width + 1;
 head_cube_z = 14;
 antenna_angle = 45;
 
-antenna_depth = 1.35;
+function neck_max_angle() = 18;
 
-module head_assembly(
+camera_head_assembly();
+
+module camera_head_assembly(
     frame_color = frame_color,
     armor_color = armor_color,
     explode = false
@@ -33,88 +36,26 @@ module head_assembly(
             rotate([90, 0, 0]) assembly_arrow();
         }
     }
-    color(armor_color) head();
-    antenna_position(antenna_explode_x) color(frame_color) antenna_left();
+    color(armor_color) camera_head();
+    antenna_position(antenna_explode_x) {
+        color(frame_color) camera_head_antenna_left();
+    }
     translate([0, head_cube_y_offset, head_cube_z/2 - 0.5 + lens_explode_z]) color(frame_color) lens();
 }
 
-
-function neck_len() = neck_len;
-function neck_max_angle() = 18;
+module camera_head_antenna_left(is_cut = false) {
+    antenna_left(is_cut = is_cut, antenna_angle = antenna_angle);
+}
 
 module antenna_position(x_offset = 0) {
     reflect([1, 0, 0]) {
-        translate([(eye_socket_diameter + 2 * antenna_depth + 1)/2 + 1.2 + x_offset, 6]) {
+        translate([(eye_socket_diameter + 1)/2 + 1.2 + x_offset, 6]) {
             rotate([-antenna_angle, 0, 0]) {
                 rotate([0, 270, 0]) {
                     children();
                 }
             }
         }
-    }
-}
-
-module antenna_left(is_cut = false) {
-    base_d = 5;
-    peg_h = 3;
-
-    if (is_cut) {
-        rotate(45 - antenna_angle) {
-            translate([0, 0, antenna_depth]) {
-                linear_extrude(peg_h + 0.15) {
-                    offset(0.04) {
-                        peg_polygon();
-                    }
-                }
-            }
-        }
-        translate([0, 0, antenna_depth]) cylinder(d = base_d + 0.2, h = 1);
-    } else {
-        rotate(45 - antenna_angle) {
-            translate([0, 0, antenna_depth]) {
-                linear_extrude(peg_h) {
-                    peg_polygon();
-                }
-            }
-        }
-        translate([0, 0, antenna_depth]) cylinder(d = 5, h = 1);
-        x = 1.6;
-        y1 = 5;
-        y2 = y1 + 6;
-        gap = 0.3;
-        cylinder(d1 = base_d - 1.5, d2 = base_d, h = antenna_depth);
-        linear_extrude(antenna_depth) {
-            polygon(
-                [
-                    [x/2, 0],
-                    [x/2, y1],
-                    [x + gap, y1 + x/2],
-                    [x + gap, y2],
-                    [gap, y2],
-                    [gap, y1 + x],
-                    [-gap, y1 + x],
-                    [-gap, y2],
-                    [-x - gap, y2],
-                    [-x - gap, y1 + x/2],
-                    [-x/2, y1],
-                    [-x/2, 0],
-                ]
-            );
-        }
-    }
-
-    module peg_polygon() {
-        peg_xy = 2.5;
-        chamfer = 1;
-        polygon(
-            [
-                [peg_xy/2, peg_xy/2],
-                [peg_xy/2, -peg_xy/2],
-                [-peg_xy/2 + chamfer, -peg_xy/2],
-                [-peg_xy/2, -peg_xy/2 + chamfer],
-                [-peg_xy/2, peg_xy/2]
-            ]
-        );
     }
 }
 
@@ -154,18 +95,23 @@ module shroud() {
     module head_block(x, y, z, head_corner_r = head_corner_r) {
         slope_d = 45;
         translate([0, -head_corner_r + y/2]) {
-            hull() {
-                reflect([1, 0, 0]) {
-                    translate([x/2 - head_corner_r, 0]) {
-                        rotate_extrude(angle = 90) {
-                            head_part_2d(head_corner_r, slope_d, z, 10);
+            intersection() {
+                hull() {
+                    reflect([1, 0, 0]) {
+                        translate([x/2 - head_corner_r, 0]) {
+                            rotate_extrude(angle = 90) {
+                                head_part_2d(head_corner_r, slope_d, z, 10);
+                            }
+                        }
+                        rotate([90, 0, 0]) {
+                            linear_extrude(y - head_corner_r) {
+                                head_part_2d(x/2, slope_d, z, 10);
+                            }
                         }
                     }
-                    rotate([90, 0, 0]) {
-                        linear_extrude(y - head_corner_r) {
-                            head_part_2d(x/2, slope_d, z, 10);
-                        }
-                    }
+                }
+                translate([x/2, head_corner_r]) {
+                    rotate([90, 0, 270]) cube_one_round_corner([y, z, x], 1.5);
                 }
             }
         }
@@ -182,12 +128,12 @@ module shroud() {
     }
 }
 
-module head() {
+module camera_head() {
     difference() {
         translate([0, head_cube_y_offset, -head_cube_z/2]) {
             head_base(lens_diameter);
         }
-        antenna_position() antenna_left(true);
+        antenna_position() camera_head_antenna_left(true);
         translate([0, -10 + socket_d/2, 0]) {
             rotate([-90, 0, 0]) cylinder(d = socket_d, h = 10);
         }

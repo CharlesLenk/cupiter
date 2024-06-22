@@ -11,32 +11,36 @@ This project is written in native OpenSCAD and can be edited without any additio
 OpenSCAD has an "Automatic Reload and Preview" option that will refresh the preview whenever a file is updated, even if the updates come from an external tool. In this way, you can have multiple instances of OpenSCAD showing previews of different parts in different files, and have all previews refresh to show your edits whenever you save in VSCode, which makes viewing changes to assemblies of multiple parts much easier.
 
 ### Navigating the Files
+* antenna.scad
+    * The antenna that go on the sides of the head options.
 * arms.scad
-  * Code for generating the arms, including the shoulder that connects to the torso.
+    * The arms, including the shoulder that connects to the torso.
 * assembly image map.scad
-  * Provides a selector between multiple assembly views. Used by the script that exports assembly instruction images.
+    * Provides a selector between multiple assembly views. Used by the script that exports assembly instruction images.
 * assembly.scad
-  * Provides an assembled view of the project.
+    * Provides an assembled view of the project.
 * body.scad
-  * Code for generating the three main torso segments.
+    * The three main torso segments.
+* camera head.scad
+    * A head option that resembles a camera.
 * feet.scad
-  * Code for generating the feet.
+    * The feet.
 * globals.scad
-  * Contains global variables for the project.
+    * Contains global variables for the project.
 * hands.scad
-  * Code for generating the hands.
-* head.scad
-  * Code for generating the head, neck segment, and lens.
+    * All complex and simple hand options.
 * legs.scad
-  * Code for generating the legs, including the hip that connects to the torso.
+    * The legs, including the hip that connects to the torso.
 * limbs.scad
-  * Shared code for the arms and legs.
+    * Shared code for the arms and legs.
 * print map.scad
-  * Imports all the other parts and rotates them into correct orientations for printing in order to simplify the export script.
+    * Imports all the other parts and rotates them into correct orientations for printing in order to simplify the export script.
 * robot common.scad
-  * Some common modules that didn't fit well into other files.
+    * Some common modules that didn't fit well into other files.
 * snaps.scad
-  * Code for the snap bumps that help hold parts together.
+    * Code for the snap bumps that help hold parts together.
+* space head.scad
+    * An alternate head option.
 
 ## Generating the Parts
 
@@ -46,9 +50,11 @@ As of 2024, the OpenSCAD development preview uses a new rendering engine called 
 
 ### Exporting with the Script
 
-In order to generate the parts, a [Python](https://www.python.org/) export script is provided. I've made an effort to make the script multi-platform, but you may need to edit it based on your specific configuration. The script assumes that you:
-* have a version of OpenSCAD installed in the default folder for your OS.
-* have a `Desktop` folder on your path that can be written to.
+In order to generate the parts, a [Python](https://www.python.org/) export script is provided in `src/python/stl_export.py`.
+
+If running using VSCode, set the `Execute in File Dir` option for Python. VSCode will run the script from the currently open folder by default, but for the folder pathing to work correctly the script is meant to be run from the `python` folder.
+
+When first run, the export script will prompt for the location of OpenSCAD on your system, and what location the files should be output to. As long as OpenSCAD is installed in the standard applications directory for your system and you have a Desktop folder, the defaults provided should work without customization. The values are saved to `export.conf`, which can be edited directly if you need to change the OpenSCAD location or output directory. If `export.conf` is deleted, the script will reprompt when next run.
 
 The export will have the folder structure given in the [instructions](../instructions/README.md)
 
