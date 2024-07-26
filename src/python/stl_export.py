@@ -2,7 +2,7 @@ import os
 import shutil
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen, PIPE
-from export_config import get_openscad_location, get_stl_output_directory
+from export_config import init_config, get_openscad_location, get_stl_output_directory, get_manifold_support
 
 part_map = {
     'frame': {
@@ -99,15 +99,22 @@ def flatten_to_folders_and_parts(parts, current_path = ''):
             flattened.update(flatten_to_folders_and_parts(value, current_path + '/' + key))
     return flattened
 
-def generate_part(openscad_location, output_directory, folder, part, count):
+def generate_part(output_directory, folder, part, count):
     part_file_name = part + '.stl'
     os.makedirs(output_directory, exist_ok=True)
 
-    process = Popen([openscad_location,
-                     '-Dpart="' + part + '"',
-                     '-o' + output_directory + part_file_name,
-                     '../scad/print map.scad'], stdout=PIPE, stderr=PIPE)
-    out, err = process.communicate()
+    args = [
+        get_openscad_location(),
+        '-Dpart="' + part + '"',
+        '-o' + output_directory + part_file_name,
+        '../scad/print map.scad'
+    ]
+
+    if get_manifold_support():
+        args.append('--enable=manifold')
+
+    process = Popen(args, stdout=PIPE, stderr=PIPE)
+    _, err = process.communicate()
 
     output = ""
     if (process.returncode == 0):
@@ -122,14 +129,12 @@ def generate_part(openscad_location, output_directory, folder, part, count):
 
 def print_parts():
     with ThreadPoolExecutor(max_workers = os.cpu_count()) as executor:
-        openscad_location = get_openscad_location()
-        base_output_directory = get_stl_output_directory()
         print('Starting STL generation')
         futures = []
         for folder, part_group in flatten_to_folders_and_parts(part_map).items():
-            output_directory = base_output_directory + folder + '/'
+            output_directory = get_stl_output_directory() + folder + '/'
             for part, count in part_group.items():
-                futures.append(executor.submit(generate_part, openscad_location, output_directory, folder, part, count))
+                futures.append(executor.submit(generate_part, output_directory, folder, part, count))
         for future in futures:
             print(future.result())
         print('Done!')

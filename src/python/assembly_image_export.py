@@ -1,7 +1,7 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen, PIPE
-from export_config import get_openscad_location
+from export_config import init_config, get_openscad_location, get_manifold_support
 
 images_map = {
     'alternate_hands':      '38,8,13,37,0,29,156',
@@ -53,19 +53,26 @@ images_map = {
     'body_space_head_assembled':    '0,35,6,34,0,240,315'
 }
 
-def generate_image(openscad_location, image_name, camera_pos):
+def generate_image(image_name, camera_pos):
     image_file_name = image_name + '.png'
 
-    process = Popen([openscad_location,
-                     '-Dpart="' + image_name + '"',
-                     '-D$fs=0.4',
-                     '-D$fa=0.8',
-                     '--camera=' + camera_pos,
-                     '-o' + '../../instructions/images/' + image_file_name,
-                     '--colorscheme=Tomorrow Night',
-                     '--imgsize=2000,1200',
-                     '../scad/assembly image map.scad'], stdout=PIPE, stderr=PIPE)
-    out, err = process.communicate()
+    args = [
+        get_openscad_location(),
+        '-Dpart="' + image_name + '"',
+        '-D$fs=0.4',
+        '-D$fa=0.8',
+        '--camera=' + camera_pos,
+        '--colorscheme=Tomorrow Night',
+        '--imgsize=2000,1200',
+        '-o' + '../../instructions/images/' + image_file_name,
+        '../scad/assembly image map.scad'
+    ]
+
+    if get_manifold_support():
+        args.extend(['--enable=manifold', '--render=true'])
+
+    process = Popen(args, stdout=PIPE, stderr=PIPE)
+    _, err = process.communicate()
 
     output = ""
     if (process.returncode == 0):
@@ -76,11 +83,10 @@ def generate_image(openscad_location, image_name, camera_pos):
 
 def generate_images():
     with ThreadPoolExecutor(max_workers = os.cpu_count()) as executor:
-        openscad_location = get_openscad_location()
         print('Starting image generation')
         futures = []
         for image_name, camera_pos in images_map.items():
-            futures.append(executor.submit(generate_image, openscad_location, image_name, camera_pos))
+            futures.append(executor.submit(generate_image, image_name, camera_pos))
         for future in futures:
             print(future.result())
         print('Done!')
