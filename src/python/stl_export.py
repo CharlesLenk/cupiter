@@ -2,7 +2,7 @@ import os
 import shutil
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen, PIPE
-from export_config import init_config, get_openscad_location, get_stl_output_directory, get_manifold_support
+from export_config import get_openscad_location, get_stl_output_directory, get_manifold_support, get_project_root
 
 part_map = {
     'frame': {
@@ -68,6 +68,14 @@ part_map = {
                 'space_head_antenna_left': 1,
                 'space_head_antenna_right': 1
             }
+        },
+        'wings': {
+            'frame': {
+                'wing_attach': 1
+            },
+            'armor': {
+                'chest_armor_with_wing_attach': 1
+            }
         }
     },
     'hand_complex_grip': {
@@ -107,7 +115,7 @@ def generate_part(output_directory, folder, part, count):
         get_openscad_location(),
         '-Dpart="' + part + '"',
         '-o' + output_directory + part_file_name,
-        '../scad/print map.scad'
+        get_project_root() + '/src/scad/print map.scad'
     ]
 
     if get_manifold_support():

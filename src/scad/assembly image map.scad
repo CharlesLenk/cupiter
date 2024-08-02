@@ -1,3 +1,4 @@
+include <openscad-utilities/common.scad>
 include <globals.scad>
 use <camera head.scad>
 use <space head.scad>
@@ -59,4 +60,7 @@ module part_for_print(part) {
     if (part == "space_head_assembled") space_head_assembly();
     if (part == "body_space_head_exploded") body_assembly(space_head = true, explode_head = true, hip_armor = true, arm_retract_angle = 80);
     if (part == "body_space_head_assembled") assembly(space_head = true, arm_retract_angle = 80);
+
+    if (part == "wing_attach") chest_armor_with_wing_attach_assembly(true);
+    if (part == "upper_body_chest_armor_wings") upper_body_assembly(explode_chest_armor = true, wing_attach = true);
 }

@@ -1,7 +1,7 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen, PIPE
-from export_config import init_config, get_openscad_location, get_manifold_support
+from export_config import get_openscad_location, get_manifold_support, get_project_root
 
 images_map = {
     'alternate_hands':      '38,8,13,37,0,29,156',
@@ -50,7 +50,10 @@ images_map = {
     'space_head_exploded':          '-5,5,9,61,0,219,113',
     'space_head_assembled':         '-5,5,9,61,0,219,113',
     'body_space_head_exploded':     '0,35,6,34,0,240,315',
-    'body_space_head_assembled':    '0,35,6,34,0,240,315'
+    'body_space_head_assembled':    '0,35,6,34,0,240,315',
+
+    'wing_attach':                  '0,2,-16,117,0,343,92',
+    'upper_body_chest_armor_wings': '-11,6,5,61,0,227,213',
 }
 
 def generate_image(image_name, camera_pos):
@@ -59,17 +62,17 @@ def generate_image(image_name, camera_pos):
     args = [
         get_openscad_location(),
         '-Dpart="' + image_name + '"',
-        '-D$fs=0.4',
-        '-D$fa=0.8',
         '--camera=' + camera_pos,
         '--colorscheme=Tomorrow Night',
         '--imgsize=2000,1200',
-        '-o' + '../../instructions/images/' + image_file_name,
-        '../scad/assembly image map.scad'
+        '-o' + get_project_root() + '/instructions/images/' + image_file_name,
+        get_project_root() + '/src/scad/assembly image map.scad'
     ]
 
     if get_manifold_support():
         args.extend(['--enable=manifold', '--render=true'])
+    else:
+        args.extend(['-D$fs=0.4', '-D$fa=0.8'])
 
     process = Popen(args, stdout=PIPE, stderr=PIPE)
     _, err = process.communicate()
