@@ -69,4 +69,6 @@ module part_for_print(part) {
     else if (part == "visor") rotate([90, 0, 0]) visor();
     else if (part == "space_head_antenna_left") space_head_antenna_left();
     else if (part == "space_head_antenna_right") mirror([1, 0, 0]) space_head_antenna_left();
+    else if (part == "chest_armor_with_wing_attach") chest_armor_with_wing_attach();
+    else if (part == "wing_attach") wing_attach();
 }

@@ -9,11 +9,10 @@ hip_len = 13.1;
 waist_len = socket_r + ball_dist + 1;
 chest_len = torso_len - waist_len - hip_len;
 shoulder_inner_width = shoulder_width - 2 * (ball_dist + socket_d/2);
+chest_armor_inner_width = shoulder_inner_width + 0.9 * ball_d;
 
 torso_width_start = socket_d + 3;
-torso_width_inc = 1.2;
 torso_height_start = socket_d + 2.2;
-torso_height_inc = 0.75;
 waist_ball_overlap_adjust = 2.5;
 
 socket_snap_depth = 0.35;
@@ -37,7 +36,8 @@ module torso_assembly(
     waist_armor = false,
     explode_waist_armor = false,
     pelvis_armor = false,
-    explode_pelvis_armor = false
+    explode_pelvis_armor = false,
+    wing_attach = false
 ) {
     chest_armor = with_armor && (explode_chest_armor ? true : chest_armor);
     waist_armor = with_armor && (explode_waist_armor ? true : waist_armor);
@@ -65,8 +65,19 @@ module torso_assembly(
     }
     color(frame_color) chest();
     if (chest_armor) {
+        translate([0, 0, -chest_armor_explode_z]) {
+            if (wing_attach) {
+                chest_armor_with_wing_attach_assembly();
+            } else {
+                color(armor_color) chest_armor();
+            }
+        }
+        translate([0, 0, chest_armor_explode_z]) {
+            rotate([0, 180, 0]) {
+                color(armor_color) chest_armor();
+            }
+        }
         reflect([0, 0, 1]) {
-            translate([0, 0, -chest_armor_explode_z]) color(armor_color) chest_armor();
             if (explode_chest_armor) {
                 translate([0, chest_len/2, -chest_armor_explode_z/2 - 2]) {
                     rotate([270, 0, 45]) assembly_arrow();
@@ -86,7 +97,7 @@ module torso_assembly(
                 translate([0, 0, -waist_armor_explode_z]) color(armor_color) waist_armor();
                 if (explode_waist_armor) {
                     translate([0, waist_len/2, -waist_armor_explode_z/2 - 2]) {
-                        rotate([270, 0, 90]) assembly_arrow();
+                        rotate([270, 0, 45]) assembly_arrow();
                     }
                 }
             }
@@ -104,8 +115,101 @@ module torso_assembly(
                 translate([0, 0, -pelvis_armor_explode_z]) color(armor_color) pelvis_armor();
                 if (explode_pelvis_armor) {
                     translate([0, hip_len/2, -pelvis_armor_explode_z/2 - 2]) {
-                        rotate([270, 0, 90]) assembly_arrow();
+                        rotate([270, 0, 45]) assembly_arrow();
                     }
+                }
+            }
+        }
+    }
+}
+
+module chest_armor_with_wing_attach_assembly(
+    explode = false
+) {
+    explode_dist = explode ? -12 : 0;
+
+    color(armor_color) chest_armor_with_wing_attach();
+    translate([0, shoulder_height, explode_dist]) {
+        rotate([90, 180, 0]) {
+            if (explode) {
+                reflect([1, 0, 0]) {
+                    translate([-16, 12]) {
+                        rotate(90) assembly_arrow();
+                    }
+                }
+            }
+            color(frame_color) wing_attach();
+            if (explode) assembly_arrow();
+        }
+    }
+}
+
+module chest_armor_with_wing_attach() {
+    difference() {
+        chest_armor();
+        translate([0, shoulder_height, 0]) {
+            rotate([270, 0, 0]) {
+                wing_attach(true);
+            }
+        }
+    }
+}
+
+module wing_attach(is_cut = false) {
+    interior_cut_adjust = is_cut ? 0.15 : 0;
+    height = is_cut ? segment_cut_height : segment_height;
+
+    clip_wall_width = 1.6;
+    width = chest_armor_inner_width;
+    clip_depth = (torso_height_start - segment_cut_height)/2 + clip_wall_width;
+    tab_size = 1.2;
+
+    ball_position = [width/2 - segment_width/2, clip_depth - segment_width/2];
+    ball_extension = 0.5;
+    ball_angle = 25;
+
+    difference() {
+        translate([0, -clip_depth + torso_height_start/2 + clip_wall_width]) {
+            reflect([1, 0, 0]) {
+                translate(ball_position) {
+                    rotate(180 - ball_angle) {
+                        translate([0, -ball_dist - ball_extension - segment_width/2]) ball();
+                    }
+                }
+            }
+            translate([0, 0, -height/2]) {
+                linear_extrude(height) {
+                    difference() {
+                        union() {
+                            translate([-width/2, 0]) {
+                                rounded_square_2([width, clip_depth], 0, 0, segment_width/2, segment_width/2);
+                            }
+                            reflect([1, 0, 0]) {
+                                translate(ball_position) {
+                                    rotate(-ball_angle) {
+                                        translate([-segment_width/2, -segment_width/2]) {
+                                            square([segment_width, segment_width + ball_extension]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        clip_middle_cut_width = width - 2 * clip_wall_width - 2 * interior_cut_adjust;
+                        translate([-clip_middle_cut_width/2, tab_size]) {
+                            square([clip_middle_cut_width, clip_depth - clip_wall_width - tab_size]);
+                        }
+                        clip_tab_cut_width = clip_middle_cut_width - 1.6;
+                        translate([-clip_tab_cut_width/2, 0]) {
+                            square([clip_tab_cut_width, tab_size]);
+                        }
+                    }
+                }
+            }
+        }
+        if (!is_cut) {
+            reflect([1, 0, 0]) {
+                translate([shoulder_inner_width/2, 0]) {
+                    sphere(d = ball_d + 0.4);
                 }
             }
         }
@@ -198,9 +302,7 @@ module chest(is_cut = false) {
 module chest_armor_blank() {
     height = torso_height_start - edge_d;
 
-    shoulder_segment_width = shoulder_width - 2 * ball_dist;
-    shoulder_width_offset = ball_dist - segment_height/2;
-    inner_segment_width = shoulder_segment_width - 2 * shoulder_width_offset - edge_d;
+    inner_segment_width = chest_armor_inner_width - edge_d;
 
     neck_segment_width = 8;
 
@@ -229,8 +331,8 @@ module chest_armor_blank() {
                 }
             }
             reflect([1, 0, 0]) {
-                translate([inner_segment_width/2, -1, -height/2]) {
-                    rounded_cube([10, 13, height], d = 3, top_d = 0, bottom_d = 0);
+                translate([inner_segment_width/2, 0, -height/2]) {
+                    rounded_cube([10, 12, height], d = 3, top_d = 0, bottom_d = 0);
                 }
             }
         }

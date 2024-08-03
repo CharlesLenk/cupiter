@@ -15,7 +15,7 @@ module snap_bump(
 
     translate([depth - target_width/2 + depth_cut_adjust, -width_cut_adjust/2]) {
         rotate([0, 90, 90]) {
-            wedge(snap_angle, depth + depth_cut_adjust + 0.1, length + width_cut_adjust);
+            wedge(snap_angle, depth + depth_cut_adjust + 0.15, length + width_cut_adjust);
         }
     }
 }

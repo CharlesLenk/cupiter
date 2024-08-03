@@ -99,3 +99,7 @@ Some parts look similar and it can be hard to tell the correct orientation. From
 ![](images/space_head_assembled.png)
 ![](images/body_space_head_exploded.png)
 ![](images/body_space_head_assembled.png)
+
+### Wing Attach
+![](images/wing_attach.png)
+![](images\upper_body_chest_armor_wings.png)

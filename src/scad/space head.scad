@@ -16,8 +16,8 @@ head_cut_angle = 40;
 chin_r = 21;
 
 head_antenna_angle = -45;
-visor_depth = -0.1;
-head_socket_pos = [0, 0.5, -4];
+visor_depth = -0.2;
+head_socket_pos = [0, 0.3, -4];
 
 module space_head_assembly(
     frame_color = frame_color,
@@ -40,14 +40,12 @@ module space_head_assembly(
         }
     }
     color(armor_color) space_head();
-    antenna_position(antenna_explode_x) {
-        color(frame_color) space_head_antenna_left();
+    translate(head_socket_pos) {
+        antenna_position(antenna_explode_x) {
+            color(frame_color) space_head_antenna_left();
+        }
+        translate([0, visor_depth + lens_explode_z, 0]) color(frame_color) visor();
     }
-    translate([0, visor_depth + lens_explode_z, 0]) color(frame_color) visor();
-}
-
-module space_head_antenna_left(is_cut = false) {
-    antenna_left(is_cut = is_cut, antenna_angle = 0);
 }
 
 module visor() {
@@ -65,9 +63,16 @@ module visor_cut(is_cut) {
     d = is_cut ? 3.1 : 3;
     hull() {
         reflect([1, 0, 0]) {
-            translate([0.5, cut_depth, 0]) rotate([-90, 0, 0]) cylinder(d = d, h = 10);
-            translate([4, cut_depth, 8.5]) rotate([-90, 0, 0]) cylinder(d = d, h = 10);
+            translate([0.5, cut_depth, 4]) rotate([-90, 0, 0]) cylinder(d = d, h = head_depth/2 - cut_depth + 1);
+            translate([4, cut_depth, 12.5]) rotate([-90, 0, 0]) cylinder(d = d, h = head_depth/2 - cut_depth + 1);
         }
+    }
+}
+
+module visor_pegs(is_cut = false) {
+    cut_adjust = is_cut ? 0.15 : 0;
+    translate([0, segment_cut_height/2 + 2 + visor_depth, 0]) {
+        translate([0, 0, 8.5]) rotate([270, 0, 0]) rounded_cylinder(1.7 + cut_adjust, 3 + cut_adjust, 1, 0);
     }
 }
 
@@ -77,44 +82,62 @@ module space_head_for_print() {
 
 module space_head() {
     difference() {
+        translate(head_socket_pos) space_head_with_accessory_sockets();
+        socket_cut();
+    }
+
+    module socket_cut() {
+        rotate([45 - head_cut_angle, 0, 0]) {
+            rotate([90, 0, 0]) socket_with_snaps(true);
+            translate([-head_width/2, -head_depth + segment_cut_height/2, 1.5]) {
+                rotate([0, 90, 0]) {
+                    rounded_cube([head_height/2, head_depth, head_width], d = 3, top_d = 0, bottom_d = 0);
+                }
+            }
+            translate([0, segment_cut_height/2, 0]) rotate(45) cube([1, 1, socket_d], center = true);
+        }
+    }
+}
+
+module space_head_with_accessory_sockets() {
+    difference() {
         space_head_without_visor();
+        antenna_position() space_head_antenna_left(true);
         visor_cut(true);
     }
     visor_pegs();
-}
-
-space_head_for_print();
-
-module visor_pegs(is_cut = false) {
-    cut_adjust = is_cut ? 0.1 : 0;
-    translate([0, segment_cut_height/2 + 2 + visor_depth, 0]) {
-        translate([0, 0, 0.5]) rotate([270, 0, 0]) rounded_cylinder(2 + cut_adjust, 2 + cut_adjust, 1, 0);
-        reflect([1, 0, 0]) translate([2.5, 0, 8.5]) rotate([270, 0, 0]) rounded_cylinder(2 + cut_adjust, 2 + cut_adjust, 1, 0);
-    }
-}
-
-module antenna_position(x_offset = 0) {
-    reflect([1, 0, 0]) {
-        translate(
-            [
-                head_width/2 + x_offset,
-                head_socket_pos[1],
-                head_height - head_depth/2 + head_socket_pos[2]
-            ]
-        ) {
-            rotate([head_antenna_angle + 180, 0, 0]) {
-                rotate([0, 270, 0]) {
-                    children();
-                }
-            }
-        }
-    }
 }
 
 module space_head_without_visor() {
     head_width_adjusted = head_width - edge_d;
     head_height = head_height - edge_d;
     head_mid_h = 0;
+
+    head_form_rounded();
+
+    module head_form_rounded() {
+        translate([0, 0, edge_d/2]) {
+            minkowski() {
+                rotate(90) head_form_with_back_cut();
+                sphere(d = edge_d);
+            }
+        }
+    }
+
+    module head_form_with_back_cut() {
+        cut_offset = head_depth_adjusted/2 - head_x_dist + 1;
+
+        difference() {
+            head_form();
+            translate([cut_offset, 0, 0]) {
+                rotate([0, head_cut_angle, 0]) {
+                    translate([-head_height, -head_width/2, -head_depth]) {
+                        cube([head_height, head_width, head_depth]);
+                    }
+                }
+            }
+        }
+    }
 
     module head_form() {
         hull() {
@@ -153,45 +176,20 @@ module space_head_without_visor() {
            }
        }
     }
+}
 
-    module with_back_cut() {
-        cut_offset = head_depth_adjusted/2 - head_x_dist + 1;
-        translate([cut_offset, 0]) {
-            rotate([0, head_cut_angle, 0]) {
-                xy_cut(size = 40) {
-                    rotate([0, -head_cut_angle, 0]) {
-                        translate([-cut_offset, 0]) {
-                            head_form();
-                        }
-                    }
+module space_head_antenna_left(is_cut = false) {
+    antenna_left(is_cut = is_cut, antenna_angle = 0);
+}
+
+module antenna_position(x_offset = 0) {
+    reflect([1, 0, 0]) {
+        translate([head_width/2 + x_offset, 0, head_height - head_depth/2]) {
+            rotate([head_antenna_angle + 180, 0, 0]) {
+                rotate([0, 270, 0]) {
+                    children();
                 }
             }
         }
-    }
-
-    module with_jaw_cut() {
-        difference() {
-            translate(head_socket_pos) {
-                rotate(90) with_back_cut();
-            }
-            translate([-head_width/2, -segment_cut_height/2 - head_depth + edge_d/2, 2]) {
-                rotate([0, 90, 0]) {
-                    rounded_cube([8, segment_cut_height + head_depth, head_width], d = 4, top_d = 0, bottom_d = 0);
-                }
-            }
-        }
-    }
-
-    module head_form_rounded() {
-        minkowski() {
-            with_jaw_cut();
-            sphere(d = edge_d);
-        }
-    }
-
-    difference() {
-        head_form_rounded();
-        antenna_position() space_head_antenna_left(true);
-        rotate([90, 0, 0]) socket_with_snaps(true);
     }
 }

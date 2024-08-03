@@ -1,7 +1,7 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen, PIPE
-from export_config import get_openscad_location
+from export_config import get_openscad_location, get_manifold_support, get_project_root
 
 images_map = {
     'alternate_hands':      '38,8,13,37,0,29,156',
@@ -16,11 +16,11 @@ images_map = {
     'hand_armor':           '-2,36,-2,234,0,66,173',
     'arm_assembled':        '-2,36,-2,234,0,66,173',
 
-    'torso_frame_exploded': '1,14,-3,234,0,247,263',
-    'torso_frame':          '1,14,-3,234,0,247,200',
-    'pelvis_armor':         '1,14,-3,234,0,247,200',
-    'waist_armor':          '1,14,-3,234,0,247,200',
-    'torso_assembled':      '1,14,-3,234,0,247,200',
+    'torso_frame_exploded': '-3,24,2,56,0,247,213',
+    'torso_frame':          '-3,24,2,56,0,247,213',
+    'pelvis_armor':         '-3,24,2,56,0,247,213',
+    'waist_armor':          '-3,24,2,56,0,247,213',
+    'torso_assembled':      '-3,24,2,56,0,247,213',
 
     'upper_body_arms_exploded':     '-1,13,4,17,0,182,300',
     'upper_body_arms':              '-1,13,4,17,0,182,300',
@@ -50,22 +50,32 @@ images_map = {
     'space_head_exploded':          '-5,5,9,61,0,219,113',
     'space_head_assembled':         '-5,5,9,61,0,219,113',
     'body_space_head_exploded':     '0,35,6,34,0,240,315',
-    'body_space_head_assembled':    '0,35,6,34,0,240,315'
+    'body_space_head_assembled':    '0,35,6,34,0,240,315',
+
+    'wing_attach':                  '0,2,-16,117,0,343,92',
+    'upper_body_chest_armor_wings': '-11,6,5,61,0,227,213',
 }
 
-def generate_image(openscad_location, image_name, camera_pos):
+def generate_image(image_name, camera_pos):
     image_file_name = image_name + '.png'
 
-    process = Popen([openscad_location,
-                     '-Dpart="' + image_name + '"',
-                     '-D$fs=0.4',
-                     '-D$fa=0.8',
-                     '--camera=' + camera_pos,
-                     '-o' + '../../instructions/images/' + image_file_name,
-                     '--colorscheme=Tomorrow Night',
-                     '--imgsize=2000,1200',
-                     '../scad/assembly image map.scad'], stdout=PIPE, stderr=PIPE)
-    out, err = process.communicate()
+    args = [
+        get_openscad_location(),
+        '-Dpart="' + image_name + '"',
+        '--camera=' + camera_pos,
+        '--colorscheme=Tomorrow Night',
+        '--imgsize=2000,1200',
+        '-o' + get_project_root() + '/instructions/images/' + image_file_name,
+        get_project_root() + '/src/scad/assembly image map.scad'
+    ]
+
+    if get_manifold_support():
+        args.extend(['--enable=manifold', '--render=true'])
+    else:
+        args.extend(['-D$fs=0.4', '-D$fa=0.8'])
+
+    process = Popen(args, stdout=PIPE, stderr=PIPE)
+    _, err = process.communicate()
 
     output = ""
     if (process.returncode == 0):
@@ -76,11 +86,10 @@ def generate_image(openscad_location, image_name, camera_pos):
 
 def generate_images():
     with ThreadPoolExecutor(max_workers = os.cpu_count()) as executor:
-        openscad_location = get_openscad_location()
         print('Starting image generation')
         futures = []
         for image_name, camera_pos in images_map.items():
-            futures.append(executor.submit(generate_image, openscad_location, image_name, camera_pos))
+            futures.append(executor.submit(generate_image, image_name, camera_pos))
         for future in futures:
             print(future.result())
         print('Done!')
