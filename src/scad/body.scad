@@ -97,7 +97,7 @@ module torso_assembly(
                 translate([0, 0, -waist_armor_explode_z]) color(armor_color) waist_armor();
                 if (explode_waist_armor) {
                     translate([0, waist_len/2, -waist_armor_explode_z/2 - 2]) {
-                        rotate([270, 0, 90]) assembly_arrow();
+                        rotate([270, 0, 45]) assembly_arrow();
                     }
                 }
             }
@@ -115,7 +115,7 @@ module torso_assembly(
                 translate([0, 0, -pelvis_armor_explode_z]) color(armor_color) pelvis_armor();
                 if (explode_pelvis_armor) {
                     translate([0, hip_len/2, -pelvis_armor_explode_z/2 - 2]) {
-                        rotate([270, 0, 90]) assembly_arrow();
+                        rotate([270, 0, 45]) assembly_arrow();
                     }
                 }
             }

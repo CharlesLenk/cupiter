@@ -16,11 +16,11 @@ images_map = {
     'hand_armor':           '-2,36,-2,234,0,66,173',
     'arm_assembled':        '-2,36,-2,234,0,66,173',
 
-    'torso_frame_exploded': '1,14,-3,234,0,247,263',
-    'torso_frame':          '1,14,-3,234,0,247,200',
-    'pelvis_armor':         '1,14,-3,234,0,247,200',
-    'waist_armor':          '1,14,-3,234,0,247,200',
-    'torso_assembled':      '1,14,-3,234,0,247,200',
+    'torso_frame_exploded': '-3,24,2,56,0,247,213',
+    'torso_frame':          '-3,24,2,56,0,247,213',
+    'pelvis_armor':         '-3,24,2,56,0,247,213',
+    'waist_armor':          '-3,24,2,56,0,247,213',
+    'torso_assembled':      '-3,24,2,56,0,247,213',
 
     'upper_body_arms_exploded':     '-1,13,4,17,0,182,300',
     'upper_body_arms':              '-1,13,4,17,0,182,300',
