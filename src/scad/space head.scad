@@ -19,8 +19,6 @@ head_antenna_angle = -45;
 visor_depth = -0.2;
 head_socket_pos = [0, 0.3, -4];
 
-space_head_assembly();
-
 module space_head_assembly(
     frame_color = frame_color,
     armor_color = armor_color,
