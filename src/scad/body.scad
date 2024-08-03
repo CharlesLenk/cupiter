@@ -123,9 +123,6 @@ module torso_assembly(
     }
 }
 
-echo_cam();
-chest_armor_with_wing_attach_assembly(true);
-
 module chest_armor_with_wing_attach_assembly(
     explode = false
 ) {

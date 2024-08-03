@@ -11,13 +11,31 @@ from threading import Lock
 conf_file_name = 'export.conf'
 lock = Lock()
 
-projectRoot = 'projectRoot'
-openSCADLocation = 'openSCADLocation'
-stlOutputDirectory = 'stlOutputDirectory'
-supportsManifold = 'supportsManifold'
+openSCADLocationName = 'openSCADLocation'
+stlOutputDirectoryName = 'stlOutputDirectory'
 
 def is_openscad_location_valid(location):
     return shutil.which(location) is not None
+
+def is_path_writable(directory):
+    return os.access(os.path.dirname(directory), os.W_OK)
+
+def reprompt(validation_func, input_name):
+    user_input = input('Enter {} or "q" to exit: '.format(input_name))
+    while not validation_func(user_input) and user_input.strip() != 'q':
+        print('{}: "{}" not accessible'.format(input_name, user_input))
+        user_input = input('Enter {} or "q" to exit: '.format(input_name))
+    if user_input == 'q':
+        sys.exit('Quitting. {} must be set.'.format(input_name))
+    else:
+        return user_input
+
+@cache
+def _get_project_root():
+    project_root = PurePath(__file__).parents[2]
+    if not os.path.isdir(project_root):
+        project_root = reprompt(os.path.isdir, 'project root folder')
+    return str(project_root)
 
 def _get_openscad_location():
     system = platform.system()
@@ -32,17 +50,23 @@ def _get_openscad_location():
         location = '/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD.app'
     elif (system == 'Linux'):
         location = 'openscad'
+    if not is_openscad_location_valid(location):
+        reprompt(is_openscad_location_valid, 'OpenSCAD executable location')
+    return location
 
-    while not is_openscad_location_valid(location) and location.strip() != 'q':
-        print("OpenSCAD not found at {}".format(location))
-        location = input('Enter OpenScad location or "q" to exit: ')
+def _get_stl_output_directory():
+    default = os.path.join(os.path.expanduser('~'), 'Desktop', 'cupiter_export')
+    directory = ''
+    if is_path_writable(default):
+        user_input = input('Would you like to use default STL output directory of {}? (y/n): '.format(default))
+        if user_input.strip() == 'y':
+            directory = default
+    if not is_path_writable(directory):
+        directory = reprompt(is_path_writable, 'STL output directory')
+    return directory
 
-    if location == 'q':
-        return ''
-    else:
-        return location
-
-def check_manifold_support(openscad_location):
+@cache
+def _get_manifold_support(openscad_location):
     if openscad_location:
         process = Popen([openscad_location, '-h'], stdout=PIPE, stderr=PIPE)
         _, out = process.communicate()
@@ -51,47 +75,42 @@ def check_manifold_support(openscad_location):
         return False
 
 def validate_config(config):
-    error = '{} is invalid. Please set {} in export.conf'
-    if not os.path.isdir(config[projectRoot]):
-        sys.exit(error.format(projectRoot, projectRoot))
-    if not is_openscad_location_valid(config[openSCADLocation]):
-        sys.exit(error.format(openSCADLocation, openSCADLocation))
-    if not os.path.isdir(config[stlOutputDirectory]):
-        sys.exit(error.format(stlOutputDirectory, stlOutputDirectory))
+    validated_config = config.copy()
+    if not is_openscad_location_valid(config.get(openSCADLocationName, '')):
+        validated_config[openSCADLocationName] = _get_openscad_location()
+    if not is_path_writable(config.get(stlOutputDirectoryName, '')):
+        validated_config[stlOutputDirectoryName] = _get_stl_output_directory()
+    return validated_config
 
 @cache
-def load_config():
-    project_root = PurePath(__file__).parents[2]
-    conf_file = project_root / conf_file_name
+def get_config():
+    conf_file = os.path.join(_get_project_root(), conf_file_name)
     config = {}
-    if shutil.which(conf_file) is not None:
+    if os.path.isfile(conf_file):
         with open(conf_file, 'r') as file:
             config = json.load(file)
-    else:
-        config[projectRoot] = str(project_root)
-        config[openSCADLocation] = _get_openscad_location()
-        config[stlOutputDirectory] = os.path.join(os.path.expanduser('~'), 'Desktop', 'cupiter_export')
-        config[supportsManifold] = check_manifold_support(config[openSCADLocation])
-        for field_name, value in config.items():
-            print('Saving {}={} in {}'.format(field_name, value, conf_file_name))
+    validated_config = validate_config(config)
+    if validated_config != config:
         with open(conf_file, 'w') as file:
-            json.dump(config, file, indent=2)
+            json.dump(validated_config, file, indent=2)
+    return validated_config
 
-    validate_config(config)
-    return config
-
+@cache
 def get_project_root():
     with lock:
-        return load_config().get(projectRoot)
+        return _get_project_root()
 
+@cache
 def get_openscad_location():
     with lock:
-        return load_config().get(openSCADLocation)
+        return get_config()[openSCADLocationName]
 
+@cache
 def get_stl_output_directory():
     with lock:
-        return load_config().get(stlOutputDirectory)
+        return get_config()[stlOutputDirectoryName]
 
+@cache
 def get_manifold_support():
     with lock:
-        return load_config().get(supportsManifold)
+        return _get_manifold_support(get_openscad_location())

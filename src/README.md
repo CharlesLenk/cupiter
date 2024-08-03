@@ -52,7 +52,7 @@ As of 2024, the OpenSCAD development preview uses a new rendering engine called 
 
 In order to generate the parts, a [Python](https://www.python.org/) export script is provided in `src/python/stl_export.py`.
 
-When first run, the export script will create an `export.conf` file in the project's root directory. attempt to find OpenSCAD on your system. As long as OpenSCAD is installed in the standard applications directory for your system and you have a Desktop folder, the defaults provided should work without customization. The values are saved to `export.conf` in the project root, which can be edited directly if you need to change the OpenSCAD location or output directory.
+When first run, the export script will confirm the output directory and attempt to find OpenSCAD on your system. As long as OpenSCAD is installed in the standard applications directory for your system and you have a Desktop folder, the defaults provided should work without customization. The values are saved to `export.conf` in the project root, which can be edited directly if you need to change the OpenSCAD location or output directory.
 
 The export will have the folder structure given in the [instructions](../instructions/README.md)
 
