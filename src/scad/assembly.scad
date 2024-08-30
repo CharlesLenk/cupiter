@@ -6,8 +6,9 @@ use <space head.scad>
 use <body.scad>
 use <arms.scad>
 use <legs.scad>
+use <wings.scad>
 
-assembly(arm_retract_angle = 80);
+assembly(arm_retract_angle = 80, wing_attach = true);
 
 module socket_assembly_note() {
     socket_dist = 15;
@@ -30,6 +31,7 @@ module assembly(
     frame_color = frame_color,
     armor_color = armor_color,
     space_head = false,
+    wing_attach = false,
     with_armor = true,
     arm_retract_angle = 0,
     arm_lift_angle = 0,
@@ -43,6 +45,7 @@ module assembly(
         space_head = space_head,
         with_armor = with_armor,
         head = true,
+        wing_attach = wing_attach,
         hip_armor = true,
         arm_retract_angle = arm_retract_angle,
         arm_lift_angle = arm_lift_angle,
@@ -59,6 +62,7 @@ module body_assembly(
     with_armor = true,
     head = false,
     explode_head = false,
+    wing_attach = false,
     explode_legs = false,
     hip_armor = false,
     explode_hip_armor = false,
@@ -81,6 +85,7 @@ module body_assembly(
         shoulder_armor = true,
         head = head,
         explode_head = explode_head,
+        wing_attach = wing_attach,
         arm_retract_angle = arm_retract_angle,
         arm_lift_angle = arm_lift_angle,
         elbow_angle = elbow_angle

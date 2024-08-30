@@ -4,6 +4,7 @@ use <robot common.scad>
 use <body.scad>
 use <limbs.scad>
 use <snaps.scad>
+use <wings.scad>
 
 hip_len = 13.1;
 waist_len = socket_r + ball_dist + 1;
@@ -124,7 +125,8 @@ module torso_assembly(
 }
 
 module chest_armor_with_wing_attach_assembly(
-    explode = false
+    explode = false,
+    wings = true
 ) {
     explode_dist = explode ? -12 : 0;
 
@@ -142,6 +144,23 @@ module chest_armor_with_wing_attach_assembly(
             if (explode) assembly_arrow();
         }
     }
+
+    if (wings) {
+        interior_cut_adjust = is_cut ? 0.15 : 0;
+        height = is_cut ? segment_cut_height : segment_height;
+
+        clip_wall_width = 1.6;
+        width = chest_armor_inner_width;
+        clip_depth = (torso_height_start - segment_cut_height)/2 + clip_wall_width;
+        tab_size = 1.2;
+
+        ball_position = [width/2 - segment_width/2, clip_depth - segment_width/2];
+        ball_extension = 0.5;
+        ball_angle = 25;
+        translate(ball_position + [0, 0, 0]) {
+            wing_assembly();
+        }
+    }
 }
 
 module chest_armor_with_wing_attach() {
@@ -154,6 +173,8 @@ module chest_armor_with_wing_attach() {
         }
     }
 }
+
+wing_attach();
 
 module wing_attach(is_cut = false) {
     interior_cut_adjust = is_cut ? 0.15 : 0;
