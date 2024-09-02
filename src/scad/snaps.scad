@@ -109,14 +109,14 @@ module snaps_tabs(x, y, z, is_cut = false, snap_depth = 0.5) {
 
     if (is_cut) {
         translate([-width/2, 0, -z/2]) {
-            cube([width, y + 1, z]);
+            cube([width, y + 0.5, z]);
         }
     } else {
         translate([0, 0.001, -z/2]) {
             reflect([1, 0, 0]) {
                 translate([-width/2, 0, 0]) {
                     hull() {
-                        cube([snap_tab_width, y - 1 + get_opposite(snap_angle/2, snap_depth), z]);
+                        cube([snap_tab_width, y - 1 + get_opposite_toa(snap_angle/2, snap_depth), z]);
                         translate([snap_tab_width/2, 0, 0]) cube([snap_tab_width/2, y, z]);
                     }
                 }

@@ -8,7 +8,7 @@ use <arms.scad>
 use <legs.scad>
 use <wings.scad>
 
-assembly(arm_retract_angle = 80, wing_attach = true);
+assembly(arm_retract_angle = 80, wing_clip = true);
 
 module socket_assembly_note() {
     socket_dist = 15;
@@ -31,7 +31,7 @@ module assembly(
     frame_color = frame_color,
     armor_color = armor_color,
     space_head = false,
-    wing_attach = false,
+    wing_clip = false,
     with_armor = true,
     arm_retract_angle = 0,
     arm_lift_angle = 0,
@@ -45,7 +45,7 @@ module assembly(
         space_head = space_head,
         with_armor = with_armor,
         head = true,
-        wing_attach = wing_attach,
+        wing_clip = wing_clip,
         hip_armor = true,
         arm_retract_angle = arm_retract_angle,
         arm_lift_angle = arm_lift_angle,
@@ -62,7 +62,7 @@ module body_assembly(
     with_armor = true,
     head = false,
     explode_head = false,
-    wing_attach = false,
+    wing_clip = false,
     explode_legs = false,
     hip_armor = false,
     explode_hip_armor = false,
@@ -85,7 +85,7 @@ module body_assembly(
         shoulder_armor = true,
         head = head,
         explode_head = explode_head,
-        wing_attach = wing_attach,
+        wing_clip = wing_clip,
         arm_retract_angle = arm_retract_angle,
         arm_lift_angle = arm_lift_angle,
         elbow_angle = elbow_angle
@@ -131,7 +131,7 @@ module upper_body_assembly(
 
     head = false,
     explode_head = false,
-    wing_attach = false,
+    wing_clip = false,
 
     arm_retract_angle = 0,
     arm_lift_angle = 0,
@@ -176,7 +176,7 @@ module upper_body_assembly(
         waist_armor = true,
         chest_armor = chest_armor,
         explode_chest_armor = explode_chest_armor,
-        wing_attach = wing_attach
+        wing_clip = wing_clip
     );
     reflect([1, 0, 0]) {
         translate([-shoulder_width/2 - arm_explode_x, shoulder_height]) {
