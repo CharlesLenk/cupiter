@@ -152,7 +152,7 @@ module chest_armor_with_wing_clip_assembly(
                 y = get_adjacent(wing_ball_angle, wing_hypot);
                 reflect([1, 0, 0]) {
                     translate([chest_armor_inner_width/2 - segment_width/2 + x, wing_clip_wall_width - segment_width/2 + y]) {
-                        rotate([270, 0, -30]) {
+                        rotate([270, 0, -40]) {
                             wing_assembly();
                         }
                     }
