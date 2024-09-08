@@ -14,13 +14,113 @@ wing_assembly();
 // translate([25, 0]) feather(15);
 
 feather_count = 5;
-feather_width = 6;
-feather_socket_width = feather_width + 0.5;
+feather_width = 4;
+feather_socket_width = feather_width + 2;
 feather_depth = 2.5;
 feather_angle = 20;
-feather_pos = [0, 15.5, 4.55];
+feather_pos = [0, 15, 4.5];
 
 fangle2 = 20;
+
+//blade_antenna(30);
+
+module blade_antenna(l, is_cut = false, holes = 0) {
+    w = 8;
+    base_wa = 3.5;
+    bot_notcha = 2;
+    edge_margin = 0;
+    top_w = 2;
+
+    translate([0, 0, feather_socket_width/2])
+    rotate([-90, 0, 90])
+    union() {
+        if (!is_cut) {
+            translate([0, -base_wa/2, -feather_depth/2 + edge_d/2]) {
+                difference() {
+                    minkowski() {
+                        linear_extrude(feather_depth - edge_d) {
+                            offset(delta = -edge_d/2) {
+                                blade_2d(l, base_wa, bot_notcha, top_w, holes);
+                            }
+                        }
+                        sphere(d = 1);
+                    }
+                    translate([-base_wa, 0, -base_wa/2]) {
+                        cube([base_wa, base_wa, 2 * base_wa]);
+                    }
+                }
+            }
+        }
+        translate([-0.5, 0]) {
+            union() {
+                translate([0, -base_wa/2, -feather_depth/2]) {
+                    cube([0.5, base_wa, feather_depth]);
+                }
+                rotate(90) snaps_tabs(base_wa, 3, feather_depth, is_cut = is_cut, snap_tab_width = 1.2);
+            }
+        }
+    }
+}
+
+module blade_2d(l, base_w, bot_notch, top_w, holes = 0) {
+    hole_dist = 4;
+    translate([-base_w, 0]) {
+        square([base_w, base_w]);
+    }
+    difference() {
+        hull() {
+            translate([top_w, -top_w]) {
+                square([l - 2 * top_w, top_w]);
+            }
+            square([l, base_w]);
+            translate([2.5 * bot_notch, base_w]) {
+                square([l - 2.5 * bot_notch, bot_notch]);
+            }
+        }
+        for (i = [0 : holes]) {
+            translate([i * hole_dist + 3.5, (base_w + bot_notch + top_w)/2 - top_w]) {
+                circle(d = 2);
+            }
+        }
+        r = (base_w + bot_notch)/2;
+        translate([r + holes * hole_dist + 6.5, base_w + bot_notch]) {
+            hull() {
+                circle(r = r);
+                translate([l, 0]) {
+                    circle(r = r);
+                }
+            }
+        }
+    }
+}
+
+module ttt(l) {
+    translate([0, 0, feather_socket_width/2]) {
+        rotate([90, 90, 90]) {
+tuning(l);
+        }
+    }
+
+}
+
+module tuning(l) {
+    d = 1;
+    w = 5;
+    rotate([270, 0, 0])
+    linear_extrude(l/3)
+    rounded_square_2([w, 2.5], 1, 1, 1, 1, center = true);
+
+    reflect([1, 0, 0])
+    translate([-d/2 - w/2, l/2, 0])
+    rotate([270, 0, 0])
+    linear_extrude(l/3)
+    rounded_square_2([w, 2.5], 1, 1, 1, 1, center = true);
+
+    translate([0, l/2, -1.25])
+    rotate(180)
+    rotate_extrude(angle = 180)
+    translate([d/2, 0]) rounded_square_2([w, 2.5], 1, 1, 1, 1);
+}
 
 module place_feathers(count, angle, h, i = 0) {
     //rotate([-angle, 0, 0])
@@ -90,12 +190,12 @@ module wing_base() {
             rotate([fangle2, 0, 0]) {
                 for (i = [0 : feather_count - 1]) {
                     place_feather_at_index(feather_angle, feather_socket_width, i) {
-                        feather(15 + 4 * i, is_cut = true);
+                        translate([0, edge_d/2]) blade_antenna(15 + 4 * i, is_cut = true);
                     }
                 }
             }
         }
-        //translate([0, -50]) cube([100, 100, 100]);
+        translate([0, -50]) cube([100, 100, 100]);
     }
 }
 
@@ -105,118 +205,14 @@ module wing_assembly() {
         rotate([fangle2, 0, 0]) {
             for (i = [0 : feather_count - 1]) {
                 place_feather_at_index(feather_angle, feather_socket_width, i) {
-                    color(frame_color) feather(22 + 4 * i);
+                    translate([0, edge_d/2]) color(frame_color)  {
+                        blade_antenna(20 + 4 * i, holes = i);//feather(22 + 4 * i);
+                    }
                 }
             }
         }
     }
     rotate([90, 0, 90]) {
         color(frame_color) socket_with_snaps();
-    }
-}
-
-// module feather(length, is_cut = false) {
-//     width = is_cut ? feather_width + 0.1 : feather_width;
-//     height = is_cut ? feather_depth + 0.1 : feather_depth;
-
-//     translate([0, 0, feather_width/2]) {
-//         rotate([90, 0, 90]) {
-//             hull() {
-//                 linear_extrude(0.001) {
-//                     feather_polygon(width, length);
-//                 }
-//                 translate([0, 0, -height/2]) {
-//                     linear_extrude(height) {
-//                         feather_polygon(width - height, length - height/2);
-//                     }
-//                 }
-//             }
-//             translate([0.01, 0]) {
-//                 rotate(90) snaps_tabs(width - height, 3, feather_depth, is_cut = is_cut);
-//             }
-//         }
-//     }
-
-//     module feather_polygon(width, length) {
-//         polygon(
-//             [
-//                 [0, width/2],
-//                 [length - width/2, width/2],
-//                 [length, 0],
-//                 [length - width/2, -width/2],
-//                 [0, -width/2],
-//             ]
-//         );
-//     }
-// }
-
-//better_feather(30);
-
-//feather(30);
-
-module feather(length, is_cut = false) {
-    width = is_cut ? feather_width + 0.1 : feather_width;
-    height = is_cut ? feather_depth + 0.1 : feather_depth;
-
-    end_d = 20;
-
-    translate([0, 0, feather_socket_width/2]) {
-        rotate([90, 0, 90]) {
-            difference() {
-                hull() {
-                    linear_extrude(0.001) feather_2d();
-                    translate([0, 0, -height/2]) linear_extrude(height) feather_2d((width - height)/2 - 0.5);
-                }
-                fix_preview() translate([0, 0, -height/2]) linear_extrude(height) feather_2d((width - height)/2 + 1.5);
-            }
-            translate([0.01, 0]) {
-                rotate(90) snaps_tabs(width - height, 3, feather_depth, is_cut = is_cut);
-            }
-        }
-    }
-
-    module feather_2d(edge_adjust = 0, a = 4) {
-        reflect([0, 1, 0]) {
-            intersection() {
-                rotate(5)
-                union() {
-                    square([length - end_d/2, width/2 - edge_adjust]);
-                    translate([length - end_d/2, -end_d/2 + width/2 - edge_adjust/2]) {
-                        circle(d = end_d - edge_adjust);
-                    }
-                }
-                square([100, 100]);
-            }
-        }
-    }
-
-    // translate([0, 0, feather_width/2]) {
-    //     rotate([90, 0, 90]) {
-            // hull() {
-            //     linear_extrude(0.001) {
-            //         feather_polygon(width, length);
-            //     }
-            //     translate([0, 0, -height/2]) {
-            //         linear_extrude(height) {
-            //             feather_polygon(width - height, length - height/2);
-            //         }
-            //     }
-            // }
-            // translate([0.01, 0]) {
-            //     rotate(90) snaps_tabs(width - height, 3, feather_depth, is_cut = is_cut);
-            // }
-    //     }
-    // }
-
-    module feather_polygon(width, length) {
-        polygon(
-            [
-                [0, width/2],
-                [length - width/2, width/2],
-                [length, 0],
-                [length - width/2, -width/2],
-                [0, -width/2],
-            ]
-        );
     }
 }
