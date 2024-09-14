@@ -107,7 +107,7 @@ module snaps_tabs(x, y, z, is_cut = false, snap_depth = 0.5, snap_tab_width = 1)
         }
         if (is_cut) {
             translate([-width/2, 0, -z/2]) {
-                cube([width, y + 0.5, z]);
+                cube([width, y + 0.3, z]);
             }
         } else {
             translate([0, 0.001, -z/2]) {
