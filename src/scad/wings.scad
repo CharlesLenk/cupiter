@@ -117,7 +117,7 @@ module wing_base() {
 
 module wing_assembly() {
     color(armor_color) wing_base();
-    place_feathers();
+    color(frame_color) place_feathers();
     rotate([90, 0, 90]) {
         color(frame_color) socket_with_snaps();
     }
