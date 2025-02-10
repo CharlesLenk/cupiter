@@ -26,10 +26,47 @@ wing_clip_wall_width = 1.6;
 wing_ball_extension = 0.5;
 wing_ball_angle = 25;
 
+wing_clip_x = 10;
+wing_clip_y = 20;
+
+wing_clip_ball_hypot = wing_ball_extension + ball_dist;
+wing_clip_ball_x = wing_clip_x + get_adjacent(wing_ball_angle, wing_clip_ball_hypot);
+wing_clip_ball_y = wing_clip_y/2 + get_opposite_soh(wing_ball_angle, wing_clip_ball_hypot);
+
 function torso_len() = torso_len;
 function hip_width() = hip_width;
 function shoulder_width() = shoulder_width;
 function shoulder_height() = shoulder_height;
+
+difference() {
+    translate([0, -wing_clip_y/2]) {
+        square([wing_clip_x, wing_clip_y]);
+    }
+    translate([wing_clip_wall_width, -wing_clip_y/2 + segment_width]) {
+        rounded_square_2([
+            wing_clip_x - wing_clip_wall_width, 
+            wing_clip_y - 2 * segment_width
+        ], 2, 0, 0, 2);
+    }
+}
+
+translate([wing_clip_x, wing_clip_y/2 - segment_width/2]) {
+    rotate(wing_ball_angle) {
+        tombstone_2d(segment_width, wing_ball_extension);
+    }
+}
+
+module tombstone_2d(d, l) {
+    intersection() {
+        translate([-d/2, -d/2]) {
+            square([d/2, d]);
+        }
+        circle(d = d);
+    }
+    translate([0, -d/2]) {
+        square([l, d]);
+    }
+}
 
 module torso_assembly(
     frame_color = frame_color,
@@ -173,7 +210,7 @@ module chest_armor_with_wing_clip() {
     }
 }
 
-chest_armor_with_wing_clip_assembly();
+//chest_armor_with_wing_clip_assembly();
 
 
 //
