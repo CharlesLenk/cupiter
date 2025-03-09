@@ -106,7 +106,7 @@ module socket_with_snaps(is_cut = false) {
         rounded_socket_blank(is_cut);
     }
 
-    translate([0, socket_d/2 - 0.01]) snaps_tabs(tab_width, tab_len, height, is_cut);
+    translate([0, socket_d/2]) snaps_tabs(tab_width, tab_len, height, is_cut);
 }
 
 module cross_brace(depth, target_width, is_cut) {

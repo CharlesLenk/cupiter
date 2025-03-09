@@ -126,7 +126,7 @@ module upper_body_assembly(
 
     head = false,
     explode_head = false,
-    wing_attach = false,
+    wing_clip = false,
 
     arm_retract_angle = 0,
     arm_lift_angle = 0,
@@ -171,7 +171,7 @@ module upper_body_assembly(
         waist_armor = true,
         chest_armor = chest_armor,
         explode_chest_armor = explode_chest_armor,
-        wing_attach = wing_attach
+        wing_clip = wing_clip
     );
     reflect([1, 0, 0]) {
         translate([-shoulder_width/2 - arm_explode_x, shoulder_height]) {
