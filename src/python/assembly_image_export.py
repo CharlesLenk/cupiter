@@ -52,7 +52,7 @@ images_map = {
     'body_space_head_exploded':     '0,35,6,34,0,240,315',
     'body_space_head_assembled':    '0,35,6,34,0,240,315',
 
-    'wing_clip':                  '0,2,-16,117,0,343,92',
+    'wing_clip':                    '6,5,-4,55,0,217,83',
     'upper_body_chest_armor_wings': '-11,6,5,61,0,227,213',
 }
 
