@@ -21,10 +21,32 @@ waist_width_chest = torso_width_start + 3;
 waist_width = torso_width_start + 2;
 waist_width_pelvis = torso_width_start + 4;
 
+wing_clip_wall_width = 1.6;
+wing_ball_extension = 0.5;
+wing_ball_angle = 25;
+
+wing_clip_x = (torso_height_start - segment_cut_height)/2;
+wing_clip_y = chest_armor_inner_width;
+
+clip_base = 0.4;
+wing_clip_tab_width = 1 + clip_base;
+
+wing_clip_ball_hypot = wing_ball_extension + ball_dist;
+
+wing_clip_ball_x = wing_clip_x + wing_clip_tab_width
+    + get_adjacent(wing_ball_angle, wing_clip_ball_hypot)
+        + get_opposite_soh(wing_ball_angle, segment_width/2);
+wing_clip_ball_y = wing_clip_y/2
+    + get_opposite_soh(wing_ball_angle, wing_clip_ball_hypot)
+        - get_adjacent(wing_ball_angle, segment_width/2);
+
 function torso_len() = torso_len;
 function hip_width() = hip_width;
 function shoulder_width() = shoulder_width;
 function shoulder_height() = shoulder_height;
+
+wing_clip();
+chest_armor_with_wing_clip();
 
 module torso_assembly(
     frame_color = frame_color,
@@ -37,7 +59,7 @@ module torso_assembly(
     explode_waist_armor = false,
     pelvis_armor = false,
     explode_pelvis_armor = false,
-    wing_attach = false
+    wing_clip = false
 ) {
     chest_armor = with_armor && (explode_chest_armor ? true : chest_armor);
     waist_armor = with_armor && (explode_waist_armor ? true : waist_armor);
@@ -66,8 +88,8 @@ module torso_assembly(
     color(frame_color) chest();
     if (chest_armor) {
         translate([0, 0, -chest_armor_explode_z]) {
-            if (wing_attach) {
-                chest_armor_with_wing_attach_assembly();
+            if (wing_clip) {
+                chest_armor_with_wing_clip_assembly();
             } else {
                 color(armor_color) chest_armor();
             }
@@ -123,93 +145,81 @@ module torso_assembly(
     }
 }
 
-module chest_armor_with_wing_attach_assembly(
+module chest_armor_with_wing_clip_assembly(
     explode = false
 ) {
-    explode_dist = explode ? -12 : 0;
+    explode_dist = explode ? -15 : 0;
 
-    color(armor_color) chest_armor_with_wing_attach();
-    translate([0, shoulder_height, explode_dist]) {
-        rotate([90, 180, 0]) {
-            if (explode) {
-                reflect([1, 0, 0]) {
-                    translate([-16, 12]) {
-                        rotate(90) assembly_arrow();
-                    }
-                }
-            }
-            color(frame_color) wing_attach();
-            if (explode) assembly_arrow();
-        }
-    }
+    color(armor_color)
+        chest_armor_with_wing_clip();
+    color(frame_color)
+        translate([0, shoulder_height, -segment_cut_height/2 - explode_dist])
+            rotate([0, 90, 270])
+                wing_clip();
+    translate([0, shoulder_height, -explode_dist/4])
+        rotate([90, 0, 0])
+            if (explode)
+                assembly_arrow();
 }
 
-module chest_armor_with_wing_attach() {
+module chest_armor_with_wing_clip() {
     difference() {
         chest_armor();
-        translate([0, shoulder_height, 0]) {
-            rotate([270, 0, 0]) {
-                wing_attach(true);
-            }
-        }
+        translate([0, shoulder_height, -segment_cut_height/2 + 0.001])
+            rotate([0, 90, 270])
+                wing_clip(true);
     }
 }
 
-module wing_attach(is_cut = false) {
-    interior_cut_adjust = is_cut ? 0.15 : 0;
-    height = is_cut ? segment_cut_height : segment_height;
+module wing_clip(is_cut = false) {
+    h = is_cut ? segment_cut_height : segment_height;
+    width_cut_adjust = is_cut ? segment_cut_width_offset : 0;
+    seg_width = segment_width + width_cut_adjust;
 
-    clip_wall_width = 1.6;
-    width = chest_armor_inner_width;
-    clip_depth = (torso_height_start - segment_cut_height)/2 + clip_wall_width;
-    tab_size = 1.2;
+    wing_clip_tab_depth = 1.2;
 
-    ball_position = [width/2 - segment_width/2, clip_depth - segment_width/2];
-    ball_extension = 0.5;
-    ball_angle = 25;
+    reflect([0, 1, 0])
+        translate([wing_clip_ball_x, wing_clip_ball_y])
+            rotate(90 + wing_ball_angle) ball(is_cut);
 
     difference() {
-        translate([0, -clip_depth + torso_height_start/2 + clip_wall_width]) {
-            reflect([1, 0, 0]) {
-                translate(ball_position) {
-                    rotate(180 - ball_angle) {
-                        translate([0, -ball_dist - ball_extension - segment_width/2]) ball();
-                    }
-                }
+        translate([0, 0, -h/2])
+            linear_extrude(h)
+                clip_2d();
+        if (!is_cut)
+            reflect([0, 1, 0])
+                translate([-segment_height/2, shoulder_inner_width/2])
+                    sphere(d = ball_d + 0.4);
+    }
+
+    module clip_2d() {
+        reflect([0, 1, 0])
+            translate([wing_clip_x, -wing_clip_y/2 + segment_width])
+                polygon(
+                    [
+                        [0, 0],
+                        [0, wing_clip_tab_depth],
+                        [clip_base, wing_clip_tab_depth],
+                        [wing_clip_tab_width, 0],
+                    ]
+                );
+
+        difference() {
+            translate([0, -wing_clip_y/2 -width_cut_adjust/2]) {
+                square([wing_clip_x + wing_clip_tab_width, wing_clip_y + width_cut_adjust]);
             }
-            translate([0, 0, -height/2]) {
-                linear_extrude(height) {
-                    difference() {
-                        union() {
-                            translate([-width/2, 0]) {
-                                rounded_square_2([width, clip_depth], 0, 0, segment_width/2, segment_width/2);
-                            }
-                            reflect([1, 0, 0]) {
-                                translate(ball_position) {
-                                    rotate(-ball_angle) {
-                                        translate([-segment_width/2, -segment_width/2]) {
-                                            square([segment_width, segment_width + ball_extension]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        clip_middle_cut_width = width - 2 * clip_wall_width - 2 * interior_cut_adjust;
-                        translate([-clip_middle_cut_width/2, tab_size]) {
-                            square([clip_middle_cut_width, clip_depth - clip_wall_width - tab_size]);
-                        }
-                        clip_tab_cut_width = clip_middle_cut_width - 1.6;
-                        translate([-clip_tab_cut_width/2, 0]) {
-                            square([clip_tab_cut_width, tab_size]);
-                        }
-                    }
-                }
+            translate([1.2, -wing_clip_y/2 + segment_width + width_cut_adjust/2]) {
+                rounded_square_2([
+                    2 * wing_clip_x,
+                    wing_clip_y - 2 * segment_width - width_cut_adjust
+                ], 1, 0, 0, 1);
             }
         }
-        if (!is_cut) {
-            reflect([1, 0, 0]) {
-                translate([shoulder_inner_width/2, 0]) {
-                    sphere(d = ball_d + 0.4);
+        reflect([0, 1, 0]) {
+            translate([wing_clip_x + wing_clip_tab_width, wing_clip_y/2 + width_cut_adjust/2]) {
+                rotate(270) {
+                    pie_wedge(seg_width, wing_ball_angle);
+                    rotate(wing_ball_angle) square([seg_width, wing_ball_extension + 0.001]);
                 }
             }
         }

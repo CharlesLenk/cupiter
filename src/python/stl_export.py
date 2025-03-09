@@ -71,10 +71,10 @@ part_map = {
         },
         'wings': {
             'frame': {
-                'wing_attach': 1
+                'wing_clip': 1
             },
             'armor': {
-                'chest_armor_with_wing_attach': 1
+                'chest_armor_with_wing_clip': 1
             }
         }
     },
