@@ -45,9 +45,6 @@ function hip_width() = hip_width;
 function shoulder_width() = shoulder_width;
 function shoulder_height() = shoulder_height;
 
-wing_clip();
-chest_armor_with_wing_clip();
-
 module torso_assembly(
     frame_color = frame_color,
     armor_color = armor_color,
